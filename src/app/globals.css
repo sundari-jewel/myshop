@@ -1,0 +1,296 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------------
+   LUXURY COLOUR PALETTE - Sundari Jewellers
+   --------------------------------------------------------------------- */
+:root {
+  /* Dark hero / nav surfaces */
+  --bg-deep:       #0e0404;
+  --bg-dark:       #180606;
+  --bg-maroon:     #2a0e0e;
+  --bg-warm:       #3d1a1a;
+
+  /* Gold spectrum */
+  --gold:          #c9a96e;
+  --gold-light:    #e4c88a;
+  --gold-pale:     #f0ddb0;
+  --gold-dim:      #7a5c2e;
+  --gold-border:   rgba(201,169,110,0.35);
+
+  /* Text on dark */
+  --cream:         #f5e6c8;
+  --cream-muted:   #c8a070;
+
+  /* Light surfaces */
+  --surface:       #faf6f0;
+  --surface-warm:  #f5ede0;
+  --surface-card:  #fffbf5;
+
+  /* Semantic aliases */
+  --foreground:    #1a0a0a;
+  --background:    #faf6f0;
+  --ruby:          #9b1c1c;
+  --ink-soft:      #6b4226;
+}
+
+/* ---------------------------------------------------------------------
+   BASE RESETS
+   --------------------------------------------------------------------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  margin: 0;
+}
+
+img,
+video {
+  max-width: 100%;
+  height: auto;
+}
+
+/* ---------------------------------------------------------------------
+   TYPOGRAPHY
+   --------------------------------------------------------------------- */
+.display-font {
+  font-family: var(--font-cormorant, "Cormorant Garamond", Georgia, serif);
+}
+
+/* ---------------------------------------------------------------------
+   LAYOUT
+   --------------------------------------------------------------------- */
+.container-shell {
+  width: min(1280px, calc(100% - 40px));
+  margin-inline: auto;
+}
+
+/* ---------------------------------------------------------------------
+   BUTTONS
+   --------------------------------------------------------------------- */
+.btn-ghost-gold {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.55rem 1.4rem;
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border-radius: 2px;
+  transition: background 0.2s ease, color 0.2s ease;
+  cursor: pointer;
+  background: transparent;
+}
+
+.btn-ghost-gold:hover {
+  background: var(--gold);
+  color: var(--bg-deep);
+}
+
+.btn-filled-gold {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.55rem 1.4rem;
+  background: var(--gold);
+  color: var(--bg-deep);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border: 1px solid var(--gold);
+  border-radius: 2px;
+  transition: background 0.2s ease, color 0.2s ease;
+  cursor: pointer;
+}
+
+.btn-filled-gold:hover {
+  background: var(--gold-light);
+  border-color: var(--gold-light);
+}
+
+.btn-ghost-cream {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.55rem 1.4rem;
+  border: 1px solid var(--cream);
+  color: var(--cream);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border-radius: 2px;
+  transition: background 0.2s ease, color 0.2s ease;
+  cursor: pointer;
+  background: transparent;
+}
+
+.btn-ghost-cream:hover {
+  background: var(--cream);
+  color: var(--bg-deep);
+}
+
+/* ---------------------------------------------------------------------
+   FOCUS RING
+   --------------------------------------------------------------------- */
+.focus-ring:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+}
+
+/* ---------------------------------------------------------------------
+   SCROLLBAR
+   --------------------------------------------------------------------- */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-dark);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--gold-dim);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--gold);
+}
+
+/* ---------------------------------------------------------------------
+   CUSTOMER REVIEW CAROUSEL
+   --------------------------------------------------------------------- */
+.review-carousel {
+  margin-inline: calc(50% - 50vw);
+  width: 100vw;
+}
+
+.review-track {
+  display: flex;
+  width: max-content;
+  gap: 56px;
+  padding-inline: 24px;
+  animation: review-scroll 36s linear infinite;
+}
+
+.review-track-reverse {
+  animation-direction: reverse;
+  transform: translateX(-160px);
+}
+
+.review-carousel:hover .review-track {
+  animation-play-state: paused;
+}
+
+.review-frame {
+  position: relative;
+  width: 300px;
+  min-height: 144px;
+  flex: 0 0 auto;
+  background: #f7f6f7;
+}
+
+.review-frame::before,
+.review-frame::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+}
+
+.review-frame::before {
+  inset: 0;
+  border-top: 1.5px solid #d9ae34;
+  border-left: 1.5px solid #d9ae34;
+  border-bottom: 1.5px solid #f0d455;
+}
+
+.review-frame::after {
+  right: -21px;
+  top: -19px;
+  width: 86px;
+  height: 86px;
+  border-top: 6px solid #f0d455;
+  border-right: 4px solid transparent;
+  border-radius: 50%;
+  transform: rotate(17deg);
+}
+
+.review-frame-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  min-height: 144px;
+  align-items: center;
+  gap: 22px;
+  padding: 26px 24px 22px;
+}
+
+.review-frame-content::before,
+.review-frame-content::after {
+  content: "";
+  position: absolute;
+  width: 42px;
+  height: 42px;
+  pointer-events: none;
+  border-color: #f0d455;
+}
+
+.review-frame-content::before {
+  left: -18px;
+  bottom: -28px;
+  border-bottom: 1.5px solid;
+  border-left: 1.5px solid;
+  border-radius: 0 0 0 100%;
+}
+
+.review-frame-content::after {
+  right: -16px;
+  bottom: -12px;
+  border-right: 1.5px solid;
+  border-bottom: 1.5px solid;
+  border-radius: 0 0 100% 0;
+}
+
+@keyframes review-scroll {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (max-width: 640px) {
+  .review-track {
+    gap: 28px;
+    padding-inline: 16px;
+    animation-duration: 28s;
+  }
+
+  .review-frame {
+    width: 280px;
+  }
+}
