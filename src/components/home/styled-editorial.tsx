@@ -1,5 +1,4 @@
 import Image from "next/image";
-import styledForEverySideOfHer from "../../../extracted_assets/styled_for_every_side_of_her.png";
 
 // const PANELS = [
 //   {
@@ -39,8 +38,10 @@ export function StyledEditorial() {
       </div>
       <div className="relative w-full">
         <Image
-          src={styledForEverySideOfHer}
+          src="/assets/CrafterForHerLeft.png"
           alt="Styled for every side of her"
+          width={1920}
+          height={1080}
           className="h-auto w-full object-cover"
           sizes="100vw"
           priority

@@ -13,9 +13,15 @@ export type Product = {
   slug: string;
   collection: CollectionSlug;
   price: number;
+  originalPrice?: number;
   currency: "INR";
   image: string;
+  images?: string[];
   material: string;
   stone: string;
+  weight?: string;
+  purity?: string;
   badge?: string;
+  description?: string;
+  sizes?: string[];
 };

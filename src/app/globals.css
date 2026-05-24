@@ -30,7 +30,12 @@
   --foreground:    #1a0a0a;
   --background:    #faf6f0;
   --ruby:          #9b1c1c;
+  --rose:          #9b1c1c;
   --ink-soft:      #6b4226;
+
+  /* Component tokens */
+  --line:          rgba(138,106,58,0.22);
+  --surface-deep:  #180606;
 }
 
 /* ---------------------------------------------------------------------
@@ -46,12 +51,14 @@ html {
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   margin: 0;
+  overflow-x: hidden;
 }
 
 img,
@@ -177,6 +184,18 @@ video {
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--gold);
+}
+
+/* ---------------------------------------------------------------------
+   ANNOUNCEMENT BAR
+   --------------------------------------------------------------------- */
+.announcement-track {
+  animation: announcement-scroll 22s linear infinite;
+}
+
+@keyframes announcement-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
 }
 
 /* ---------------------------------------------------------------------

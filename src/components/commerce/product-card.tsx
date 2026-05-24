@@ -11,11 +11,11 @@ type ProductCardProps = {
 
 export function ProductCard({ product }: ProductCardProps) {
   return (
-    <article className="group overflow-hidden rounded-md border border-[var(--line)] bg-[var(--surface)]">
+    <article className="group overflow-hidden rounded-sm bg-[var(--surface)]" style={{ border: "1px solid var(--line)" }}>
       <Link href={`/products/${product.slug}` as Route} className="block">
         <div className="relative aspect-[4/5] overflow-hidden bg-[#f4eadc]">
           {product.badge ? (
-            <span className="absolute left-4 top-4 z-10 rounded-full bg-[var(--ruby)] px-3 py-1 text-xs font-semibold text-white">
+            <span className="absolute left-3 top-3 z-10 rounded-sm px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.14em]" style={{ background: "var(--bg-dark)", color: "var(--gold)" }}>
               {product.badge}
             </span>
           ) : null}
@@ -28,13 +28,13 @@ export function ProductCard({ product }: ProductCardProps) {
           />
         </div>
       </Link>
-      <div className="grid gap-4 p-5">
+      <div className="grid gap-4 p-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--jade)]">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.16em]" style={{ color: "var(--gold-dim)" }}>
             {product.material} / {product.stone}
           </p>
-          <h3 className="mt-2 text-lg font-semibold">{product.name}</h3>
-          <p className="mt-1 text-sm text-[var(--ink-soft)]">{formatPrice(product.price)}</p>
+          <h3 className="mt-1.5 text-sm font-semibold leading-snug sm:text-base">{product.name}</h3>
+          <p className="mt-1 text-sm font-medium" style={{ color: "var(--ink-soft)" }}>{formatPrice(product.price)}</p>
         </div>
         <AddToCartButton productName={product.name} />
       </div>

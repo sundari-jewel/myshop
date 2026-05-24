@@ -44,7 +44,7 @@ export default async function CollectionPage({ params }: CollectionPageProps) {
 
   return (
     <>
-      <section className="relative min-h-[460px] overflow-hidden bg-[var(--surface-deep)] text-white">
+      <section className="relative min-h-[340px] overflow-hidden bg-[var(--bg-dark)] text-white sm:min-h-[420px] lg:min-h-[460px]">
         <Image
           src={collection.image}
           alt={collection.name}
@@ -53,13 +53,13 @@ export default async function CollectionPage({ params }: CollectionPageProps) {
           sizes="100vw"
           className="object-cover opacity-70"
         />
-        <div className="container-shell relative flex min-h-[460px] items-end pb-14">
+        <div className="container-shell relative flex min-h-[340px] items-end pb-10 sm:min-h-[420px] sm:pb-12 lg:min-h-[460px] lg:pb-14">
           <div className="max-w-2xl">
-            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[var(--rose)]">
+            <p className="text-xs font-semibold uppercase tracking-[0.24em]" style={{ color: "var(--gold)" }}>
               Collection
             </p>
-            <h1 className="display-font mt-3 text-6xl font-semibold">{collection.name}</h1>
-            <p className="mt-4 text-lg leading-8 text-[#f1e5d7]">{collection.description}</p>
+            <h1 className="display-font mt-3 text-4xl font-semibold sm:text-5xl lg:text-6xl">{collection.name}</h1>
+            <p className="mt-4 text-base leading-7 text-[#f1e5d7] sm:text-lg sm:leading-8">{collection.description}</p>
           </div>
         </div>
       </section>

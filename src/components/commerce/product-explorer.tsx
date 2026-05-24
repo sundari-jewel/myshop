@@ -27,11 +27,11 @@ export function ProductExplorer() {
             <SlidersHorizontal size={16} />
             Browse
           </p>
-          <h1 className="display-font mt-3 text-6xl font-semibold">All jewellery</h1>
+          <h1 className="display-font mt-3 text-4xl font-semibold sm:text-5xl lg:text-6xl">All jewellery</h1>
         </div>
         <div className="flex flex-wrap gap-2">
           <button
-            className="focus-ring rounded-full border border-[var(--line)] px-4 py-2 text-sm font-semibold data-[active=true]:border-[var(--ruby)] data-[active=true]:bg-[var(--ruby)] data-[active=true]:text-white"
+            className="focus-ring rounded-full border border-[rgba(138,106,58,0.25)] px-4 py-2 text-sm font-semibold data-[active=true]:border-[var(--ruby)] data-[active=true]:bg-[var(--ruby)] data-[active=true]:text-white"
             type="button"
             data-active={filter === "all"}
             onClick={() => setFilter("all")}
@@ -41,7 +41,7 @@ export function ProductExplorer() {
           {collections.map((collection) => (
             <button
               key={collection.slug}
-              className="focus-ring rounded-full border border-[var(--line)] px-4 py-2 text-sm font-semibold data-[active=true]:border-[var(--ruby)] data-[active=true]:bg-[var(--ruby)] data-[active=true]:text-white"
+              className="focus-ring rounded-full border border-[rgba(138,106,58,0.25)] px-4 py-2 text-sm font-semibold data-[active=true]:border-[var(--ruby)] data-[active=true]:bg-[var(--ruby)] data-[active=true]:text-white"
               type="button"
               data-active={filter === collection.slug}
               onClick={() => setFilter(collection.slug)}

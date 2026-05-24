@@ -4,7 +4,6 @@ import { createMetadata } from "@/lib/seo";
 /* -- Home sections -- */
 import { HeroSection }        from "@/components/home/hero-section";
 import { ShopByCategory }     from "@/components/home/shop-by-category";
-import { StyledEditorial }    from "@/components/home/styled-editorial";
 import { ArchivalCollection } from "@/components/home/archival-collection";
 import { ShopByGender }       from "@/components/home/shop-by-gender";
 // import { FeatureBanners }     from "@/components/home/feature-banners";
@@ -26,8 +25,7 @@ export default function HomePage() {
     <>
       <HeroSection />
       <ShopByCategory />
-      <StyledEditorial />
-      <ArchivalCollection />
+<ArchivalCollection />
       <ShopByGender />
       {/* <FeatureBanners /> */}
       <WeddingShop />

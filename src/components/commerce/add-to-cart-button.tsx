@@ -12,7 +12,8 @@ export function AddToCartButton({ productName }: AddToCartButtonProps) {
 
   return (
     <button
-      className="focus-ring inline-flex h-11 items-center justify-center gap-2 rounded-full bg-[var(--surface-deep)] px-5 text-sm font-semibold text-white transition hover:bg-[var(--ruby)]"
+      className="focus-ring inline-flex h-10 w-full items-center justify-center gap-2 rounded-sm text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--gold-pale)] transition-colors duration-200 hover:bg-[var(--ruby)]"
+      style={{ background: "var(--bg-dark)" }}
       type="button"
       aria-label={`Add ${productName} to cart`}
       onClick={() => setAdded(true)}
