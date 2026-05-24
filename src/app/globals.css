@@ -294,3 +294,19 @@ video {
     width: 280px;
   }
 }
+
+/* ---------------------------------------------------------------------
+   CUSTOMER REELS CAROUSEL
+   --------------------------------------------------------------------- */
+.reel-track {
+  animation: reel-scroll 30s linear infinite;
+}
+
+.reel-carousel:hover .reel-track {
+  animation-play-state: paused;
+}
+
+@keyframes reel-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
