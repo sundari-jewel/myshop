@@ -29,6 +29,7 @@ interface ProductData {
   featured: boolean;
   published: boolean;
   inStock: boolean;
+  stockQty: number | "";
 }
 
 interface Props {
@@ -61,6 +62,7 @@ export function ProductForm({ initial, mode }: Props) {
     featured:      initial?.featured      ?? false,
     published:     initial?.published     ?? true,
     inStock:       initial?.inStock       ?? true,
+    stockQty:      (initial as Partial<ProductData> & { stockQty?: number })?.stockQty ?? "",
   });
 
   const [uploading, setUploading] = useState(false);
@@ -104,7 +106,12 @@ export function ProductForm({ initial, mode }: Props) {
     setError("");
     setSaving(true);
 
-    const payload = { ...form, price: Number(form.price), originalPrice: form.originalPrice ? Number(form.originalPrice) : undefined };
+    const payload = {
+      ...form,
+      price:         Number(form.price),
+      originalPrice: form.originalPrice ? Number(form.originalPrice) : undefined,
+      stockQty:      form.stockQty !== "" ? Number(form.stockQty) : undefined,
+    };
 
     try {
       const url    = mode === "create" ? "/api/admin/products" : `/api/admin/products/${initial?._id}`;
@@ -189,8 +196,8 @@ export function ProductForm({ initial, mode }: Props) {
             <input className={inp} value={form.material} required placeholder="e.g. 22K Gold" onChange={e => set("material", e.target.value)} />
           </div>
           <div>
-            <label className="label-xs">Stone *</label>
-            <input className={inp} value={form.stone} required placeholder="e.g. Ruby accents" onChange={e => set("stone", e.target.value)} />
+            <label className="label-xs">Stone / Finish</label>
+            <input className={inp} value={form.stone} placeholder="e.g. Ruby accents (optional)" onChange={e => set("stone", e.target.value)} />
           </div>
           <div>
             <label className="label-xs">Weight</label>
@@ -254,9 +261,9 @@ export function ProductForm({ initial, mode }: Props) {
         )}
       </section>
 
-      {/* Flags */}
-      <section className="rounded-xl p-6" style={{ background: "var(--bg-dark)", border: "1px solid rgba(138,106,58,0.18)" }}>
-        <h2 className="mb-4 text-xs font-bold uppercase tracking-[0.2em] text-[var(--gold-dim)]">Visibility</h2>
+      {/* Flags + Stock Qty */}
+      <section className="rounded-xl p-6 space-y-5" style={{ background: "var(--bg-dark)", border: "1px solid rgba(138,106,58,0.18)" }}>
+        <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-[var(--gold-dim)]">Visibility & Stock</h2>
         <div className="flex flex-wrap gap-6">
           {([["published", "Published"], ["featured", "Featured"], ["inStock", "In Stock"]] as [keyof ProductData, string][]).map(([key, label]) => (
             <label key={key} className="flex cursor-pointer items-center gap-2.5 text-sm text-[var(--cream)]">
@@ -265,6 +272,17 @@ export function ProductForm({ initial, mode }: Props) {
               {label}
             </label>
           ))}
+        </div>
+        <div className="max-w-[200px]">
+          <label className="label-xs">Stock Quantity</label>
+          <input
+            className={inp}
+            type="number"
+            min="0"
+            value={form.stockQty}
+            placeholder="Leave blank for unlimited"
+            onChange={e => set("stockQty", e.target.value === "" ? "" : Number(e.target.value))}
+          />
         </div>
       </section>
 

@@ -3,6 +3,8 @@ import { connectDB } from "@/lib/mongodb";
 import { uploadBuffer } from "@/lib/cloudinary";
 import { ProductTryonConfig } from "@/models/ProductTryonConfig";
 
+const MAX_BYTES = 10 * 1024 * 1024; // 10 MB
+
 export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ skuId: string }> }
@@ -13,10 +15,18 @@ export async function POST(
 
     const formData  = await req.formData();
     const assetFile = formData.get("asset") as File | null;
-    const maskFile  = formData.get("mask") as File | null;
+    const maskFile  = formData.get("mask")  as File | null;
 
     if (!assetFile) {
       return NextResponse.json({ error: "missing_asset" }, { status: 400 });
+    }
+
+    if (assetFile.size > MAX_BYTES) {
+      return NextResponse.json({ error: "asset_too_large", maxMb: 10 }, { status: 400 });
+    }
+
+    if (maskFile && maskFile.size > MAX_BYTES) {
+      return NextResponse.json({ error: "mask_too_large", maxMb: 10 }, { status: 400 });
     }
 
     const assetBuf = Buffer.from(await assetFile.arrayBuffer());

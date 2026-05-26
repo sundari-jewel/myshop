@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { Route } from "next";
+import { Eye, Sparkles } from "lucide-react";
 import type { Product } from "@/types/commerce";
 import { formatPrice } from "@/lib/seo";
 import { AddToCartButton } from "./add-to-cart-button";
@@ -10,13 +11,38 @@ type ProductCardProps = {
 };
 
 export function ProductCard({ product }: ProductCardProps) {
+  const hasMarkdown = Boolean(product.originalPrice && product.originalPrice > product.price);
+  const discount = hasMarkdown && product.originalPrice ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100) : 0;
+
   return (
-    <article className="group overflow-hidden rounded-sm bg-[var(--surface)]" style={{ border: "1px solid var(--line)" }}>
+    <article
+      className="group overflow-hidden rounded-sm bg-[var(--surface-card)] shadow-[0_18px_50px_rgba(82,45,12,0.08)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_24px_70px_rgba(82,45,12,0.14)]"
+      style={{ border: "1px solid var(--line)" }}
+    >
       <Link href={`/products/${product.slug}` as Route} className="block">
         <div className="relative aspect-[4/5] overflow-hidden bg-[#f4eadc]">
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 opacity-0 transition duration-500 group-hover:opacity-100"
+            style={{
+              background:
+                "radial-gradient(circle at 50% 18%, rgba(240,221,176,0.72), transparent 42%), linear-gradient(180deg, rgba(255,251,245,0), rgba(155,28,28,0.1))",
+            }}
+          />
           {product.badge ? (
-            <span className="absolute left-3 top-3 z-10 rounded-sm px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.14em]" style={{ background: "var(--bg-dark)", color: "var(--gold)" }}>
+            <span
+              className="absolute left-3 top-3 z-10 rounded-sm px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em]"
+              style={{ background: "var(--bg-dark)", color: "var(--gold)" }}
+            >
               {product.badge}
+            </span>
+          ) : null}
+          {hasMarkdown ? (
+            <span
+              className="absolute right-3 top-3 z-10 rounded-sm px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em]"
+              style={{ background: "var(--ruby)", color: "white" }}
+            >
+              {discount}% off
             </span>
           ) : null}
           <Image
@@ -26,15 +52,30 @@ export function ProductCard({ product }: ProductCardProps) {
             sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
             className="object-contain p-8 transition duration-500 group-hover:scale-105"
           />
+          <span
+            className="absolute bottom-3 left-1/2 z-10 inline-flex -translate-x-1/2 translate-y-3 items-center gap-2 rounded-sm border px-3 py-2 text-[10px] font-bold uppercase tracking-[0.18em] opacity-0 shadow-[0_12px_28px_rgba(14,4,4,0.24)] transition duration-300 group-hover:translate-y-0 group-hover:opacity-100"
+            style={{ borderColor: "rgba(201,169,110,0.36)", background: "rgba(24,6,6,0.9)", color: "var(--gold-pale)" }}
+          >
+            <Eye size={14} />
+            View
+          </span>
         </div>
       </Link>
       <div className="grid gap-4 p-4">
         <div>
-          <p className="text-[10px] font-semibold uppercase tracking-[0.16em]" style={{ color: "var(--gold-dim)" }}>
+          <p className="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.16em]" style={{ color: "var(--gold-dim)" }}>
+            <Sparkles size={12} />
             {product.material} / {product.stone}
           </p>
           <h3 className="mt-1.5 text-sm font-semibold leading-snug sm:text-base">{product.name}</h3>
-          <p className="mt-1 text-sm font-medium" style={{ color: "var(--ink-soft)" }}>{formatPrice(product.price)}</p>
+          <div className="mt-2 flex flex-wrap items-baseline gap-2">
+            <p className="text-sm font-bold" style={{ color: "var(--foreground)" }}>{formatPrice(product.price)}</p>
+            {hasMarkdown && product.originalPrice ? (
+              <p className="text-xs font-medium line-through" style={{ color: "rgba(107,66,38,0.55)" }}>
+                {formatPrice(product.originalPrice)}
+              </p>
+            ) : null}
+          </div>
         </div>
         <AddToCartButton
           productId={product.id}

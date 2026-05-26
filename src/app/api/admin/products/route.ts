@@ -7,7 +7,7 @@ export async function GET(req: NextRequest) {
     await connectDB();
     const { searchParams } = new URL(req.url);
     const page  = Math.max(1, Number(searchParams.get("page") ?? 1));
-    const limit = 20;
+    const limit = Math.min(200, Math.max(1, Number(searchParams.get("limit") ?? 20)));
 
     const [items, total] = await Promise.all([
       Product.find({}).sort({ createdAt: -1 }).skip((page - 1) * limit).limit(limit).lean(),

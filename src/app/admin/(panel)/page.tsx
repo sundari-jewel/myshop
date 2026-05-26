@@ -3,21 +3,22 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import type { Route } from "next";
-import { ShoppingBag, Package, TrendingUp, Clock, ChevronRight } from "lucide-react";
+import { ShoppingBag, Package, TrendingUp, Clock, ChevronRight, AlertCircle, RefreshCw } from "lucide-react";
 
-interface Stats {
-  totalOrders: number;
+interface AggStats {
+  totalOrders:   number;
   pendingOrders: number;
-  totalRevenue: number;
+  totalRevenue:  number;
   totalProducts: number;
-  recentOrders: {
-    _id: string;
-    orderId: string;
-    total: number;
-    status: string;
-    customer: { name: string };
-    createdAt: string;
-  }[];
+}
+
+interface RecentOrder {
+  _id:       string;
+  orderId:   string;
+  total:     number;
+  status:    string;
+  customer:  { name: string };
+  createdAt: string;
 }
 
 function formatPrice(n: number) {
@@ -34,42 +35,61 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 export default function AdminDashboard() {
-  const [stats, setStats] = useState<Stats | null>(null);
+  const [stats,        setStats]        = useState<AggStats | null>(null);
+  const [recentOrders, setRecentOrders] = useState<RecentOrder[]>([]);
+  const [error,        setError]        = useState(false);
 
-  useEffect(() => {
-    async function load() {
-      const [ordersRes, productsRes] = await Promise.all([
+  async function load() {
+    setError(false);
+    try {
+      const [statsRes, ordersRes] = await Promise.all([
+        fetch("/api/admin/stats"),
         fetch("/api/admin/orders?page=1"),
-        fetch("/api/admin/products?page=1"),
       ]);
-      const ordersData   = (ordersRes.ok   ? await ordersRes.json()   : { items: [], total: 0 }) as { items: Stats["recentOrders"]; total: number };
-      const productsData = (productsRes.ok ? await productsRes.json() : { total: 0 })            as { total: number };
 
-      const allOrders = ordersData.items;
-      const revenue   = allOrders.reduce((s: number, o: { total: number }) => s + o.total, 0);
-      const pending   = allOrders.filter((o: { status: string }) => o.status === "pending").length;
+      if (!statsRes.ok || !ordersRes.ok) throw new Error("fetch_failed");
 
-      setStats({
-        totalOrders:   ordersData.total,
-        pendingOrders: pending,
-        totalRevenue:  revenue,
-        totalProducts: productsData.total,
-        recentOrders:  allOrders.slice(0, 5),
-      });
+      const statsData  = (await statsRes.json())  as AggStats;
+      const ordersData = (await ordersRes.json())  as { items: RecentOrder[] };
+
+      setStats(statsData);
+      setRecentOrders(ordersData.items.slice(0, 5));
+    } catch {
+      setError(true);
     }
-    load();
-  }, []);
+  }
+
+  useEffect(() => { load(); }, []);
 
   const cards = [
-    { label: "Total Orders",    value: stats?.totalOrders ?? "—",                     icon: ShoppingBag, link: "/admin/orders" as Route },
-    { label: "Pending",         value: stats?.pendingOrders ?? "—",                 icon: Clock,       link: "/admin/orders" as Route },
-    { label: "Revenue (page)",  value: stats ? formatPrice(stats.totalRevenue) : "—", icon: TrendingUp, link: "/admin/orders" as Route },
-    { label: "Products",        value: stats?.totalProducts ?? "—",                 icon: Package,     link: "/admin/products" as Route },
+    { label: "Total Orders",   value: stats ? String(stats.totalOrders)          : "—", icon: ShoppingBag, link: "/admin/orders"   as Route },
+    { label: "Pending",        value: stats ? String(stats.pendingOrders)         : "—", icon: Clock,       link: "/admin/orders"   as Route },
+    { label: "Total Revenue",  value: stats ? formatPrice(stats.totalRevenue)     : "—", icon: TrendingUp,  link: "/admin/orders"   as Route },
+    { label: "Products",       value: stats ? String(stats.totalProducts)         : "—", icon: Package,     link: "/admin/products" as Route },
   ];
 
   return (
     <div className="p-8" style={{ color: "var(--cream)" }}>
-      <h1 className="font-cormorant mb-8 text-3xl font-semibold text-[var(--gold)]">Dashboard</h1>
+      <div className="mb-8 flex items-center justify-between">
+        <h1 className="font-cormorant text-3xl font-semibold text-[var(--gold)]">Dashboard</h1>
+        {error && (
+          <button
+            onClick={load}
+            className="flex items-center gap-2 rounded-lg px-4 py-2 text-xs text-red-400 hover:text-red-300"
+            style={{ background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)" }}
+          >
+            <RefreshCw size={12} /> Retry
+          </button>
+        )}
+      </div>
+
+      {error && (
+        <div className="mb-6 flex items-center gap-2 rounded-lg px-4 py-3 text-sm text-red-400"
+          style={{ background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.15)" }}>
+          <AlertCircle size={15} />
+          Failed to load stats. Check your database connection.
+        </div>
+      )}
 
       {/* Stat cards */}
       <div className="mb-10 grid grid-cols-2 gap-4 xl:grid-cols-4">
@@ -98,9 +118,9 @@ export default function AdminDashboard() {
           </Link>
         </div>
 
-        {!stats ? (
+        {!stats && !error ? (
           <div className="px-6 py-8 text-center text-sm text-[var(--cream-muted)]">Loading…</div>
-        ) : stats.recentOrders.length === 0 ? (
+        ) : recentOrders.length === 0 ? (
           <div className="px-6 py-8 text-center text-sm text-[var(--cream-muted)]">No orders yet.</div>
         ) : (
           <table className="w-full text-sm">
@@ -112,7 +132,7 @@ export default function AdminDashboard() {
               </tr>
             </thead>
             <tbody>
-              {stats.recentOrders.map((order) => (
+              {recentOrders.map((order) => (
                 <tr key={order._id} style={{ borderBottom: "1px solid rgba(138,106,58,0.07)" }}>
                   <td className="px-6 py-3">
                     <code className="text-xs text-[var(--gold)]">{order.orderId}</code>

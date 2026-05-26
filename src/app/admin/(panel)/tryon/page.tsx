@@ -11,8 +11,8 @@ import {
   ToggleLeft,
   ToggleRight,
   Sparkles,
+  AlertCircle,
 } from "lucide-react";
-import { products } from "@/data/catalog";
 
 type AssetStatus = "pending" | "ready" | "error" | "none";
 type JewelleryType =
@@ -31,46 +31,64 @@ const JEWELLERY_LABELS: Record<string, string> = {
   necklace_long:   "Necklace — Long",
 };
 
+interface DBProduct {
+  _id:      string;
+  name:     string;
+  slug:     string;
+  material: string;
+  images:   string[];
+}
+
 interface ProductConfig {
-  skuId: string;
-  tryonEnabled: boolean;
-  assetStatus: AssetStatus;
-  jewelleryType: JewelleryType;
-  totalTryons: number;
-  assetKey?: string;
-  maskKey?: string;
+  skuId:            string;
+  tryonEnabled:     boolean;
+  assetStatus:      AssetStatus;
+  jewelleryType:    JewelleryType;
+  totalTryons:      number;
+  assetKey?:        string;
+  maskKey?:         string;
   promptDescriptor?: string;
 }
 
 interface RowState {
-  saving: boolean;
-  uploading: boolean;
-  saved: boolean;
-  error: string | null;
-  jewelleryType: JewelleryType;
-  tryonEnabled: boolean;
+  saving:           boolean;
+  uploading:        boolean;
+  saved:            boolean;
+  error:            string | null;
+  jewelleryType:    JewelleryType;
+  tryonEnabled:     boolean;
   promptDescriptor: string;
-  assetStatus: AssetStatus;
-  totalTryons: number;
-  assetUrl?: string;
+  assetStatus:      AssetStatus;
+  totalTryons:      number;
+  assetUrl?:        string;
 }
 
 export default function AdminTryOnPage() {
-  const [configs, setConfigs] = useState<Record<string, RowState>>({});
-  const [loading, setLoading] = useState(true);
+  const [products, setProducts] = useState<DBProduct[]>([]);
+  const [configs,  setConfigs]  = useState<Record<string, RowState>>({});
+  const [loading,  setLoading]  = useState(true);
+
   const assetInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
   const maskInputRefs  = useRef<Record<string, HTMLInputElement | null>>({});
 
   useEffect(() => {
     async function load() {
       try {
-        const res  = await fetch("/api/admin/tryon/products");
-        const data = (res.ok ? await res.json() : []) as ProductConfig[];
+        // Fetch products from MongoDB (all pages — limit 100 for the tryon config view)
+        const [productsRes, configsRes] = await Promise.all([
+          fetch("/api/admin/products?page=1&limit=100"),
+          fetch("/api/admin/tryon/products"),
+        ]);
+
+        const productsData = (productsRes.ok ? await productsRes.json() : { items: [] }) as { items: DBProduct[] };
+        const configsData  = (configsRes.ok  ? await configsRes.json()  : [])            as ProductConfig[];
+
+        setProducts(productsData.items);
 
         const map: Record<string, RowState> = {};
-        for (const p of products) {
-          const cfg = data.find((d) => d.skuId === p.id);
-          map[p.id] = {
+        for (const p of productsData.items) {
+          const cfg = configsData.find((d) => d.skuId === p._id);
+          map[p._id] = {
             saving:           false,
             uploading:        false,
             saved:            false,
@@ -93,6 +111,18 @@ export default function AdminTryOnPage() {
 
   function update(skuId: string, patch: Partial<RowState>) {
     setConfigs((prev) => ({ ...prev, [skuId]: { ...prev[skuId], ...patch } }));
+  }
+
+  function toggleEnabled(skuId: string) {
+    const row = configs[skuId];
+    if (!row) return;
+
+    // Block enabling if no asset is ready
+    if (!row.tryonEnabled && row.assetStatus !== "ready") {
+      update(skuId, { error: "Upload a product asset first before enabling try-on." });
+      return;
+    }
+    update(skuId, { tryonEnabled: !row.tryonEnabled, error: null });
   }
 
   async function saveConfig(skuId: string) {
@@ -131,12 +161,17 @@ export default function AdminTryOnPage() {
       if (maskFile) fd.append("mask", maskFile);
 
       const res  = await fetch(`/api/admin/tryon/assets/${skuId}`, { method: "POST", body: fd });
-      const data = await res.json() as { assetUrl?: string; error?: string };
-      if (!res.ok) throw new Error(data.error ?? "Upload failed");
+      const data = await res.json() as { assetUrl?: string; error?: string; maxMb?: number };
+
+      if (!res.ok) {
+        const msg = data.error === "asset_too_large" || data.error === "mask_too_large"
+          ? `File exceeds ${data.maxMb ?? 10} MB limit.`
+          : (data.error ?? "Upload failed");
+        throw new Error(msg);
+      }
 
       update(skuId, { assetStatus: "ready", assetUrl: data.assetUrl });
 
-      // Reset file inputs
       if (assetInputRefs.current[skuId]) assetInputRefs.current[skuId]!.value = "";
       if (maskInputRefs.current[skuId])  maskInputRefs.current[skuId]!.value  = "";
     } catch (e) {
@@ -161,6 +196,15 @@ export default function AdminTryOnPage() {
     );
   }
 
+  if (products.length === 0) {
+    return (
+      <div className="flex h-screen flex-col items-center justify-center gap-3" style={{ background: "var(--bg-dark)", color: "var(--cream-muted)" }}>
+        <Sparkles size={28} className="text-[var(--gold-dim)]" />
+        <p className="text-sm">No products found. Add products first before configuring try-on.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen px-6 py-10" style={{ background: "var(--bg-dark)", color: "var(--cream)" }}>
       {/* Header */}
@@ -174,10 +218,10 @@ export default function AdminTryOnPage() {
 
       {/* Table */}
       <div className="overflow-x-auto rounded-xl border" style={{ borderColor: "rgba(138,106,58,0.2)" }}>
-        <table className="w-full min-w-[900px] text-sm">
+        <table className="w-full min-w-[960px] text-sm">
           <thead>
             <tr style={{ background: "rgba(138,106,58,0.08)", borderBottom: "1px solid rgba(138,106,58,0.2)" }}>
-              {["Product", "SKU", "Jewellery Type", "Asset", "Tries", "Enabled", "Actions"].map((h) => (
+              {["Product", "Jewellery Type", "Prompt Descriptor", "Asset", "Tries", "Enabled", "Actions"].map((h) => (
                 <th key={h} className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--gold-dim)]">
                   {h}
                 </th>
@@ -186,13 +230,13 @@ export default function AdminTryOnPage() {
           </thead>
           <tbody>
             {products.map((product, idx) => {
-              const row = configs[product.id];
+              const row    = configs[product._id];
               if (!row) return null;
               const isLast = idx === products.length - 1;
 
               return (
                 <tr
-                  key={product.id}
+                  key={product._id}
                   style={{
                     borderBottom: isLast ? "none" : "1px solid rgba(138,106,58,0.1)",
                     background: idx % 2 === 0 ? "transparent" : "rgba(138,106,58,0.03)",
@@ -202,20 +246,18 @@ export default function AdminTryOnPage() {
                   <td className="px-4 py-4">
                     <div className="flex items-center gap-3">
                       <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded" style={{ background: "rgba(138,106,58,0.1)" }}>
-                        <Image src={product.image} alt={product.name} fill className="object-contain p-1" />
+                        {product.images?.[0] && (
+                          <Image src={product.images[0]} alt={product.name} fill className="object-contain p-1" />
+                        )}
                       </div>
                       <div>
                         <p className="font-medium text-[var(--cream)]">{product.name}</p>
                         <p className="text-[11px] text-[var(--cream-muted)]">{product.material}</p>
+                        <code className="mt-0.5 block rounded px-1 py-0.5 text-[10px]" style={{ background: "rgba(138,106,58,0.1)", color: "var(--gold-dim)" }}>
+                          {product._id.slice(-8)}
+                        </code>
                       </div>
                     </div>
-                  </td>
-
-                  {/* SKU */}
-                  <td className="px-4 py-4">
-                    <code className="rounded px-1.5 py-0.5 text-[11px]" style={{ background: "rgba(138,106,58,0.12)", color: "var(--gold)" }}>
-                      {product.id}
-                    </code>
                   </td>
 
                   {/* Jewellery Type */}
@@ -223,12 +265,13 @@ export default function AdminTryOnPage() {
                     <div className="relative">
                       <select
                         value={row.jewelleryType}
-                        onChange={(e) => update(product.id, { jewelleryType: e.target.value as JewelleryType })}
+                        onChange={(e) => update(product._id, { jewelleryType: e.target.value as JewelleryType })}
                         className="w-full appearance-none rounded-lg px-3 py-2 pr-8 text-xs outline-none"
                         style={{
                           background: "rgba(138,106,58,0.1)",
-                          border: "1px solid rgba(138,106,58,0.25)",
-                          color: "var(--cream)",
+                          border:     "1px solid rgba(138,106,58,0.25)",
+                          color:      "var(--cream)",
+                          minWidth:   "160px",
                         }}
                       >
                         <option value="">— Select type —</option>
@@ -238,6 +281,23 @@ export default function AdminTryOnPage() {
                       </select>
                       <ChevronDown size={12} className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--gold-dim)]" />
                     </div>
+                  </td>
+
+                  {/* Prompt Descriptor — moved into table row */}
+                  <td className="px-4 py-4">
+                    <textarea
+                      rows={2}
+                      value={row.promptDescriptor}
+                      onChange={(e) => update(product._id, { promptDescriptor: e.target.value })}
+                      placeholder="e.g. antique gold jhumka with ruby drops…"
+                      className="w-full resize-none rounded px-3 py-2 text-xs outline-none"
+                      style={{
+                        background: "rgba(138,106,58,0.08)",
+                        border:     "1px solid rgba(138,106,58,0.2)",
+                        color:      "var(--cream)",
+                        minWidth:   "180px",
+                      }}
+                    />
                   </td>
 
                   {/* Asset status + upload */}
@@ -252,21 +312,21 @@ export default function AdminTryOnPage() {
                             type="file"
                             accept="image/png,image/jpeg,image/webp"
                             className="mt-1 block w-full text-[11px] text-[var(--cream-muted)] file:mr-2 file:rounded file:border-0 file:bg-[rgba(138,106,58,0.2)] file:px-2 file:py-1 file:text-[10px] file:text-[var(--gold)] file:cursor-pointer"
-                            ref={(el) => { assetInputRefs.current[product.id] = el; }}
+                            ref={(el) => { assetInputRefs.current[product._id] = el; }}
                           />
                         </label>
                         <label className="text-[10px] uppercase tracking-wider text-[var(--cream-muted)]">
-                          Mask PNG <span className="normal-case text-[var(--cream-muted)] opacity-60">(optional)</span>
+                          Mask PNG <span className="normal-case opacity-60">(optional)</span>
                           <input
                             type="file"
                             accept="image/png"
                             className="mt-1 block w-full text-[11px] text-[var(--cream-muted)] file:mr-2 file:rounded file:border-0 file:bg-[rgba(138,106,58,0.2)] file:px-2 file:py-1 file:text-[10px] file:text-[var(--gold)] file:cursor-pointer"
-                            ref={(el) => { maskInputRefs.current[product.id] = el; }}
+                            ref={(el) => { maskInputRefs.current[product._id] = el; }}
                           />
                         </label>
 
                         <button
-                          onClick={() => uploadAssets(product.id)}
+                          onClick={() => uploadAssets(product._id)}
                           disabled={row.uploading}
                           className="flex items-center justify-center gap-1.5 rounded px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider transition-opacity disabled:opacity-50"
                           style={{ background: "rgba(138,106,58,0.2)", color: "var(--gold)" }}
@@ -285,28 +345,39 @@ export default function AdminTryOnPage() {
 
                   {/* Toggle */}
                   <td className="px-4 py-4">
-                    <button
-                      onClick={() => update(product.id, { tryonEnabled: !row.tryonEnabled })}
-                      className="transition-colors"
-                      title={row.tryonEnabled ? "Disable try-on" : "Enable try-on"}
-                    >
-                      {row.tryonEnabled
-                        ? <ToggleRight size={28} className="text-[var(--gold)]" />
-                        : <ToggleLeft size={28} className="text-[rgba(138,106,58,0.4)]" />
-                      }
-                    </button>
+                    <div className="flex flex-col items-start gap-1">
+                      <button
+                        onClick={() => toggleEnabled(product._id)}
+                        className="transition-colors"
+                        title={
+                          row.assetStatus !== "ready" && !row.tryonEnabled
+                            ? "Upload an asset first"
+                            : row.tryonEnabled ? "Disable try-on" : "Enable try-on"
+                        }
+                      >
+                        {row.tryonEnabled
+                          ? <ToggleRight size={28} className="text-[var(--gold)]" />
+                          : <ToggleLeft  size={28} className="text-[rgba(138,106,58,0.4)]" />
+                        }
+                      </button>
+                      {row.assetStatus !== "ready" && !row.tryonEnabled && (
+                        <span className="flex items-center gap-1 text-[9px] text-[var(--cream-muted)]">
+                          <AlertCircle size={9} /> needs asset
+                        </span>
+                      )}
+                    </div>
                   </td>
 
                   {/* Save */}
                   <td className="px-4 py-4">
                     <div className="flex flex-col gap-2">
                       <button
-                        onClick={() => saveConfig(product.id)}
+                        onClick={() => saveConfig(product._id)}
                         disabled={row.saving}
                         className="flex items-center justify-center gap-1.5 rounded-lg px-4 py-2 text-[11px] font-semibold uppercase tracking-wider transition-all disabled:opacity-50"
                         style={{
                           background: row.saved ? "rgba(34,197,94,0.15)" : "var(--gold)",
-                          color:      row.saved ? "rgb(34,197,94)" : "var(--bg-dark)",
+                          color:      row.saved ? "rgb(34,197,94)"        : "var(--bg-dark)",
                         }}
                       >
                         {row.saving ? (
@@ -318,7 +389,7 @@ export default function AdminTryOnPage() {
                       </button>
 
                       {row.error && (
-                        <p className="text-[10px] text-red-400">{row.error}</p>
+                        <p className="text-[10px] text-red-400 max-w-[120px]">{row.error}</p>
                       )}
                     </div>
                   </td>
@@ -327,38 +398,6 @@ export default function AdminTryOnPage() {
             })}
           </tbody>
         </table>
-      </div>
-
-      {/* Prompt descriptor panel */}
-      <div className="mt-8">
-        <h2 className="mb-4 font-cormorant text-xl font-semibold text-[var(--gold)]">Prompt Descriptors</h2>
-        <p className="mb-4 text-xs text-[var(--cream-muted)]">
-          Optional. Overrides the default AI prompt for a specific SKU. E.g. "antique gold jhumka with ruby drops, temple style".
-          Save using the button in the table row above.
-        </p>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {products.map((product) => {
-            const row = configs[product.id];
-            if (!row) return null;
-            return (
-              <div key={product.id} className="rounded-xl p-4" style={{ background: "rgba(138,106,58,0.06)", border: "1px solid rgba(138,106,58,0.15)" }}>
-                <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-[var(--gold-dim)]">{product.name}</p>
-                <textarea
-                  rows={2}
-                  value={row.promptDescriptor}
-                  onChange={(e) => update(product.id, { promptDescriptor: e.target.value })}
-                  placeholder="Leave blank to use default…"
-                  className="w-full resize-none rounded px-3 py-2 text-xs outline-none"
-                  style={{
-                    background: "rgba(138,106,58,0.08)",
-                    border: "1px solid rgba(138,106,58,0.2)",
-                    color: "var(--cream)",
-                  }}
-                />
-              </div>
-            );
-          })}
-        </div>
       </div>
     </div>
   );

@@ -4,7 +4,7 @@ import Link from "next/link";
 import type { Route } from "next";
 import { usePathname, useRouter } from "next/navigation";
 import {
-  LayoutDashboard, Package, ShoppingBag, Sparkles, LogOut,
+  LayoutDashboard, Package, ShoppingBag, Sparkles, LogOut, Database,
 } from "lucide-react";
 
 const NAV: { href: Route; label: string; icon: typeof LayoutDashboard }[] = [
@@ -12,6 +12,7 @@ const NAV: { href: Route; label: string; icon: typeof LayoutDashboard }[] = [
   { href: "/admin/products", label: "Products",   icon: Package },
   { href: "/admin/orders",   label: "Orders",     icon: ShoppingBag },
   { href: "/admin/tryon",    label: "Try-On",     icon: Sparkles },
+  { href: "/admin/seed",     label: "Seed DB",    icon: Database },
 ];
 
 export function AdminNav() {

@@ -1,5 +1,12 @@
 export const COOKIE_NAME = "sundari_admin";
 
+if (!process.env.ADMIN_JWT_SECRET && process.env.NODE_ENV === "production") {
+  throw new Error("[auth] ADMIN_JWT_SECRET is not set. Set it in your environment variables.");
+}
+if (!process.env.ADMIN_JWT_SECRET && process.env.NODE_ENV !== "production") {
+  console.warn("[auth] ADMIN_JWT_SECRET is not set — using insecure dev-secret. Set it in .env.local before going to production.");
+}
+
 const SECRET = process.env.ADMIN_JWT_SECRET ?? "dev-secret";
 
 interface TokenPayload {
