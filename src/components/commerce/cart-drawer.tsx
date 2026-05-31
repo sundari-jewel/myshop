@@ -2,8 +2,10 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import type { Route } from "next";
 import { X, Minus, Plus, ShoppingBag } from "lucide-react";
 import { useCart } from "@/context/cart-context";
+import { useCustomerAuth } from "@/context/customer-auth-context";
 
 function formatPrice(n: number) {
   return new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(n);
@@ -11,6 +13,7 @@ function formatPrice(n: number) {
 
 export function CartDrawer() {
   const { items, count, subtotal, open, removeItem, updateQty, setOpen } = useCart();
+  const { customer } = useCustomerAuth();
 
   if (!open) return null;
 
@@ -119,7 +122,7 @@ export function CartDrawer() {
               </div>
             </div>
 
-            <Link href="/checkout"
+            <Link href={(customer ? "/checkout" : "/signin?next=/checkout") as Route}
               onClick={() => setOpen(false)}
               className="block w-full py-3.5 text-center text-[11px] font-bold uppercase tracking-[0.26em] transition-opacity hover:opacity-90"
               style={{ background: "var(--bg-dark)", color: "var(--gold-pale)" }}>

@@ -4,8 +4,10 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { Loader2, ShieldCheck } from "lucide-react";
+import type { Route } from "next";
+import { Loader2, LockKeyhole, ShieldCheck } from "lucide-react";
 import { useCart } from "@/context/cart-context";
+import { useCustomerAuth } from "@/context/customer-auth-context";
 
 function formatPrice(n: number) {
   return new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(n);
@@ -20,6 +22,7 @@ interface FormData {
 
 export default function CheckoutPage() {
   const { items, subtotal, clearCart } = useCart();
+  const { customer, ready } = useCustomerAuth();
   const router = useRouter();
   const shipping = subtotal >= 50000 ? 0 : 99;
 
@@ -33,6 +36,26 @@ export default function CheckoutPage() {
 
   function set(key: keyof FormData, val: string) {
     setForm(prev => ({ ...prev, [key]: val }));
+  }
+
+  if (!ready) return null;
+
+  if (!customer) {
+    return (
+      <div className="container-shell grid min-h-[60vh] place-items-center py-20 text-center">
+        <div className="max-w-md">
+          <LockKeyhole className="mx-auto text-[var(--gold-dim)]" size={34} />
+          <h1 className="display-font mt-4 text-4xl font-semibold">Sign in to checkout</h1>
+          <p className="mt-2 text-sm leading-6 text-[var(--ink-soft)]">
+            Your cart is ready. Sign in or create an account to keep your order connected to your profile.
+          </p>
+          <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
+            <Link href={"/signin?next=/checkout" as Route} className="btn-filled-gold">Sign In</Link>
+            <Link href={"/signup?next=/checkout" as Route} className="btn-ghost-gold">Create Account</Link>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   if (items.length === 0) {
@@ -50,13 +73,15 @@ export default function CheckoutPage() {
     setLoading(true);
 
     try {
+      if (!customer) return;
+
       const res  = await fetch("/api/checkout", {
         method:  "POST",
         headers: { "Content-Type": "application/json" },
         body:    JSON.stringify({
           items: items.map(i => ({ productId: i.productId, qty: i.qty, size: i.size })),
           customer: {
-            name: form.name, email: form.email, phone: form.phone,
+            name: form.name || customer.name, email: form.email || customer.email, phone: form.phone || customer.phone || "",
             address: { line1: form.line1, line2: form.line2 || undefined, city: form.city, state: form.state, pincode: form.pincode },
           },
           paymentMethod: form.paymentMethod,
@@ -67,7 +92,7 @@ export default function CheckoutPage() {
       if (!res.ok) { setError(data.error ?? "Checkout failed. Please try again."); return; }
 
       clearCart();
-      router.push(`/order-confirmation/${data.orderId}`);
+      router.push(`/order-confirmation/${data.orderId}` as Route);
     } finally {
       setLoading(false);
     }
@@ -91,15 +116,15 @@ export default function CheckoutPage() {
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="sm:col-span-2">
                   <label className={lbl} style={{ color: "var(--ink-soft)" }}>Full Name *</label>
-                  <input className={inp} style={inpStyle} required value={form.name} onChange={e => set("name", e.target.value)} placeholder="Priya Sharma" />
+                  <input className={inp} style={inpStyle} required value={form.name || customer.name} onChange={e => set("name", e.target.value)} placeholder="Priya Sharma" />
                 </div>
                 <div>
                   <label className={lbl} style={{ color: "var(--ink-soft)" }}>Email *</label>
-                  <input className={inp} style={inpStyle} type="email" required value={form.email} onChange={e => set("email", e.target.value)} placeholder="priya@example.com" />
+                  <input className={inp} style={inpStyle} type="email" required value={form.email || customer.email} onChange={e => set("email", e.target.value)} placeholder="priya@example.com" />
                 </div>
                 <div>
                   <label className={lbl} style={{ color: "var(--ink-soft)" }}>Phone *</label>
-                  <input className={inp} style={inpStyle} type="tel" required value={form.phone} onChange={e => set("phone", e.target.value)} placeholder="+91 98765 43210" />
+                  <input className={inp} style={inpStyle} type="tel" required value={form.phone || customer.phone || ""} onChange={e => set("phone", e.target.value)} placeholder="+91 98765 43210" />
                 </div>
               </div>
             </section>

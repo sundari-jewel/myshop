@@ -1,8 +1,9 @@
 "use client";
 
 import {
-  createContext, useContext, useEffect, useReducer, useCallback, type ReactNode,
+  createContext, useContext, useEffect, useReducer, useCallback, useMemo, useRef, type ReactNode,
 } from "react";
+import { useCustomerAuth } from "./customer-auth-context";
 
 export interface CartItem {
   productId: string;
@@ -84,25 +85,65 @@ interface CartContextValue {
 
 const CartContext = createContext<CartContextValue | null>(null);
 
-const STORAGE_KEY = "sundari_cart";
+function storageKey(email?: string) {
+  return email ? `sundari_cart_${email}` : "sundari_cart_guest";
+}
+
+function readCart(keyName: string) {
+  try {
+    return JSON.parse(localStorage.getItem(keyName) ?? "[]") as CartItem[];
+  } catch {
+    return [];
+  }
+}
+
+function mergeItems(primary: CartItem[], secondary: CartItem[]) {
+  const merged = [...primary];
+  for (const item of secondary) {
+    const itemKey = key(item.productId, item.size);
+    const index = merged.findIndex((current) => key(current.productId, current.size) === itemKey);
+    if (index >= 0) {
+      merged[index] = { ...merged[index], qty: merged[index].qty + item.qty };
+    } else {
+      merged.push(item);
+    }
+  }
+  return merged;
+}
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(reducer, { items: [], open: false });
+  const { customer, ready } = useCustomerAuth();
+  const activeStorageKey = useMemo(() => storageKey(customer?.email), [customer?.email]);
+  const skipNextPersist = useRef(false);
 
-  // Hydrate from localStorage on mount
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) dispatch({ type: "LOAD", items: JSON.parse(raw) as CartItem[] });
-    } catch { /* ignore */ }
-  }, []);
+    if (!ready) return;
 
-  // Persist to localStorage on change
+    const savedItems = readCart(activeStorageKey);
+
+    if (customer) {
+      const guestItems = readCart(storageKey());
+      const merged = mergeItems(savedItems, guestItems);
+      skipNextPersist.current = true;
+      dispatch({ type: "LOAD", items: merged });
+      localStorage.setItem(activeStorageKey, JSON.stringify(merged));
+      localStorage.removeItem(storageKey());
+    } else {
+      skipNextPersist.current = true;
+      dispatch({ type: "LOAD", items: savedItems });
+    }
+
+  }, [activeStorageKey, customer, ready]);
+
   useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state.items));
-    } catch { /* ignore */ }
-  }, [state.items]);
+    if (!ready) return;
+    if (skipNextPersist.current) {
+      skipNextPersist.current = false;
+      return;
+    }
+    localStorage.setItem(activeStorageKey, JSON.stringify(state.items));
+  }, [activeStorageKey, ready, state.items]);
 
   const addItem    = useCallback((item: CartItem)                          => dispatch({ type: "ADD", payload: item }), []);
   const removeItem = useCallback((productId: string, size?: string)        => dispatch({ type: "REMOVE", productId, size }), []);

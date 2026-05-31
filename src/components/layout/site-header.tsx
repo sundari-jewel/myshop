@@ -6,6 +6,8 @@ import { Heart, Menu, User, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { CartDrawer } from "@/components/commerce/cart-drawer";
 import { useCart } from "@/context/cart-context";
+import { useCustomerAuth } from "@/context/customer-auth-context";
+import { useWishlist } from "@/context/wishlist-context";
 
 const NAV_LINKS: Array<{ href: string; label: string }> = [
   { href: "/", label: "Home" },
@@ -24,12 +26,14 @@ const OFFER_ITEMS = [
   "Minimum 10% off",
 ];
 
-const UTILITY_LINKS = ["About", "Contact", "Account"];
+const UTILITY_LINKS = ["About", "Contact"];
 
 export function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const { count, open: cartOpen, setOpen: setCartOpen } = useCart();
+  const { count, setOpen: setCartOpen } = useCart();
+  const { customer } = useCustomerAuth();
+  const wishlist = useWishlist();
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 8);
@@ -119,13 +123,14 @@ export function SiteHeader() {
             </Link>
 
             <div className="hidden items-center justify-end gap-6 lg:flex">
-              <button
-                type="button"
+              <Link
+                href={(customer ? "/wishlist" : "/signin?next=/wishlist") as Route}
                 className="focus-ring text-[11px] font-medium uppercase tracking-[0.28em] transition-colors hover:text-[var(--gold-light)]"
                 style={{ color: "var(--gold-pale)" }}
               >
                 Wish-list
-              </button>
+                {wishlist.count > 0 && <span className="ml-1 text-[var(--gold-light)]">({wishlist.count})</span>}
+              </Link>
               <button
                 type="button"
                 className="focus-ring text-[11px] font-medium uppercase tracking-[0.28em] transition-colors hover:text-[var(--gold-light)]"
@@ -133,6 +138,13 @@ export function SiteHeader() {
               >
                 Search
               </button>
+              <Link
+                href={(customer ? "/account" : "/signin?next=/account") as Route}
+                className="focus-ring text-[11px] font-medium uppercase tracking-[0.28em] transition-colors hover:text-[var(--gold-light)]"
+                style={{ color: "var(--gold-pale)" }}
+              >
+                {customer ? "Account" : "Sign in"}
+              </Link>
               <button
                 aria-label="Open cart"
                 type="button"
@@ -218,12 +230,12 @@ export function SiteHeader() {
               ))}
               <div className="mt-3 h-px mx-3" style={{ background: "rgba(201,169,110,0.18)" }} />
               <div className="flex gap-5 px-3 pt-3 pb-1">
-                <button type="button" className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em]" style={{ color: "var(--cream-muted)" }}>
+                <Link href={(customer ? "/account" : "/signin?next=/account") as Route} className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em]" style={{ color: "var(--cream-muted)" }}>
                   <User size={15} strokeWidth={1.5} /> Account
-                </button>
-                <button type="button" className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em]" style={{ color: "var(--cream-muted)" }}>
-                  <Heart size={15} strokeWidth={1.5} /> Wishlist
-                </button>
+                </Link>
+                <Link href={(customer ? "/wishlist" : "/signin?next=/wishlist") as Route} className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em]" style={{ color: "var(--cream-muted)" }}>
+                  <Heart size={15} strokeWidth={1.5} /> Wishlist {wishlist.count > 0 ? `(${wishlist.count})` : ""}
+                </Link>
               </div>
             </div>
           </nav>

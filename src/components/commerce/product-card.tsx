@@ -1,9 +1,14 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import type { Route } from "next";
-import { Eye, Sparkles } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { Eye, Heart, Sparkles } from "lucide-react";
 import type { Product } from "@/types/commerce";
 import { formatPrice } from "@/lib/seo";
+import { useCustomerAuth } from "@/context/customer-auth-context";
+import { useWishlist } from "@/context/wishlist-context";
 import { AddToCartButton } from "./add-to-cart-button";
 
 type ProductCardProps = {
@@ -11,14 +16,37 @@ type ProductCardProps = {
 };
 
 export function ProductCard({ product }: ProductCardProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const { customer } = useCustomerAuth();
+  const wishlist = useWishlist();
   const hasMarkdown = Boolean(product.originalPrice && product.originalPrice > product.price);
   const discount = hasMarkdown && product.originalPrice ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100) : 0;
+  const saved = wishlist.isSaved(product.id);
+
+  function handleWishlist() {
+    if (!customer) {
+      router.push(`/signin?next=${encodeURIComponent(pathname)}` as Route);
+      return;
+    }
+    wishlist.toggle(product.id);
+  }
 
   return (
     <article
-      className="group overflow-hidden rounded-sm bg-[var(--surface-card)] shadow-[0_18px_50px_rgba(82,45,12,0.08)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_24px_70px_rgba(82,45,12,0.14)]"
+      className="group relative overflow-hidden rounded-sm bg-[var(--surface-card)] shadow-[0_18px_50px_rgba(82,45,12,0.08)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_24px_70px_rgba(82,45,12,0.14)]"
       style={{ border: "1px solid var(--line)" }}
     >
+      <button
+        type="button"
+        aria-label={saved ? `Remove ${product.name} from wishlist` : `Save ${product.name} to wishlist`}
+        title={saved ? "Saved to wishlist" : "Save to wishlist"}
+        onClick={handleWishlist}
+        className="focus-ring absolute right-3 top-12 z-20 grid size-9 place-items-center rounded-full border bg-[rgba(255,251,245,0.9)] text-[var(--ruby)] shadow-[0_8px_24px_rgba(14,4,4,0.16)] transition hover:scale-105"
+        style={{ borderColor: saved ? "rgba(155,28,28,0.35)" : "rgba(138,106,58,0.24)" }}
+      >
+        <Heart size={16} fill={saved ? "currentColor" : "none"} />
+      </button>
       <Link href={`/products/${product.slug}` as Route} className="block">
         <div className="relative aspect-[4/5] overflow-hidden bg-[#f4eadc]">
           <div
