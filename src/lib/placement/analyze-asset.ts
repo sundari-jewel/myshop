@@ -35,6 +35,10 @@ export async function analyzeAsset(
     }
   }
 
+  if (maxX < minX || maxY < minY) {
+    throw new Error("analyzeAsset: no opaque pixels found in PNG");
+  }
+
   const bbox = { x: minX, y: minY, w: maxX - minX + 1, h: maxY - minY + 1 };
   const centerX = (minX + maxX) / 2;
 
@@ -55,6 +59,10 @@ export async function analyzeAsset(
       attachmentX = centerX / width;
       attachmentY = (minY + maxY) / 2 / height;
       break;
+    default: {
+      const _exhaustive: never = category;
+      throw new Error(`analyzeAsset: unhandled category ${_exhaustive}`);
+    }
   }
 
   return {

@@ -69,4 +69,12 @@ describe("analyzeAsset", () => {
     const { suggestedMirror } = await analyzeAsset(buf, "earring");
     expect(suggestedMirror).toBe(false);
   });
+
+  it("throws for fully transparent PNG", async () => {
+    // 100x100 all-transparent PNG
+    const transparent = await sharp({
+      create: { width: 100, height: 100, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } },
+    }).png().toBuffer();
+    await expect(analyzeAsset(transparent, "earring")).rejects.toThrow("no opaque pixels");
+  });
 });
