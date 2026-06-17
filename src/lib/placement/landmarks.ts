@@ -136,7 +136,7 @@ export async function detectLandmarks(
 
   const idx = jewelleryType === "ring" ? MIDDLE_MCP : WRIST;
   const targets: BodyTarget[] = result.landmarks.map((lms: Array<{x:number;y:number;z?:number}>, i: number) => {
-    const handedness = result.handedness?.[i]?.categories?.[0]?.categoryName ?? "Right";
+    const handedness = result.handedness?.[i]?.[0]?.categoryName ?? "Right";
     const side: BodyTarget["side"] = handedness === "Left" ? "right" : "left";
     const lm = lms[idx];
     return { side, x: lm.x * imageWidth, y: lm.y * imageHeight, z: lm.z ?? 0 };

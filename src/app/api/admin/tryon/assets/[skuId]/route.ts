@@ -7,10 +7,10 @@ import { ProductTryonConfig, type JewelleryType } from "@/models/ProductTryonCon
 const MAX_BYTES = 10 * 1024 * 1024;
 
 function assetCategory(type: JewelleryType): AssetCategory {
-  if (["earring_stud", "earring_drop", "earring_jhumka"].includes(type)) return "earring";
-  if (["necklace_choker", "necklace_long"].includes(type))               return "necklace";
-  if (type === "ring")                                                    return "ring";
-  if (type === "kada" || type === "bracelet")                            return "kada_bracelet";
+  if (type === "earring_stud" || type === "earring_drop" || type === "earring_jhumka") return "earring";
+  if (type === "necklace_choker" || type === "necklace_long")                           return "necklace";
+  if (type === "ring")                                                                   return "ring";
+  if (type === "kada" || type === "bracelet")                                            return "kada_bracelet";
   const _exhaustive: never = type;
   throw new Error(`assetCategory: unhandled type ${_exhaustive as string}`);
 }

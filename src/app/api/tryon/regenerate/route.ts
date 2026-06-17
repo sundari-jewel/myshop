@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
-import { startTryOnPrediction } from "@/lib/replicate";
+import { defaultProvider } from "@/lib/replicate";
 import { TryOnSession } from "@/models/TryOnSession";
 import { TryOnJob } from "@/models/TryOnJob";
 import { ProductTryonConfig } from "@/models/ProductTryonConfig";
@@ -25,17 +25,29 @@ export async function POST(req: NextRequest) {
     const config = await ProductTryonConfig.findOne({ skuId: session.skuId });
     if (!config) return NextResponse.json({ error: "config_not_found" }, { status: 404 });
 
-    // photoKey, maskKey, assetKey all hold Cloudinary URLs directly
-    const replicateId = await startTryOnPrediction({
-      photoUrl:         session.photoKey,
-      maskUrl:          config.maskKey!,
-      assetUrl:         config.assetKey!,
-      jewelleryType:    config.jewelleryType!,
-      promptDescriptor: config.promptDescriptor,
+    // Find the existing job to inherit the composite (previewUrl)
+    const existingJob = await TryOnJob.findOne({ sessionId }).sort({ createdAt: -1 });
+    if (!existingJob?.previewUrl) {
+      return NextResponse.json({ error: "no_preview_to_refine" }, { status: 400 });
+    }
+
+    const providerJobId = await defaultProvider.startRefinement({
+      compositeUrl:      existingJob.previewUrl,
+      blendMaskUrl:      config.maskKey!,
+      jewelleryType:     config.jewelleryType!,
+      promptDescriptor:  config.promptDescriptor,
+      seed:              Math.floor(Math.random() * 2 ** 32),
     });
 
     const jobId = crypto.randomUUID().replace(/-/g, "");
-    await TryOnJob.create({ jobId, sessionId, skuId: session.skuId, status: "processing", replicateId });
+    await TryOnJob.create({
+      jobId,
+      sessionId,
+      skuId:      session.skuId,
+      status:     "preview_ready",
+      previewUrl: existingJob.previewUrl,
+      providerJobId,
+    });
     await TryOnSession.updateOne({ sessionId }, { $inc: { regenCount: 1 } });
     await TryOnAnalytics.create({ sessionId, jobId, skuId: session.skuId, event: "try_another" });
 
