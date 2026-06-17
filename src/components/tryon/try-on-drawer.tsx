@@ -7,46 +7,59 @@ import { GeneratingStep } from "./generating-step";
 import { ResultStep } from "./result-step";
 import { useTryOnResult } from "@/hooks/useTryOnResult";
 
-type Step = "upload" | "generating" | "result" | "error";
+type Step = "upload" | "generating" | "preview" | "result" | "error";
 
 interface Props {
-  skuId: string;
-  productName: string;
-  open: boolean;
-  onClose: () => void;
-  onAddToCart: () => void;
+  skuId:            string;
+  productName:      string;
+  isHandJewellery?: boolean;
+  open:             boolean;
+  onClose:          () => void;
+  onAddToCart:      () => void;
 }
 
-export function TryOnDrawer({ skuId, productName, open, onClose, onAddToCart }: Props) {
-  const [step, setStep]           = useState<Step>("upload");
-  const [sessionId, setSessionId] = useState<string | null>(null);
-  const [jobId, setJobId]         = useState<string | null>(null);
-  const [regenCount, setRegenCount] = useState(0);
-  const [errorMsg, setErrorMsg]   = useState<string | null>(null);
-  const drawerRef                 = useRef<HTMLDivElement>(null);
+const ERROR_MESSAGES: Record<string, string> = {
+  rate_limit_exceeded: "You've reached the daily try-on limit. Please try again tomorrow.",
+  no_face:             "We couldn't detect a face. Try a front-facing photo in good lighting.",
+  low_confidence:      "We couldn't find the right placement point. Try a clearer photo.",
+  ear_not_visible:     "Ears aren't visible. Try a photo with hair pulled back.",
+  hand_not_visible:    "Hand isn't visible. Try a photo showing your hand clearly.",
+  neck_not_visible:    "Neck isn't fully visible. Try a lower neckline or different angle.",
+};
 
+export function TryOnDrawer({ skuId, productName, isHandJewellery = false, open, onClose, onAddToCart }: Props) {
+  const [step,       setStep]       = useState<Step>("upload");
+  const [sessionId,  setSessionId]  = useState<string | null>(null);
+  const [jobId,      setJobId]      = useState<string | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [regenCount, setRegenCount] = useState(0);
+  const [errorMsg,   setErrorMsg]   = useState<string | null>(null);
+  const drawerRef                   = useRef<HTMLDivElement>(null);
   const REGEN_LIMIT = 3;
 
-  const { status, resultUrl } = useTryOnResult(step === "generating" ? jobId : null);
+  const { status, resultUrl, previewUrl: polledPreview } = useTryOnResult(
+    step === "generating" || step === "preview" ? jobId : null,
+    previewUrl
+  );
 
-  // Transition generating → result/error
+  // As soon as polling reports preview_ready or refining, show the preview
   useEffect(() => {
+    if ((status === "preview_ready" || status === "refining") && polledPreview) {
+      setStep("preview");
+    }
     if (status === "complete") setStep("result");
-    if (status === "failed")   { setStep("error"); setErrorMsg("Try-on generation failed. Please try again."); }
-  }, [status]);
+    if (status === "failed") {
+      if (step !== "preview") { setStep("error"); setErrorMsg("Try-on generation failed. Please try again."); }
+    }
+  }, [status, polledPreview, step]);
 
-  // Reset when drawer closes
   useEffect(() => {
     if (!open) {
-      setStep("upload");
-      setSessionId(null);
-      setJobId(null);
-      setRegenCount(0);
-      setErrorMsg(null);
+      setStep("upload"); setSessionId(null); setJobId(null);
+      setPreviewUrl(null); setRegenCount(0); setErrorMsg(null);
     }
   }, [open]);
 
-  // Trap focus + close on Escape
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
@@ -54,7 +67,7 @@ export function TryOnDrawer({ skuId, productName, open, onClose, onAddToCart }: 
     return () => document.removeEventListener("keydown", onKey);
   }, [open, onClose]);
 
-  const handlePhotoSelected = useCallback(async (file: File) => {
+  const handlePhotoSelected = useCallback(async (file: File, _preview: string) => {
     setStep("generating");
     setErrorMsg(null);
 
@@ -64,19 +77,21 @@ export function TryOnDrawer({ skuId, productName, open, onClose, onAddToCart }: 
 
     try {
       const res  = await fetch("/api/tryon/session", { method: "POST", body: fd });
-      const data = await res.json() as { sessionId?: string; jobId?: string; error?: string };
+      const data = await res.json() as {
+        sessionId?:  string;
+        jobId?:      string;
+        previewUrl?: string;
+        error?:      string;
+      };
 
       if (!res.ok || !data.sessionId || !data.jobId) {
         setStep("error");
-        setErrorMsg(
-          data.error === "rate_limit_exceeded"
-            ? "You've reached the daily try-on limit. Please try again tomorrow."
-            : "Something went wrong. Please try again."
-        );
+        setErrorMsg(ERROR_MESSAGES[data.error ?? ""] ?? "Something went wrong. Please try again.");
         return;
       }
 
       setSessionId(data.sessionId);
+      setPreviewUrl(data.previewUrl ?? null);
       setJobId(data.jobId);
     } catch {
       setStep("error");
@@ -87,18 +102,13 @@ export function TryOnDrawer({ skuId, productName, open, onClose, onAddToCart }: 
   const handleRegenerate = useCallback(async () => {
     if (!sessionId) return;
     setStep("generating");
-
     try {
       const res  = await fetch("/api/tryon/regenerate", {
-        method:  "POST",
-        headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({ sessionId }),
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sessionId }),
       });
       const data = await res.json() as { jobId?: string; regenCount?: number };
-      if (data.jobId) {
-        setJobId(data.jobId);
-        setRegenCount(data.regenCount ?? regenCount + 1);
-      }
+      if (data.jobId) { setJobId(data.jobId); setRegenCount(data.regenCount ?? regenCount + 1); }
     } catch {
       setStep("error");
       setErrorMsg("Could not regenerate. Please try again.");
@@ -107,49 +117,36 @@ export function TryOnDrawer({ skuId, productName, open, onClose, onAddToCart }: 
 
   if (!open) return null;
 
+  const displayUrl = resultUrl ?? polledPreview ?? previewUrl;
+
   return (
     <>
-      {/* Backdrop */}
-      <div
-        className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
-        aria-hidden="true"
-        onClick={onClose}
-      />
-
-      {/* Drawer */}
+      <div className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm" aria-hidden="true" onClick={onClose} />
       <div
         ref={drawerRef}
-        role="dialog"
-        aria-modal="true"
-        aria-label="Virtual Try-On"
+        role="dialog" aria-modal="true" aria-label="Virtual Try-On"
         className="fixed bottom-0 right-0 top-0 z-50 flex w-full max-w-md flex-col bg-[var(--bg-dark)] shadow-2xl"
         style={{ borderLeft: "1px solid rgba(138,106,58,0.2)" }}
       >
-        {/* Header */}
         <div className="flex items-center justify-between border-b border-[rgba(138,106,58,0.15)] px-6 py-4">
           <div>
             <p className="text-xs uppercase tracking-widest text-[var(--gold)] opacity-80">Virtual Try-On</p>
             <h2 className="font-cormorant mt-0.5 text-lg text-[var(--parchment)]">{productName}</h2>
           </div>
-          <button
-            onClick={onClose}
-            className="flex h-8 w-8 items-center justify-center rounded-full text-[var(--parchment-dim)] transition-colors hover:text-[var(--parchment)]"
-          >
+          <button onClick={onClose} className="flex h-8 w-8 items-center justify-center rounded-full text-[var(--parchment-dim)] hover:text-[var(--parchment)]">
             <X size={18} />
           </button>
         </div>
 
-        {/* Step content */}
         <div className="flex-1 overflow-y-auto px-6 py-6">
           {step === "upload" && (
-            <PhotoUploadStep onPhotoSelected={handlePhotoSelected} />
+            <PhotoUploadStep onPhotoSelected={handlePhotoSelected} isHandJewellery={isHandJewellery} />
           )}
-
           {step === "generating" && <GeneratingStep />}
-
-          {step === "result" && resultUrl && sessionId && jobId && (
+          {(step === "preview" || step === "result") && displayUrl && sessionId && jobId && (
             <ResultStep
-              resultUrl={resultUrl}
+              resultUrl={displayUrl}
+              isRefining={step === "preview"}
               skuId={skuId}
               sessionId={sessionId}
               jobId={jobId}
@@ -160,7 +157,6 @@ export function TryOnDrawer({ skuId, productName, open, onClose, onAddToCart }: 
               onClose={onClose}
             />
           )}
-
           {step === "error" && (
             <div className="flex flex-col items-center gap-6 py-8 text-center">
               <p className="text-[var(--parchment-dim)]">{errorMsg}</p>

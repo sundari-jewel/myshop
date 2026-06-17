@@ -5,6 +5,7 @@ import { Download, Share2, ShoppingBag, RefreshCw } from "lucide-react";
 
 interface Props {
   resultUrl: string;
+  isRefining?: boolean;
   skuId: string;
   sessionId: string;
   jobId: string;
@@ -25,6 +26,7 @@ async function track(event: string, skuId: string, sessionId: string, jobId: str
 
 export function ResultStep({
   resultUrl,
+  isRefining = false,
   skuId,
   sessionId,
   jobId,
@@ -60,6 +62,13 @@ export function ResultStep({
       {/* Result image */}
       <div className="relative aspect-[3/4] w-full overflow-hidden rounded-xl">
         <Image src={resultUrl} alt="Your try-on result" fill className="object-cover" />
+        {isRefining && (
+          <div className="absolute inset-0 flex items-end justify-center bg-black/30 pb-4">
+            <p className="rounded-full bg-black/60 px-4 py-1.5 text-xs text-[var(--parchment-dim)]">
+              Refining your result…
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Action buttons */}

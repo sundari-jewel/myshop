@@ -7,21 +7,68 @@ import Image from "next/image";
 
 interface Props {
   onPhotoSelected: (file: File, preview: string) => void;
+  isHandJewellery?: boolean;
 }
 
-export function PhotoUploadStep({ onPhotoSelected }: Props) {
-  const [preview, setPreview] = useState<string | null>(null);
-  const [dragging, setDragging] = useState(false);
+type PreflightError = { code: string; message: string };
+
+async function runFacePreflight(preview: string): Promise<PreflightError | null> {
+  // @ts-ignore — FaceDetector is experimental; not available in all browsers
+  if (typeof FaceDetector === "undefined") return null;
+
+  return new Promise((resolve) => {
+    const img  = document.createElement("img");
+    img.src    = preview;
+    img.onload = async () => {
+      try {
+        // @ts-ignore
+        const detector = new FaceDetector({ fastMode: true });
+        const faces    = await detector.detect(img);
+
+        if (faces.length === 0) {
+          resolve({ code: "no_face", message: "We couldn't detect a face. Try a front-facing photo in good lighting." });
+        } else if (faces.length > 1) {
+          resolve({ code: "multiple_faces", message: "Please use a photo with only one person." });
+        } else {
+          const { width: fw, height: fh } = faces[0].boundingBox;
+          if (fw * fh < img.width * img.height * 0.15) {
+            resolve({ code: "face_too_small", message: "Please use a closer photo — face should fill most of the frame." });
+          } else {
+            resolve(null);
+          }
+        }
+      } catch {
+        resolve(null);
+      }
+    };
+    img.onerror = () => resolve(null);
+  });
+}
+
+export function PhotoUploadStep({ onPhotoSelected, isHandJewellery = false }: Props) {
+  const [preview,      setPreview]      = useState<string | null>(null);
+  const [dragging,     setDragging]     = useState(false);
+  const [preflightErr, setPreflightErr] = useState<string | null>(null);
 
   const onDrop = useCallback(
-    (accepted: File[]) => {
+    async (accepted: File[]) => {
       const file = accepted[0];
       if (!file) return;
       const url = URL.createObjectURL(file);
       setPreview(url);
+      setPreflightErr(null);
+
+      if (!isHandJewellery) {
+        const err = await runFacePreflight(url);
+        if (err) {
+          setPreflightErr(err.message);
+          return;
+        }
+      }
+
       onPhotoSelected(file, url);
     },
-    [onPhotoSelected]
+    [onPhotoSelected, isHandJewellery]
   );
 
   const { getRootProps, getInputProps } = useDropzone({
@@ -62,10 +109,16 @@ export function PhotoUploadStep({ onPhotoSelected }: Props) {
         )}
       </div>
 
+      {preflightErr && (
+        <p className="rounded-lg bg-red-900/20 px-4 py-3 text-sm text-red-300">{preflightErr}</p>
+      )}
+
       <div className="flex items-start gap-3 rounded-lg bg-[rgba(138,106,58,0.06)] px-4 py-3 text-sm text-[var(--parchment-dim)]">
         <Camera size={16} className="mt-0.5 shrink-0 text-[var(--gold)]" />
         <span>
-          For best results, use a front-facing photo with your face and neck clearly visible, in good lighting.
+          {isHandJewellery
+            ? "For best results, use a photo showing your hand clearly in good lighting."
+            : "For best results, use a front-facing photo with your face and neck clearly visible, in good lighting."}
         </span>
       </div>
 
