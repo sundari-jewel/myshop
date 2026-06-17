@@ -3,6 +3,7 @@ import mongoose, { Schema, type Document } from "mongoose";
 export interface IProduct extends Omit<Document, "collection"> {
   name: string;
   slug: string;
+  sku?: string;
   collection: string;
   description: string;
   price: number;
@@ -28,6 +29,7 @@ const ProductSchema = new Schema<IProduct>(
   {
     name:          { type: String, required: true },
     slug:          { type: String, required: true, unique: true, index: true },
+    sku:           { type: String, unique: true, sparse: true, index: true },
     collection:    { type: String, required: true, index: true },
     description:   { type: String, default: "" },
     price:         { type: Number, required: true },
