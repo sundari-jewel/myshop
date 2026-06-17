@@ -23,6 +23,14 @@ export async function POST(
       mirrorForLeft?:     boolean;
     };
 
+    if (
+      typeof body.attachmentX !== "number"   || !isFinite(body.attachmentX) ||
+      typeof body.attachmentY !== "number"   || !isFinite(body.attachmentY) ||
+      typeof body.defaultScaleMm !== "number" || !isFinite(body.defaultScaleMm) || body.defaultScaleMm <= 0
+    ) {
+      return NextResponse.json({ error: "invalid_calibration_values" }, { status: 400 });
+    }
+
     const updated = await ProductTryonConfig.findOneAndUpdate(
       { skuId },
       {
