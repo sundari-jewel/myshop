@@ -52,3 +52,9 @@ export async function uploadFromUrl(
 export async function deleteAsset(publicId: string): Promise<void> {
   await cloudinary.uploader.destroy(publicId, { resource_type: "image" });
 }
+
+export async function fetchBuffer(url: string): Promise<Buffer> {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`fetchBuffer: HTTP ${res.status} for ${url}`);
+  return Buffer.from(await res.arrayBuffer());
+}
