@@ -6,6 +6,10 @@ export default defineConfig({
     environment: "node",
     globals: true,
     setupFiles: ["./src/test/setup.ts"],
+    coverage: {
+      include: ["src/**"],
+      exclude: ["src/test/**"],
+    },
   },
   resolve: {
     alias: {

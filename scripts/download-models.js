@@ -1,6 +1,5 @@
 const https = require("https");
 const fs    = require("fs");
-const path  = require("path");
 
 const MODELS = [
   {
@@ -21,10 +20,36 @@ for (const { url, dest } of MODELS) {
   const file = fs.createWriteStream(dest);
   https.get(url, (res) => {
     if (res.statusCode === 301 || res.statusCode === 302) {
-      https.get(res.headers.location, (r) => r.pipe(file));
+      https.get(res.headers.location, (r) => {
+        if (r.statusCode < 200 || r.statusCode >= 300) {
+          file.destroy();
+          fs.rmSync(dest, { force: true });
+          console.error(`HTTP ${r.statusCode} for ${dest}`);
+          process.exitCode = 1;
+          return;
+        }
+        r.pipe(file);
+      }).on("error", (err) => {
+        file.destroy();
+        fs.rmSync(dest, { force: true });
+        console.error(err);
+        process.exitCode = 1;
+      });
     } else {
+      if (res.statusCode < 200 || res.statusCode >= 300) {
+        file.destroy();
+        fs.rmSync(dest, { force: true });
+        console.error(`HTTP ${res.statusCode} for ${dest}`);
+        process.exitCode = 1;
+        return;
+      }
       res.pipe(file);
     }
     file.on("finish", () => { file.close(); console.log(`done ${dest}`); });
-  }).on("error", (err) => { fs.unlinkSync(dest); console.error(err); });
+  }).on("error", (err) => {
+    file.destroy();
+    fs.rmSync(dest, { force: true });
+    console.error(err);
+    process.exitCode = 1;
+  });
 }
