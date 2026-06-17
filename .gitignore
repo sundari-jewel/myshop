@@ -10,3 +10,6 @@ coverage
 *.tsbuildinfo
 next-env.d.ts
 extracted_assets
+
+# MediaPipe model files (large binaries — download via npm run setup:models)
+/models/
