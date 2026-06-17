@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { NextRequest } from "next/server";
-import crypto from "crypto";
 
 vi.mock("@/lib/mongodb", () => ({ connectDB: vi.fn() }));
 vi.mock("@/lib/cloudinary", () => ({
@@ -27,7 +26,6 @@ vi.mock("@/lib/placement/composite", () => ({
 vi.mock("@/lib/replicate", () => ({
   defaultProvider: { startRefinement: vi.fn().mockResolvedValue("rep-001") },
   FLUX_FILL_MODEL: "black-forest-labs/flux-fill-pro",
-  buildRefinementPrompt: vi.fn().mockReturnValue("test prompt"),
 }));
 vi.mock("@/lib/rate-limit", () => ({
   checkRateLimit: vi.fn().mockResolvedValue({ allowed: true, remaining: 9 }),

@@ -24,7 +24,7 @@ async function enqueueRefinement(
     await TryOnJob.updateOne({ jobId }, { $set: { status: "processing", providerJobId } });
   } catch (err) {
     console.error("[tryon/session] refinement enqueue failed — previewUrl is final", err);
-    await TryOnJob.updateOne({ jobId }, { $set: { status: "complete" } });
+    await TryOnJob.updateOne({ jobId }, { $set: { status: "failed" } });
   }
 }
 
