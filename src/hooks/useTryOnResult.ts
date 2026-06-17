@@ -22,7 +22,7 @@ export function useTryOnResult(
   const [state, setState] = useState<TryOnResultState>({
     status:    "idle",
     previewUrl: initialPreviewUrl,
-    resultUrl:  initialPreviewUrl,
+    resultUrl:  null,
     elapsedMs:  null,
     errorCode:  null,
   });
@@ -35,7 +35,7 @@ export function useTryOnResult(
     setState({
       status:    "preview_ready",
       previewUrl: initialPreviewUrl,
-      resultUrl:  initialPreviewUrl,
+      resultUrl:  null,
       elapsedMs:  null,
       errorCode:  null,
     });
@@ -43,6 +43,14 @@ export function useTryOnResult(
 
     const timer = setInterval(async () => {
       pollCount.current++;
+
+      // Absolute ceiling — fires regardless of server status or network errors
+      if (pollCount.current >= MAX_POLLS) {
+        clearInterval(timer);
+        setState(prev => ({ ...prev, status: "failed", errorCode: "timeout" }));
+        return;
+      }
+
       try {
         const res  = await fetch(`/api/tryon/result/${jobId}`);
         const data = await res.json() as {
@@ -67,10 +75,8 @@ export function useTryOnResult(
         } else if (data.status === "failed") {
           clearInterval(timer);
           setState(prev => ({ ...prev, status: "failed", errorCode: data.errorCode ?? "unknown" }));
-        } else if (pollCount.current >= MAX_POLLS) {
-          clearInterval(timer);
-          setState(prev => ({ ...prev, status: "failed", errorCode: "timeout" }));
         }
+        // "preview_ready" — refinement not started yet, keep polling
       } catch {
         // transient — keep polling
       }
