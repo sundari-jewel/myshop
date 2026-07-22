@@ -78,7 +78,7 @@ export function ProductCard({ product }: ProductCardProps) {
             alt={product.name}
             fill
             sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
-            className="object-contain p-8 transition duration-500 group-hover:scale-105"
+            className="object-cover transition duration-500 group-hover:scale-105"
           />
           <span
             className="absolute bottom-3 left-1/2 z-10 inline-flex -translate-x-1/2 translate-y-3 items-center gap-2 rounded-sm border px-3 py-2 text-[10px] font-bold uppercase tracking-[0.18em] opacity-0 shadow-[0_12px_28px_rgba(14,4,4,0.24)] transition duration-300 group-hover:translate-y-0 group-hover:opacity-100"
