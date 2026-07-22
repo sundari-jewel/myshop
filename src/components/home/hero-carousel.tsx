@@ -19,6 +19,8 @@ export function HeroCarousel({ banners }: HeroCarouselProps) {
 
   const count = banners.length;
 
+  if (count === 0) return null;
+
   function go(index: number) {
     setActive(((index % count) + count) % count);
   }
@@ -35,14 +37,14 @@ export function HeroCarousel({ banners }: HeroCarouselProps) {
 
   return (
     <div
-      className="relative min-h-[98vh] w-full overflow-hidden"
+      className="group relative min-h-[98vh] w-full overflow-hidden"
       style={{ background: "var(--bg-dark)" }}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
       {banners.map((banner, i) => (
         <div
-          key={banner.image}
+          key={banner.image + i}
           className="absolute inset-0 transition-opacity duration-700"
           style={{ opacity: i === active ? 1 : 0, pointerEvents: i === active ? "auto" : "none" }}
           aria-hidden={i !== active}
@@ -52,7 +54,7 @@ export function HeroCarousel({ banners }: HeroCarouselProps) {
               src={banner.image}
               alt={`Hero banner ${i + 1}`}
               fill
-              priority={i === 0}
+              priority={i < 2}
               sizes="100vw"
               className="object-cover object-top"
             />
@@ -67,7 +69,7 @@ export function HeroCarousel({ banners }: HeroCarouselProps) {
             type="button"
             aria-label="Previous banner"
             onClick={() => go(active - 1)}
-            className="absolute left-4 top-1/2 z-20 -translate-y-1/2 grid size-10 place-items-center rounded-full border border-[rgba(201,169,110,0.35)] bg-[rgba(14,4,4,0.55)] text-[var(--gold)] opacity-0 transition hover:bg-[rgba(14,4,4,0.8)] group-hover:opacity-100 sm:opacity-60"
+            className="focus-ring absolute left-4 top-1/2 z-20 -translate-y-1/2 grid size-10 place-items-center rounded-full border border-[rgba(201,169,110,0.35)] bg-[rgba(14,4,4,0.55)] text-[var(--gold)] opacity-0 transition hover:bg-[rgba(14,4,4,0.8)] group-hover:opacity-100 sm:opacity-60"
           >
             <ChevronLeft size={20} />
           </button>
@@ -75,7 +77,7 @@ export function HeroCarousel({ banners }: HeroCarouselProps) {
             type="button"
             aria-label="Next banner"
             onClick={() => go(active + 1)}
-            className="absolute right-4 top-1/2 z-20 -translate-y-1/2 grid size-10 place-items-center rounded-full border border-[rgba(201,169,110,0.35)] bg-[rgba(14,4,4,0.55)] text-[var(--gold)] opacity-0 transition hover:bg-[rgba(14,4,4,0.8)] group-hover:opacity-100 sm:opacity-60"
+            className="focus-ring absolute right-4 top-1/2 z-20 -translate-y-1/2 grid size-10 place-items-center rounded-full border border-[rgba(201,169,110,0.35)] bg-[rgba(14,4,4,0.55)] text-[var(--gold)] opacity-0 transition hover:bg-[rgba(14,4,4,0.8)] group-hover:opacity-100 sm:opacity-60"
           >
             <ChevronRight size={20} />
           </button>
@@ -91,7 +93,7 @@ export function HeroCarousel({ banners }: HeroCarouselProps) {
               type="button"
               aria-label={`Go to slide ${i + 1}`}
               onClick={() => go(i)}
-              className="size-2 rounded-full border border-[rgba(201,169,110,0.5)] transition-colors"
+              className="focus-ring size-2 rounded-full border border-[rgba(201,169,110,0.5)] transition-colors"
               style={{ background: i === active ? "var(--gold)" : "transparent" }}
             />
           ))}
