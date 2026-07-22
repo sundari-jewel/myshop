@@ -5,9 +5,11 @@ export type HeroBanner = {
   link: string;
 };
 
-type MetaobjectField =
-  | { key: "image"; reference: { previewImage: { url: string } } | null }
-  | { key: "link"; value: string };
+type MetaobjectField = {
+  key: string;
+  value: string | null;
+  reference: { previewImage: { url: string } } | null;
+};
 
 type HeroBannersData = {
   metaobjects: {
@@ -39,12 +41,8 @@ export async function getHeroBanners(): Promise<HeroBanner[]> {
   try {
     const data = await shopifyFetch<HeroBannersData>(QUERY);
     return data.metaobjects.nodes.flatMap((node) => {
-      const imageField = node.fields.find((f) => f.key === "image") as
-        | { key: "image"; reference: { previewImage: { url: string } } | null }
-        | undefined;
-      const linkField = node.fields.find((f) => f.key === "link") as
-        | { key: "link"; value: string }
-        | undefined;
+      const imageField = node.fields.find((f) => f.key === "image");
+      const linkField = node.fields.find((f) => f.key === "link");
 
       const imageUrl = imageField?.reference?.previewImage?.url;
       const link = linkField?.value ?? "/";

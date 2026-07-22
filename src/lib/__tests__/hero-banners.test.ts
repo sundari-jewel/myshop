@@ -79,4 +79,21 @@ describe("getHeroBanners", () => {
     const banners = await getHeroBanners();
     expect(banners).toEqual([]);
   });
+
+  it("falls back to '/' when link field is missing", async () => {
+    mockFetch.mockResolvedValue({
+      metaobjects: {
+        nodes: [
+          {
+            fields: [
+              { key: "image", reference: { previewImage: { url: "https://cdn.shopify.com/a.jpg" } } },
+            ],
+          },
+        ],
+      },
+    });
+
+    const banners = await getHeroBanners();
+    expect(banners).toEqual([{ image: "https://cdn.shopify.com/a.jpg", link: "/" }]);
+  });
 });
