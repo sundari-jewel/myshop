@@ -38,9 +38,9 @@ export function WatchesAndRakhi() {
         >
           {/* Placeholder background grid */}
           <div className="absolute inset-0 z-0 grid grid-cols-2 grid-rows-2 transition-transform duration-700 group-hover:scale-[1.04]">
-            {WATCHES_CELLS.map((bg, i) => (
+            {WATCHES_CELLS.map((bg) => (
               <div
-                key={i}
+                key={bg}
                 style={{ background: bg, border: "1px solid rgba(201,169,110,0.1)" }}
               />
             ))}
@@ -96,9 +96,9 @@ export function WatchesAndRakhi() {
         >
           {/* Placeholder background grid */}
           <div className="absolute inset-0 z-0 grid grid-cols-2 grid-rows-2 transition-transform duration-700 group-hover:scale-[1.04]">
-            {RAKHI_CELLS.map((bg, i) => (
+            {RAKHI_CELLS.map((bg) => (
               <div
-                key={i}
+                key={bg}
                 style={{ background: bg, border: "1px solid rgba(201,169,110,0.1)" }}
               />
             ))}
