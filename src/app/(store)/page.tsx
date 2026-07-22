@@ -9,7 +9,6 @@ import { ShopByGender }       from "@/components/home/shop-by-gender";
 // import { FeatureBanners }     from "@/components/home/feature-banners";
 import { WeddingShop }        from "@/components/home/wedding-shop";
 import { WatchesAndRakhi }    from "@/components/home/watches-and-rakhi";
-import { TryBeforeShine }     from "@/components/home/try-before-shine";
 import { CustomerReels }      from "@/components/home/customer-reels";
 import { CustomerReviews }    from "@/components/home/customer-reviews";
 
@@ -31,7 +30,6 @@ export default function HomePage() {
       {/* <FeatureBanners /> */}
       <WeddingShop />
       <WatchesAndRakhi />
-      <TryBeforeShine />
       <CustomerReels />
       <CustomerReviews />
     </>
