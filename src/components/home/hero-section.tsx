@@ -23,5 +23,9 @@ export async function HeroSection() {
     );
   }
 
-  return <HeroCarousel banners={banners} />;
+  return (
+    <section>
+      <HeroCarousel banners={banners} />
+    </section>
+  );
 }
