@@ -11,7 +11,7 @@ export type Product = {
   id: string;
   name: string;
   slug: string;
-  collection: CollectionSlug;
+  collection: string;
   price: number;
   originalPrice?: number;
   currency: "INR";

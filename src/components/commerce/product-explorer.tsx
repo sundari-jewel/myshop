@@ -2,19 +2,15 @@
 
 import {
   ArrowDownAZ,
-  BadgePercent,
   Check,
   Gem,
   RotateCcw,
   Search,
   SlidersHorizontal,
-  Sparkles,
   X,
 } from "lucide-react";
 import { useMemo, useState } from "react";
-import { collections, products } from "@/data/catalog";
-import { formatPrice } from "@/lib/seo";
-import type { CollectionSlug } from "@/types/commerce";
+import type { Product } from "@/types/commerce";
 import { ProductGrid } from "./product-grid";
 
 type SortMode = "featured" | "price-low" | "price-high" | "name";
@@ -38,8 +34,7 @@ function uniqueValues(values: string[]) {
   return Array.from(new Set(values)).sort((a, b) => a.localeCompare(b));
 }
 
-export function ProductExplorer() {
-  const [collectionFilter, setCollectionFilter] = useState<"all" | CollectionSlug>("all");
+export function ProductExplorer({ products }: { products: Product[] }) {
   const [materialFilter, setMaterialFilter] = useState("all");
   const [stoneFilter, setStoneFilter] = useState("all");
   const [priceFilter, setPriceFilter] = useState<PriceBand>("all");
@@ -47,26 +42,18 @@ export function ProductExplorer() {
   const [query, setQuery] = useState("");
   const [showMobileFilters, setShowMobileFilters] = useState(false);
 
-  const materials = useMemo(() => uniqueValues(products.map((product) => product.material)), []);
-  const stones = useMemo(() => uniqueValues(products.map((product) => product.stone)), []);
-
-  const collectionName = useMemo(() => {
-    return collections.reduce<Record<string, string>>((acc, collection) => {
-      acc[collection.slug] = collection.name;
-      return acc;
-    }, {});
-  }, []);
+  const materials = useMemo(() => uniqueValues(products.map((product) => product.material).filter(Boolean)), [products]);
+  const stones = useMemo(() => uniqueValues(products.map((product) => product.stone).filter(Boolean)), [products]);
 
   const visibleProducts = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
 
     const filtered = products.filter((product) => {
-      const matchesCollection = collectionFilter === "all" || product.collection === collectionFilter;
       const matchesMaterial = materialFilter === "all" || product.material === materialFilter;
       const matchesStone = stoneFilter === "all" || product.stone === stoneFilter;
       const matchesQuery =
         normalizedQuery.length === 0 ||
-        [product.name, product.material, product.stone, collectionName[product.collection], product.badge]
+        [product.name, product.material, product.stone, product.badge]
           .filter((value): value is string => Boolean(value))
           .some((value) => value.toLowerCase().includes(normalizedQuery));
       const matchesPrice =
@@ -75,7 +62,7 @@ export function ProductExplorer() {
         (priceFilter === "50-100" && product.price >= 50000 && product.price <= 100000) ||
         (priceFilter === "100-plus" && product.price > 100000);
 
-      return matchesCollection && matchesMaterial && matchesStone && matchesQuery && matchesPrice;
+      return matchesMaterial && matchesStone && matchesQuery && matchesPrice;
     });
 
     return [...filtered].sort((a, b) => {
@@ -84,21 +71,16 @@ export function ProductExplorer() {
       if (sortMode === "name") return a.name.localeCompare(b.name);
       return products.findIndex((product) => product.id === a.id) - products.findIndex((product) => product.id === b.id);
     });
-  }, [collectionFilter, collectionName, materialFilter, priceFilter, query, sortMode, stoneFilter]);
+  }, [materialFilter, priceFilter, products, query, sortMode, stoneFilter]);
 
   const activeFilterCount = [
-    collectionFilter !== "all",
     materialFilter !== "all",
     stoneFilter !== "all",
     priceFilter !== "all",
     query.trim().length > 0,
   ].filter(Boolean).length;
 
-  const averagePrice =
-    products.length > 0 ? Math.round(products.reduce((total, product) => total + product.price, 0) / products.length) : 0;
-
   function resetFilters() {
-    setCollectionFilter("all");
     setMaterialFilter("all");
     setStoneFilter("all");
     setPriceFilter("all");
@@ -132,24 +114,6 @@ export function ProductExplorer() {
 
       <div className="mt-5 grid gap-6">
         <fieldset>
-          <legend className="mb-3 flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.22em] text-[var(--ink-soft)]">
-            <Sparkles size={14} />
-            Collection
-          </legend>
-          <div className="grid gap-2">
-            <FilterOption label="All jewellery" active={collectionFilter === "all"} onClick={() => setCollectionFilter("all")} />
-            {collections.map((collection) => (
-              <FilterOption
-                key={collection.slug}
-                label={collection.name}
-                active={collectionFilter === collection.slug}
-                onClick={() => setCollectionFilter(collection.slug)}
-              />
-            ))}
-          </div>
-        </fieldset>
-
-        <fieldset>
           <legend className="mb-3 text-[11px] font-bold uppercase tracking-[0.22em] text-[var(--ink-soft)]">
             Price
           </legend>
@@ -158,8 +122,7 @@ export function ProductExplorer() {
               <button
                 key={band.value}
                 type="button"
-                className="focus-ring grid grid-cols-[1fr_auto] items-center gap-3 rounded-sm border px-3 py-2.5 text-left transition data-[active=true]:border-[var(--ruby)] data-[active=true]:bg-[rgba(155,28,28,0.06)]"
-                style={{ borderColor: "rgba(138,106,58,0.2)" }}
+                className="focus-ring grid grid-cols-[1fr_auto] items-center gap-3 rounded-sm border border-[rgba(138,106,58,0.2)] px-3 py-2.5 text-left transition data-[active=true]:border-[var(--ruby)] data-[active=true]:bg-[rgba(155,28,28,0.06)]"
                 data-active={priceFilter === band.value}
                 onClick={() => setPriceFilter(band.value)}
               >
@@ -181,7 +144,7 @@ export function ProductExplorer() {
 
   return (
     <section className="bg-[var(--surface)]">
-      <div className="container-shell py-10 sm:py-14">
+      <div className="w-full px-5 py-10 sm:px-8 sm:py-14">
         <div
           className="relative overflow-hidden border bg-[var(--bg-dark)] px-5 py-8 text-[var(--cream)] sm:px-8 lg:px-10 lg:py-11"
           style={{ borderColor: "rgba(201,169,110,0.24)" }}
@@ -198,21 +161,12 @@ export function ProductExplorer() {
           />
           <div className="relative grid gap-8 lg:grid-cols-[1fr_330px] lg:items-end">
             <div>
-              <p className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.32em] text-[var(--gold-light)]">
-                <Gem size={16} />
-                Curated catalogue
-              </p>
-              <h1 className="display-font mt-4 max-w-3xl text-5xl font-semibold leading-[0.94] sm:text-6xl lg:text-7xl">
+              <h1 className="display-font max-w-3xl text-5xl font-semibold leading-[0.94] sm:text-6xl lg:text-7xl">
                 All Jewellery
               </h1>
               <p className="mt-5 max-w-2xl text-sm leading-7 text-[var(--cream-muted)] sm:text-base">
                 Browse bridal heirlooms, daily gold, diamond essentials, and modern classics with filters tuned for real jewellery decisions.
               </p>
-            </div>
-            <div className="grid grid-cols-3 border text-center" style={{ borderColor: "rgba(201,169,110,0.28)" }}>
-              <Stat label="Pieces" value={products.length.toString()} />
-              <Stat label="From" value={formatPrice(Math.min(...products.map((product) => product.price)))} />
-              <Stat label="Avg" value={formatPrice(averagePrice)} />
             </div>
           </div>
         </div>
@@ -302,15 +256,6 @@ export function ProductExplorer() {
                     Clear all
                   </button>
                 ) : null}
-                {products.some((product) => product.originalPrice) ? (
-                  <span
-                    className="inline-flex items-center gap-2 rounded-sm border px-3 py-2 text-[11px] font-bold uppercase tracking-[0.16em] text-[var(--gold-dim)]"
-                    style={{ borderColor: "rgba(138,106,58,0.2)" }}
-                  >
-                    <BadgePercent size={14} />
-                    Sale edits included
-                  </span>
-                ) : null}
               </div>
             </div>
 
@@ -349,8 +294,7 @@ function FilterOption({ label, active, onClick }: { label: string; active: boole
   return (
     <button
       type="button"
-      className="focus-ring grid grid-cols-[1fr_auto] items-center rounded-sm border px-3 py-2.5 text-left text-sm font-semibold transition data-[active=true]:border-[var(--ruby)] data-[active=true]:bg-[rgba(155,28,28,0.06)]"
-      style={{ borderColor: "rgba(138,106,58,0.2)" }}
+      className="focus-ring grid grid-cols-[1fr_auto] items-center rounded-sm border border-[rgba(138,106,58,0.2)] px-3 py-2.5 text-left text-sm font-semibold transition data-[active=true]:border-[var(--ruby)] data-[active=true]:bg-[rgba(155,28,28,0.06)]"
       data-active={active}
       onClick={onClick}
     >
@@ -379,8 +323,7 @@ function FilterChipGroup({
       <div className="flex flex-wrap gap-2">
         <button
           type="button"
-          className="focus-ring rounded-sm border px-3 py-2 text-xs font-semibold transition data-[active=true]:border-[var(--ruby)] data-[active=true]:bg-[var(--ruby)] data-[active=true]:text-white"
-          style={{ borderColor: "rgba(138,106,58,0.22)" }}
+          className="focus-ring rounded-sm border border-[rgba(138,106,58,0.22)] px-3 py-2 text-xs font-semibold transition data-[active=true]:border-[var(--ruby)] data-[active=true]:bg-[var(--ruby)] data-[active=true]:text-white"
           data-active={value === "all"}
           onClick={() => onChange("all")}
         >
@@ -390,8 +333,7 @@ function FilterChipGroup({
           <button
             key={option}
             type="button"
-            className="focus-ring rounded-sm border px-3 py-2 text-xs font-semibold transition data-[active=true]:border-[var(--ruby)] data-[active=true]:bg-[var(--ruby)] data-[active=true]:text-white"
-            style={{ borderColor: "rgba(138,106,58,0.22)" }}
+            className="focus-ring rounded-sm border border-[rgba(138,106,58,0.22)] px-3 py-2 text-xs font-semibold transition data-[active=true]:border-[var(--ruby)] data-[active=true]:bg-[var(--ruby)] data-[active=true]:text-white"
             data-active={value === option}
             onClick={() => onChange(option)}
           >
@@ -403,11 +345,3 @@ function FilterChipGroup({
   );
 }
 
-function Stat({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="border-r px-3 py-4 last:border-r-0" style={{ borderColor: "rgba(201,169,110,0.28)" }}>
-      <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--cream-muted)]">{label}</p>
-      <p className="mt-1 text-sm font-bold text-[var(--gold-pale)] sm:text-base">{value}</p>
-    </div>
-  );
-}

@@ -169,7 +169,7 @@ export default function AdminSeedPage() {
             <CheckCircle2 size={15} className="text-emerald-400" />
             <span className="text-sm font-semibold text-emerald-400">Seed complete</span>
           </div>
-          <div className="divide-y" style={{ divideColor: "rgba(138,106,58,0.08)" }}>
+          <div className="divide-y divide-[rgba(138,106,58,0.08)]">
             {entityRows.map(({ label, value }) => {
               const Icon = ENTITY_ICONS[label] ?? Database;
               return (

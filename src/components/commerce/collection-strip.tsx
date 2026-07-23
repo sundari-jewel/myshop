@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { Route } from "next";
-import { collections } from "@/data/catalog";
+import { collections } from "@/data/collections";
 
 export function CollectionStrip() {
   return (

@@ -32,7 +32,7 @@ const WEDDING_COLLECTIONS = [
 
 export function WeddingShop() {
   return (
-    <section className="pt-7 sm:pt-8" style={{ background: "var(--surface)" }}>
+    <section className="py-16 sm:py-20" style={{ background: "var(--bg-dark)" }}>
       <div className="mb-5 flex items-center justify-center gap-5 sm:gap-7">
         <span className="hidden h-px w-24 bg-gradient-to-r from-transparent via-[var(--gold)] to-transparent sm:block" />
         <span className="display-font text-center text-[2.05rem] font-semibold italic leading-none tracking-[0.08em] text-[var(--gold)] drop-shadow-[0_2px_1px_rgba(70,40,0,0.32)] sm:text-[2.45rem]">

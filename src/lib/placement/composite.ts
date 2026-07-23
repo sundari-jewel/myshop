@@ -1,4 +1,4 @@
-import sharp from "sharp";
+import sharp, { type OverlayOptions } from "sharp";
 import type { BodyTarget } from "./landmarks";
 
 export interface PlacementConfig {
@@ -25,7 +25,7 @@ async function placeOne(
   assetBuffer: Buffer,
   config: PlacementConfig,
   target: BodyTarget
-): Promise<{ overlay: sharp.OverlayOptions; bbox: { x: number; y: number; w: number; h: number } }> {
+): Promise<{ overlay: OverlayOptions; bbox: { x: number; y: number; w: number; h: number } }> {
   const assetMeta  = await sharp(assetBuffer).metadata();
   const origW      = assetMeta.width!;
   const origH      = assetMeta.height!;
@@ -58,7 +58,7 @@ export async function compositeJewellery(
   const photoWidth  = meta.width!;
   const photoHeight = meta.height!;
 
-  const overlays: sharp.OverlayOptions[]              = [];
+  const overlays: OverlayOptions[]              = [];
   const bboxes:   Array<{ x:number; y:number; w:number; h:number }> = [];
 
   for (const target of targets) {

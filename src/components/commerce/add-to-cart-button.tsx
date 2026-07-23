@@ -2,7 +2,9 @@
 
 import { ShoppingBag, Check } from "lucide-react";
 import { useState } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import { useCart } from "@/context/cart-context";
+import { useCustomerAuth } from "@/context/customer-auth-context";
 
 interface Props {
   productId: string;
@@ -17,10 +19,17 @@ interface Props {
 
 export function AddToCartButton({ productId, slug, productName, image, material, price, selectedSize, requiresSize }: Props) {
   const { addItem } = useCart();
+  const { customer } = useCustomerAuth();
+  const router = useRouter();
+  const pathname = usePathname();
   const [added, setAdded] = useState(false);
 
   function handleAdd() {
-    if (requiresSize && !selectedSize) return; // parent shows validation
+    if (!customer) {
+      router.push(`/signin?next=${encodeURIComponent(pathname)}`);
+      return;
+    }
+    if (requiresSize && !selectedSize) return;
 
     addItem({ productId, slug, name: productName, image, material, price, qty: 1, size: selectedSize });
     setAdded(true);

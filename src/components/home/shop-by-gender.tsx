@@ -11,7 +11,7 @@ const SQUARE_IMAGES = [
 
 export function ShopByGender() {
   return (
-    <section className="pt-7 pb-4 sm:pt-8 sm:pb-5" style={{ background: "var(--surface-warm)" }}>
+    <section className="py-16 sm:py-20" style={{ background: "var(--bg-dark)" }}>
       <div className="mb-5 flex items-center justify-center gap-5 sm:gap-7">
         <span className="hidden h-px w-24 bg-gradient-to-r from-transparent via-[var(--gold)] to-transparent sm:block" />
         <span className="display-font text-center text-[2.05rem] font-semibold italic leading-none tracking-[0.08em] text-[var(--gold)] drop-shadow-[0_2px_1px_rgba(70,40,0,0.32)] sm:text-[2.45rem]">
@@ -50,6 +50,7 @@ export function ShopByGender() {
         </Link>
       </div>
 
+      {/* Square image cards hidden temporarily
       <div className="mx-auto mt-4 grid w-[min(1240px,calc(100%-32px))] grid-cols-1 gap-4 sm:mt-5 sm:grid-cols-2 sm:gap-5">
         {SQUARE_IMAGES.map((image) => (
           <div
@@ -66,6 +67,7 @@ export function ShopByGender() {
           </div>
         ))}
       </div>
+      */}
     </section>
   );
 }

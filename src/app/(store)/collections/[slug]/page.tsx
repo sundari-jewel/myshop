@@ -1,13 +1,17 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import { notFound } from "next/navigation";
 import { ProductGrid } from "@/components/commerce/product-grid";
-import { collections, getCollection, getProductsByCollection } from "@/data/catalog";
+import { collections } from "@/data/collections";
+import { getShopifyCollection } from "@/lib/shopify-collections";
+import { getProductsByGenderGid, getProductsByTaxonomyCategory, GENDER_GIDS, TAXONOMY_CATEGORY_IDS } from "@/lib/shopify-admin";
 import { createMetadata } from "@/lib/seo";
 
 type CollectionPageProps = {
   params: Promise<{ slug: string }>;
 };
+
+export const dynamicParams = true;
+export const revalidate = 300;
 
 export async function generateStaticParams() {
   return collections.map((collection) => ({ slug: collection.slug }));
@@ -15,56 +19,114 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: CollectionPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const collection = getCollection(slug);
 
-  if (!collection) {
+  const staticCollection = collections.find((c) => c.slug === slug);
+  if (staticCollection) {
     return createMetadata({
-      title: "Collection not found",
-      description: "The requested Sundari Jewels collection could not be found."
+      title: staticCollection.name,
+      description: staticCollection.description,
+      path: `/collections/${slug}`,
+      image: staticCollection.image,
+    });
+  }
+
+  const categoryConfig = CATEGORY_SLUGS[slug];
+  if (categoryConfig) {
+    return createMetadata({
+      title: categoryConfig.title,
+      description: categoryConfig.description,
+      path: `/collections/${slug}`,
+    });
+  }
+
+  const genderConfig = GENDER_SLUGS[slug];
+  if (genderConfig) {
+    return createMetadata({
+      title: genderConfig.title,
+      description: genderConfig.description,
+      path: `/collections/${slug}`,
+    });
+  }
+
+  const shopify = await getShopifyCollection(slug);
+  if (shopify) {
+    return createMetadata({
+      title: shopify.collection.title,
+      description: shopify.collection.description,
+      path: `/collections/${slug}`,
+      image: shopify.collection.image ?? undefined,
     });
   }
 
   return createMetadata({
-    title: collection.name,
-    description: collection.description,
-    path: `/collections/${collection.slug}`,
-    image: collection.image
+    title: "Collection",
+    description: "Browse Sundari Jewellers collection.",
   });
 }
 
+// Maps collection slugs to Shopify taxonomy category IDs
+const CATEGORY_SLUGS: Record<string, { categoryId: string; title: string; description: string }> = {
+  necklaces: { categoryId: TAXONOMY_CATEGORY_IDS.necklaces, title: "Necklaces", description: "Discover our exquisite necklace collection." },
+  earrings:  { categoryId: TAXONOMY_CATEGORY_IDS.earrings,  title: "Earrings",  description: "Elegant earrings for every occasion." },
+  bangles:   { categoryId: TAXONOMY_CATEGORY_IDS.bangles,   title: "Bangles",   description: "Timeless bangles and bracelets." },
+  rings:     { categoryId: TAXONOMY_CATEGORY_IDS.rings,     title: "Rings",     description: "Beautiful rings for every moment." },
+  tika:      { categoryId: TAXONOMY_CATEGORY_IDS.tika,      title: "Tika",      description: "Traditional maang tikka and head jewellery." },
+};
+
+const GENDER_SLUGS: Record<string, { genderGid: string | null; title: string; description: string; image: string }> = {
+  "womens-edit": {
+    genderGid: GENDER_GIDS.female,
+    title: "Crafted for Her",
+    description: "Elegant jewellery for every woman, for every moment.",
+    image: "/assets/CrafterForHerLeft.png",
+  },
+  "mens-edit": {
+    genderGid: GENDER_GIDS.male,
+    title: "Crafted for Him",
+    description: "Timeless jewellery for every man, for every occasion.",
+    image: "/assets/CraftedForHimRight.png",
+  },
+};
+
 export default async function CollectionPage({ params }: CollectionPageProps) {
   const { slug } = await params;
-  const collection = getCollection(slug);
 
-  if (!collection) {
-    notFound();
+  // 1. Jewellery category pages: fetch from Shopify Admin API by taxonomy category_id
+  const categoryConfig = CATEGORY_SLUGS[slug];
+  if (categoryConfig) {
+    const products = await getProductsByTaxonomyCategory(categoryConfig.categoryId, slug);
+    return <CollectionLayout products={products} />;
   }
 
-  const collectionProducts = getProductsByCollection(slug);
+  // 3. Gender-based pages: fetch from Shopify Admin API by target-gender metafield GID
+  const genderConfig = GENDER_SLUGS[slug];
+  if (genderConfig) {
+    const products = genderConfig.genderGid
+      ? await getProductsByGenderGid(genderConfig.genderGid, slug)
+      : [];
+    return <CollectionLayout products={products} />;
+  }
 
+  // 4. Any other Shopify collection by handle
+  const shopify = await getShopifyCollection(slug);
+  if (!shopify) notFound();
+
+  return <CollectionLayout products={shopify.products} />;
+}
+
+function CollectionLayout({
+  products,
+}: {
+  products: import("@/types/commerce").Product[];
+}) {
   return (
     <>
-      <section className="relative min-h-[340px] overflow-hidden bg-[var(--bg-dark)] text-white sm:min-h-[420px] lg:min-h-[460px]">
-        <Image
-          src={collection.image}
-          alt={collection.name}
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover opacity-70"
-        />
-        <div className="container-shell relative flex min-h-[340px] items-end pb-10 sm:min-h-[420px] sm:pb-12 lg:min-h-[460px] lg:pb-14">
-          <div className="max-w-2xl">
-            <p className="text-xs font-semibold uppercase tracking-[0.24em]" style={{ color: "var(--gold)" }}>
-              Collection
-            </p>
-            <h1 className="display-font mt-3 text-4xl font-semibold sm:text-5xl lg:text-6xl">{collection.name}</h1>
-            <p className="mt-4 text-base leading-7 text-[#f1e5d7] sm:text-lg sm:leading-8">{collection.description}</p>
-          </div>
-        </div>
-      </section>
       <section className="container-shell py-12">
-        <ProductGrid products={collectionProducts} />
+        {products.length > 0 ? (
+          <ProductGrid products={products} />
+        ) : (
+          <p className="py-20 text-center text-sm text-[var(--ink-soft)]">No products found in this collection.</p>
+        )}
       </section>
     </>
   );

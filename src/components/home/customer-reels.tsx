@@ -198,7 +198,7 @@ export function CustomerReels() {
         </div>
 
         <a
-          href="https://instagram.com/sundarijewellers"
+          href="https://www.instagram.com/sundariartjewellery/"
           target="_blank"
           rel="noopener noreferrer"
           className="btn-ghost-gold"

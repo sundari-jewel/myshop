@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import type { Route } from "next";
 import { useRouter } from "next/navigation";
@@ -7,13 +8,24 @@ import { Heart, ShoppingBag } from "lucide-react";
 import { ProductGrid } from "@/components/commerce/product-grid";
 import { useCustomerAuth } from "@/context/customer-auth-context";
 import { useWishlist } from "@/context/wishlist-context";
-import { products } from "@/data/catalog";
+import type { Product } from "@/types/commerce";
 
 export default function WishlistPage() {
   const router = useRouter();
   const { customer, ready } = useCustomerAuth();
   const { items, clearWishlist } = useWishlist();
-  const savedProducts = products.filter((product) => items.includes(product.id));
+  const [savedProducts, setSavedProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!items.length) { setSavedProducts([]); return; }
+    setLoading(true);
+    fetch(`/api/products?ids=${items.join(",")}`)
+      .then((r) => r.json())
+      .then((data: Product[]) => setSavedProducts(data))
+      .catch(() => setSavedProducts([]))
+      .finally(() => setLoading(false));
+  }, [items]);
 
   if (!ready) return null;
 
@@ -48,7 +60,11 @@ export default function WishlistPage() {
           ) : null}
         </div>
 
-        {savedProducts.length > 0 ? (
+        {loading ? (
+          <div className="grid min-h-[360px] place-items-center">
+            <div className="h-8 w-8 animate-spin rounded-full border-2 border-[var(--gold)] border-t-transparent" />
+          </div>
+        ) : savedProducts.length > 0 ? (
           <ProductGrid products={savedProducts} />
         ) : (
           <div className="grid min-h-[360px] place-items-center border bg-[var(--surface-card)] px-6 text-center" style={{ borderColor: "rgba(138,106,58,0.18)" }}>

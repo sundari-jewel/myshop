@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import type { Route } from "next";
 import { Heart, Menu, User, X } from "lucide-react";
@@ -102,24 +103,14 @@ export function SiteHeader() {
             </div>
 
             <Link href="/" className="focus-ring mx-auto shrink-0" aria-label="Sundari Jewellers">
-              <div
-                className="flex h-[92px] w-[92px] flex-col items-center justify-center rounded-t-full border px-2 text-center leading-none shadow-[0_12px_30px_rgba(0,0,0,0.35)] select-none"
-                style={{
-                  background: "linear-gradient(180deg, rgba(89,34,17,0.92), rgba(29,8,6,0.94))",
-                  borderColor: "rgba(228,200,138,0.5)",
-                  color: "var(--gold-light)",
-                }}
-              >
-                <span className="text-[8px] tracking-[0.3em]" style={{ color: "var(--gold-pale)" }}>
-                  * * *
-                </span>
-                <span className="display-font mt-1 text-[1.32rem] font-semibold italic">
-                  Sundari
-                </span>
-                <span className="mt-1 text-[7px] font-semibold uppercase tracking-[0.36em]" style={{ color: "var(--cream)" }}>
-                  Jewellers
-                </span>
-              </div>
+              <Image
+                src="/assets/logo.webp"
+                alt="Sundari Jewellers"
+                width={140}
+                height={140}
+                priority
+                className="rounded-t-full shadow-[0_12px_30px_rgba(0,0,0,0.35)]"
+              />
             </Link>
 
             <div className="hidden items-center justify-end gap-6 lg:flex">
@@ -131,14 +122,7 @@ export function SiteHeader() {
                 Wish-list
                 {wishlist.count > 0 && <span className="ml-1 text-[var(--gold-light)]">({wishlist.count})</span>}
               </Link>
-              <button
-                type="button"
-                className="focus-ring text-[11px] font-medium uppercase tracking-[0.28em] transition-colors hover:text-[var(--gold-light)]"
-                style={{ color: "var(--gold-pale)" }}
-              >
-                Search
-              </button>
-              <Link
+<Link
                 href={(customer ? "/account" : "/signin?next=/account") as Route}
                 className="focus-ring text-[11px] font-medium uppercase tracking-[0.28em] transition-colors hover:text-[var(--gold-light)]"
                 style={{ color: "var(--gold-pale)" }}

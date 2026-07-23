@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import { Order } from "@/models/Order";
-import { Product } from "@/models/Product";
 import type { IOrderItem } from "@/models/Order";
+import { getShopifyProduct } from "@/lib/shopify-collections";
 
 async function nextOrderId(): Promise<string> {
   const last = await Order.findOne({}, { orderId: 1 }).sort({ createdAt: -1 }).lean();
@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
     await connectDB();
 
     const body = await req.json() as {
-      items: { productId: string; qty: number; size?: string }[];
+      items: { productId: string; slug: string; qty: number; size?: string }[];
       customer: {
         name: string; email: string; phone: string;
         address: { line1: string; line2?: string; city: string; state: string; pincode: string };
@@ -29,18 +29,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "missing_fields" }, { status: 400 });
     }
 
-    // Validate + price items from DB (never trust client prices)
     const orderItems: IOrderItem[] = [];
     for (const item of body.items) {
-      const product = await Product.findById(item.productId).lean();
-      if (!product || !product.published) {
-        return NextResponse.json({ error: `product_unavailable:${item.productId}` }, { status: 400 });
+      const product = await getShopifyProduct(item.slug);
+      if (!product) {
+        return NextResponse.json({ error: `product_unavailable:${item.slug}` }, { status: 400 });
       }
       orderItems.push({
-        productId: String(product._id),
+        productId: product.id,
         slug:      product.slug,
         name:      product.name,
-        image:     product.images?.[0] ?? "",
+        image:     product.images?.[0] ?? product.image,
         material:  product.material,
         price:     product.price,
         qty:       item.qty,
@@ -49,7 +48,7 @@ export async function POST(req: NextRequest) {
     }
 
     const subtotal       = orderItems.reduce((s, i) => s + i.price * i.qty, 0);
-    const shippingCharge = subtotal >= 50000 ? 0 : 99; // free shipping above ₹500
+    const shippingCharge = subtotal >= 50000 ? 0 : 99;
     const total          = subtotal + shippingCharge;
     const orderId        = await nextOrderId();
 
@@ -61,17 +60,12 @@ export async function POST(req: NextRequest) {
       shippingCharge,
       total,
       paymentMethod:  body.paymentMethod,
-      paymentStatus:  body.paymentMethod === "cod" ? "pending" : "pending",
+      paymentStatus:  "pending",
       notes:          body.notes,
     });
 
-    // Increment totalSold
-    for (const item of orderItems) {
-      await Product.updateOne({ _id: item.productId }, { $inc: { totalSold: item.qty } });
-    }
-
     return NextResponse.json({ orderId: order.orderId, total: order.total }, { status: 201 });
-  } catch (err) {
+  } catch (err: unknown) {
     console.error("[checkout]", err);
     return NextResponse.json({ error: "internal_error" }, { status: 500 });
   }

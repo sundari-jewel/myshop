@@ -9,24 +9,22 @@ import { ImageGallery } from "@/components/product/image-gallery";
 import { ProductActions } from "@/components/product/product-actions";
 import { ProductAccordion } from "@/components/product/product-accordion";
 import { TryOnButton } from "@/components/tryon/try-on-button";
-import { products, getRelatedProducts } from "@/data/catalog";
+import { getShopifyProduct, getRelatedShopifyProducts } from "@/lib/shopify-collections";
 import { createMetadata, formatPrice } from "@/lib/seo";
 
 type ProductPageProps = {
   params: Promise<{ slug: string }>;
 };
 
-export async function generateStaticParams() {
-  return products.map((product) => ({ slug: product.slug }));
-}
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const product = products.find((p) => p.slug === slug);
+  const product = await getShopifyProduct(slug);
   if (!product) return createMetadata({ title: "Not found", description: "Product not found." });
   return createMetadata({
     title: product.name,
-    description: `${product.name} in ${product.material} with ${product.stone}. ${product.purity ?? ""}`,
+    description: `${product.name} in ${product.material}${product.stone ? ` with ${product.stone}` : ""}. ${product.purity ?? ""}`,
     path: `/products/${product.slug}`,
     image: product.image,
   });
@@ -41,17 +39,21 @@ const TRUST_ITEMS = [
 
 export default async function ProductPage({ params }: ProductPageProps) {
   const { slug } = await params;
-  const product = products.find((p) => p.slug === slug);
+  const [product, related] = await Promise.all([
+    getShopifyProduct(slug),
+    getRelatedShopifyProducts(slug),
+  ]);
   if (!product) notFound();
 
   const gallery = product.images?.length ? product.images : [product.image];
-  const related = getRelatedProducts(product.slug, product.collection);
   const collectionName =
     product.collection === "bridal"
       ? "Bridal Heirlooms"
       : product.collection === "daily-gold"
       ? "Daily Gold"
-      : "Diamond Edit";
+      : product.collection === "diamond-edit"
+      ? "Diamond Edit"
+      : "Jewellery";
 
   return (
     <div style={{ background: "var(--surface)" }}>

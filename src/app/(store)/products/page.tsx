@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { ProductExplorer } from "@/components/commerce/product-explorer";
+import { fetchAllShopifyProducts } from "@/lib/shopify-collections";
 import { createMetadata } from "@/lib/seo";
+
+export const revalidate = 300;
 
 export const metadata: Metadata = createMetadata({
   title: "Jewellery",
@@ -8,6 +11,7 @@ export const metadata: Metadata = createMetadata({
   path: "/products"
 });
 
-export default function ProductsPage() {
-  return <ProductExplorer />;
+export default async function ProductsPage() {
+  const products = await fetchAllShopifyProducts();
+  return <ProductExplorer products={products} />;
 }

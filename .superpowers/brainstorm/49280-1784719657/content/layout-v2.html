@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sundari — Watches & Rakhi Section Concepts</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Inter:wght@400;500;600&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --gold: #c9a96e;
+    --gold-light: #e4c88a;
+    --gold-pale: #f0ddb0;
+    --bg-deep: #0e0404;
+    --bg-dark: #180606;
+    --bg-maroon: #2a0e0e;
+    --bg-warm: #3d1a1a;
+    --cream: #f5e6c8;
+    --surface: #faf6f0;
+    --surface-warm: #f5ede0;
+  }
+
+  body {
+    background: #111;
+    font-family: 'Inter', sans-serif;
+    color: #fff;
+    padding: 32px 16px;
+  }
+
+  .page-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5rem;
+    font-style: italic;
+    color: var(--gold);
+    text-align: center;
+    letter-spacing: 0.06em;
+    margin-bottom: 6px;
+  }
+  .page-sub {
+    text-align: center;
+    color: rgba(201,169,110,0.5);
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    margin-bottom: 40px;
+  }
+
+  /* ── Concept cards ── */
+  .concepts { display: flex; flex-direction: column; gap: 48px; max-width: 860px; margin: 0 auto; }
+
+  .concept {
+    border: 1px solid rgba(201,169,110,0.18);
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color 0.25s, box-shadow 0.25s, transform 0.25s;
+    position: relative;
+  }
+  .concept:hover {
+    border-color: rgba(201,169,110,0.55);
+    box-shadow: 0 0 0 1px rgba(201,169,110,0.3), 0 24px 64px rgba(0,0,0,0.6);
+    transform: translateY(-3px);
+  }
+  .concept.selected {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 2px rgba(201,169,110,0.5), 0 24px 64px rgba(0,0,0,0.5);
+  }
+  .concept.selected::after {
+    content: "✓ Selected";
+    position: absolute;
+    top: 14px; right: 14px;
+    background: var(--gold);
+    color: var(--bg-deep);
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 3px;
+    z-index: 10;
+  }
+
+  .concept-label {
+    background: rgba(14,4,4,0.9);
+    border-top: 1px solid rgba(201,169,110,0.18);
+    padding: 18px 22px;
+  }
+  .concept-label h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+    font-style: italic;
+    color: var(--gold);
+    margin-bottom: 4px;
+  }
+  .concept-label p {
+    font-size: 0.73rem;
+    color: rgba(201,169,110,0.55);
+    line-height: 1.5;
+    letter-spacing: 0.03em;
+  }
+
+  /* ═══════════════════════════════════
+     CONCEPT A — Full-bleed Immersive
+     (mimics WeddingShop layout)
+  ═══════════════════════════════════ */
+
+  .concept-a-preview {
+    background: var(--bg-deep);
+    padding: 28px 0 0;
+  }
+
+  .section-heading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    margin-bottom: 20px;
+  }
+  .ornament-line {
+    width: 70px; height: 1px;
+    background: linear-gradient(to right, transparent, var(--gold), transparent);
+    opacity: 0.55;
+    flex-shrink: 0;
+  }
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.6rem;
+    font-style: italic;
+    font-weight: 600;
+    color: var(--gold);
+    letter-spacing: 0.08em;
+    line-height: 1;
+    text-shadow: 0 2px 2px rgba(70,40,0,0.45);
+    white-space: nowrap;
+  }
+
+  /* Dark immersive panel */
+  .immersive-panel {
+    position: relative;
+    height: 240px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .immersive-bg-watches {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 70% 80% at 30% 50%, rgba(50,25,5,0.9) 0%, transparent 70%),
+      linear-gradient(135deg, #0a0202 0%, #1a0a02 40%, #2a1205 70%, #1a0505 100%);
+  }
+  .immersive-bg-rakhi {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 70% 80% at 30% 50%, rgba(90,40,10,0.85) 0%, transparent 70%),
+      linear-gradient(135deg, #1a0808 0%, #2d1205 40%, #3d1a08 70%, #2a0e05 100%);
+  }
+  .immersive-content {
+    position: relative; z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    width: 100%;
+    padding: 0 40px;
+  }
+  .immersive-text { flex: 0 0 auto; max-width: 200px; }
+  .immersive-overline {
+    font-size: 0.5rem;
+    font-weight: 700;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: rgba(201,169,110,0.6);
+    margin-bottom: 8px;
+  }
+  .immersive-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem;
+    font-style: italic;
+    color: var(--cream);
+    line-height: 1.05;
+    margin-bottom: 8px;
+  }
+  .immersive-desc {
+    font-size: 0.6rem;
+    color: rgba(245,230,200,0.45);
+    letter-spacing: 0.08em;
+    line-height: 1.6;
+    margin-bottom: 14px;
+  }
+  .immersive-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--gold);
+    color: var(--bg-deep);
+    font-size: 0.5rem;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    padding: 7px 14px;
+    border-radius: 2px;
+  }
+  .immersive-cta-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    font-size: 0.5rem;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    padding: 7px 14px;
+    border-radius: 2px;
+  }
+
+  /* Product float images */
+  .immersive-products {
+    flex: 1;
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+    justify-content: center;
+    height: 180px;
+    overflow: hidden;
+  }
+  .prod-card {
+    border-radius: 6px;
+    border: 1px solid rgba(201,169,110,0.2);
+    background: rgba(255,255,255,0.04);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow: hidden;
+    flex-shrink: 0;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+  }
+  .prod-img {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+  }
+  .prod-info {
+    padding: 6px 8px;
+    width: 100%;
+    border-top: 1px solid rgba(201,169,110,0.12);
+  }
+  .prod-name { font-size: 0.45rem; color: var(--cream); letter-spacing: 0.06em; }
+  .prod-price { font-size: 0.45rem; color: var(--gold); margin-top: 2px; }
+
+  /* Rakhi warm panel */
+  .rakhi-panel {
+    position: relative;
+    height: 210px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #fdf3e0 0%, #f5e0c0 50%, #f0d4a0 100%);
+  }
+  .rakhi-pattern {
+    position: absolute; inset: 0;
+    background-image:
+      radial-gradient(circle at 85% 50%, rgba(155,28,28,0.06) 0%, transparent 50%),
+      radial-gradient(circle at 15% 30%, rgba(201,169,110,0.1) 0%, transparent 40%);
+  }
+  .rakhi-content {
+    position: relative; z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    width: 100%;
+    padding: 0 40px;
+  }
+  .rakhi-text { flex: 0 0 auto; max-width: 200px; }
+  .rakhi-overline {
+    font-size: 0.5rem;
+    font-weight: 700;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: rgba(155,28,28,0.65);
+    margin-bottom: 8px;
+  }
+  .rakhi-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem;
+    font-style: italic;
+    color: #5c2000;
+    line-height: 1.05;
+    margin-bottom: 8px;
+  }
+  .rakhi-desc {
+    font-size: 0.6rem;
+    color: rgba(107,66,38,0.7);
+    letter-spacing: 0.08em;
+    line-height: 1.6;
+    margin-bottom: 14px;
+  }
+  .rakhi-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid #c9a96e;
+    color: #5c2000;
+    font-size: 0.5rem;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    padding: 7px 14px;
+    border-radius: 2px;
+  }
+
+  /* ═══════════════════════════════════
+     CONCEPT B — Horizontal Marquee
+  ═══════════════════════════════════ */
+  .concept-b-preview { background: var(--bg-dark); }
+
+  .marquee-section { overflow: hidden; padding: 0; }
+  .marquee-heading {
+    padding: 28px 32px 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .marquee-title-group { flex: 1; }
+  .marquee-overline {
+    font-size: 0.5rem;
+    font-weight: 700;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: rgba(201,169,110,0.5);
+    margin-bottom: 5px;
+  }
+  .marquee-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.7rem;
+    font-style: italic;
+    font-weight: 600;
+    color: var(--gold);
+    letter-spacing: 0.06em;
+  }
+  .marquee-cta-right {
+    font-size: 0.5rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    border: 1px solid rgba(201,169,110,0.35);
+    padding: 6px 14px;
+    border-radius: 2px;
+    white-space: nowrap;
+  }
+  .marquee-rule {
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(201,169,110,0.2), rgba(201,169,110,0.2), transparent);
+    margin: 0 32px 16px;
+  }
+
+  /* Horizontal scroll strip */
+  .hscroll { display: flex; gap: 12px; padding: 0 32px 24px; overflow-x: auto; }
+  .hscroll::-webkit-scrollbar { display: none; }
+
+  .hcard {
+    flex: 0 0 auto;
+    width: 120px;
+    border-radius: 8px;
+    border: 1px solid rgba(201,169,110,0.14);
+    background: rgba(255,255,255,0.03);
+    overflow: hidden;
+    transition: border-color 0.25s, transform 0.25s;
+  }
+  .hcard:hover { border-color: rgba(201,169,110,0.4); transform: translateY(-4px); }
+  .hcard-img {
+    height: 110px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #180606;
+    font-size: 2rem;
+    color: rgba(201,169,110,0.3);
+  }
+  .hcard-img.warm { background: #2d1205; }
+  .hcard-body { padding: 8px 10px; }
+  .hcard-name { font-size: 0.55rem; color: var(--cream); letter-spacing: 0.05em; }
+  .hcard-price { font-size: 0.55rem; color: var(--gold); margin-top: 2px; }
+  .hcard-tag {
+    display: inline-block;
+    font-size: 0.38rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold);
+    border: 1px solid rgba(201,169,110,0.3);
+    padding: 2px 5px;
+    border-radius: 2px;
+    margin-top: 4px;
+  }
+
+  /* Rakhi strip: warm tone */
+  .rakhi-strip-bg { background: var(--surface-warm); padding-top: 4px; }
+  .rakhi-strip-overline { color: rgba(155,28,28,0.6) !important; }
+  .rakhi-strip-name { color: #5c2000 !important; }
+  .rakhi-strip-rule { background: linear-gradient(to right, transparent, rgba(122,56,0,0.18), rgba(122,56,0,0.18), transparent) !important; }
+  .hcard-img.rakhi-card { background: #fde8c0; font-size: 1.8rem; }
+  .hcard.rakhi { border-color: rgba(122,56,0,0.12); background: rgba(255,255,255,0.5); }
+  .hcard-body.rakhi .hcard-name { color: #3d1a00; }
+  .hcard-body.rakhi .hcard-price { color: #7a3800; }
+  .hcard-body.rakhi .hcard-tag { color: #7a3800; border-color: rgba(122,56,0,0.3); }
+  .rakhi-strip-cta { color: #5c2000 !important; border-color: rgba(122,56,0,0.3) !important; }
+
+  /* ═══════════════════════════════════
+     CONCEPT C — Cinematic Split
+  ═══════════════════════════════════ */
+  .concept-c-preview { background: #000; }
+
+  .split-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: 280px;
+  }
+
+  .split-panel {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end;
+    padding: 28px 28px;
+    min-height: 280px;
+  }
+
+  .split-watches {
+    background:
+      radial-gradient(ellipse 80% 60% at 60% 40%, rgba(60,30,5,0.7) 0%, transparent 70%),
+      linear-gradient(160deg, #060101 0%, #180a02 50%, #1a0505 100%);
+  }
+
+  .split-rakhi {
+    background:
+      radial-gradient(ellipse 80% 60% at 40% 40%, rgba(100,50,10,0.5) 0%, transparent 70%),
+      linear-gradient(160deg, #3d1a08 0%, #2a0e05 50%, #1a0606 100%);
+  }
+
+  /* Grid of product images on right side of each panel */
+  .split-grid {
+    position: absolute;
+    top: 0; right: 0;
+    bottom: 0;
+    width: 55%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 2px;
+    overflow: hidden;
+  }
+
+  .split-grid-cell {
+    background: rgba(255,255,255,0.04);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    border: 1px solid rgba(201,169,110,0.08);
+  }
+
+  .split-grid-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to right, rgba(6,1,1,1) 0%, rgba(6,1,1,0.7) 40%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .split-text {
+    position: relative; z-index: 2;
+    max-width: 55%;
+  }
+  .split-overline {
+    font-size: 0.47rem;
+    font-weight: 700;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: rgba(201,169,110,0.55);
+    margin-bottom: 10px;
+  }
+  .split-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem;
+    font-style: italic;
+    font-weight: 600;
+    color: var(--cream);
+    line-height: 1.05;
+    margin-bottom: 8px;
+  }
+  .split-sub {
+    font-size: 0.55rem;
+    color: rgba(245,230,200,0.4);
+    letter-spacing: 0.07em;
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+  .split-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: transparent;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    font-size: 0.47rem;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    padding: 7px 14px;
+    border-radius: 2px;
+  }
+
+  .split-divider {
+    position: absolute;
+    top: 10%; bottom: 10%;
+    left: 50%;
+    width: 1px;
+    background: linear-gradient(to bottom, transparent, rgba(201,169,110,0.3), transparent);
+    z-index: 5;
+  }
+
+  /* Select button */
+  .select-btn {
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding: 11px;
+    background: transparent;
+    border: none;
+    border-top: 1px solid rgba(201,169,110,0.1);
+    color: rgba(201,169,110,0.45);
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+  }
+  .select-btn:hover { background: rgba(201,169,110,0.07); color: var(--gold); }
+  .concept.selected .select-btn { color: var(--gold); }
+
+</style>
+</head>
+<body>
+
+<div class="page-title">Watches & Rakhi — Layout Concepts</div>
+<p class="page-sub">Click a concept to select it</p>
+
+<div class="concepts">
+
+  <!-- ═══ CONCEPT A: Immersive Panels ═══ -->
+  <div class="concept" id="concept-a" onclick="select('a')">
+    <div class="concept-a-preview">
+
+      <!-- Watches Section -->
+      <div class="section-heading">
+        <span class="ornament-line"></span>
+        <span class="section-title">Fine Watches</span>
+        <span class="ornament-line"></span>
+      </div>
+
+      <div class="immersive-panel">
+        <div class="immersive-bg-watches"></div>
+        <div class="immersive-content">
+          <div class="immersive-text">
+            <div class="immersive-overline">New Arrivals · 2026</div>
+            <div class="immersive-name">Timepieces<br>Worth Wearing</div>
+            <div class="immersive-desc">Precision-crafted watches for every occasion — from heritage dress pieces to modern sport editions.</div>
+            <span class="immersive-cta">Explore Watches →</span>
+          </div>
+          <div class="immersive-products">
+            <div class="prod-card" style="width:80px;">
+              <div class="prod-img" style="height:90px;background:#1a0808;">⌚</div>
+              <div class="prod-info">
+                <div class="prod-name">Aurum Classic</div>
+                <div class="prod-price">₹18,500</div>
+              </div>
+            </div>
+            <div class="prod-card" style="width:90px;margin-bottom:12px;">
+              <div class="prod-img" style="height:110px;background:#2a0e0e;">🕐</div>
+              <div class="prod-info">
+                <div class="prod-name">Heritage Gold</div>
+                <div class="prod-price">₹32,000</div>
+              </div>
+            </div>
+            <div class="prod-card" style="width:80px;">
+              <div class="prod-img" style="height:90px;background:#1a0808;">⌚</div>
+              <div class="prod-info">
+                <div class="prod-name">Sundari Sport</div>
+                <div class="prod-price">₹24,000</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rakhi Section -->
+      <div class="section-heading" style="padding-top:22px;">
+        <span class="ornament-line"></span>
+        <span class="section-title">Rakhi Collection</span>
+        <span class="ornament-line"></span>
+      </div>
+
+      <div class="rakhi-panel">
+        <div class="rakhi-pattern"></div>
+        <div class="rakhi-content">
+          <div class="rakhi-text">
+            <div class="rakhi-overline">Raksha Bandhan · Festival Edit</div>
+            <div class="rakhi-name">Gift in Gold,<br>Bond in Love</div>
+            <div class="rakhi-desc">Handcrafted rakhis in gold, diamond & kundan. A thread of love, reborn in fine jewellery.</div>
+            <span class="rakhi-cta">Shop Rakhi →</span>
+          </div>
+          <div class="immersive-products">
+            <div class="prod-card" style="width:80px;border-color:rgba(122,56,0,0.2);background:rgba(253,232,192,0.4);">
+              <div class="prod-img" style="height:90px;background:#fde8c0;">🧵</div>
+              <div class="prod-info" style="border-top-color:rgba(122,56,0,0.15);">
+                <div class="prod-name" style="color:#3d1a00;">Kundan Rakhi</div>
+                <div class="prod-price" style="color:#7a3800;">₹4,200</div>
+              </div>
+            </div>
+            <div class="prod-card" style="width:90px;margin-bottom:12px;border-color:rgba(201,169,110,0.3);background:rgba(253,240,210,0.5);">
+              <div class="prod-img" style="height:110px;background:#fdf3e0;">💛</div>
+              <div class="prod-info" style="border-top-color:rgba(201,169,110,0.2);">
+                <div class="prod-name" style="color:#3d1a00;">Gold Thread</div>
+                <div class="prod-price" style="color:#7a3800;">₹8,500</div>
+              </div>
+            </div>
+            <div class="prod-card" style="width:80px;border-color:rgba(122,56,0,0.2);background:rgba(253,232,192,0.4);">
+              <div class="prod-img" style="height:90px;background:#fde8c0;">💎</div>
+              <div class="prod-info" style="border-top-color:rgba(122,56,0,0.15);">
+                <div class="prod-name" style="color:#3d1a00;">Diamond Set</div>
+                <div class="prod-price" style="color:#7a3800;">₹12,000</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="height:16px;background:var(--bg-dark);"></div>
+    </div>
+    <div class="concept-label">
+      <h3>A — Immersive Editorial Panels</h3>
+      <p>Each section gets a cinematic full-width panel with editorial copy on the left and floating product cards on the right. Watches: dark maroon luxury. Rakhi: warm saffron parchment. Closest to the WeddingShop pattern already on the site.</p>
+    </div>
+    <button class="select-btn">Click to select this concept</button>
+  </div>
+
+  <!-- ═══ CONCEPT B: Horizontal Product Scroll ═══ -->
+  <div class="concept" id="concept-b" onclick="select('b')">
+    <div class="concept-b-preview">
+
+      <!-- Watches Strip -->
+      <div class="marquee-section">
+        <div class="marquee-heading">
+          <div class="marquee-title-group">
+            <div class="marquee-overline">Precision &amp; Craft</div>
+            <div class="marquee-name">Fine Watches</div>
+          </div>
+          <span class="marquee-cta-right">View All →</span>
+        </div>
+        <div class="marquee-rule"></div>
+        <div class="hscroll">
+          <div class="hcard">
+            <div class="hcard-img">⌚</div>
+            <div class="hcard-body">
+              <div class="hcard-name">Aurum Classic</div>
+              <div class="hcard-price">₹18,500</div>
+              <div class="hcard-tag">Bestseller</div>
+            </div>
+          </div>
+          <div class="hcard">
+            <div class="hcard-img warm">🕐</div>
+            <div class="hcard-body">
+              <div class="hcard-name">Heritage Gold</div>
+              <div class="hcard-price">₹32,000</div>
+              <div class="hcard-tag">New</div>
+            </div>
+          </div>
+          <div class="hcard">
+            <div class="hcard-img">⌚</div>
+            <div class="hcard-body">
+              <div class="hcard-name">Sundari Sport</div>
+              <div class="hcard-price">₹24,000</div>
+              <div class="hcard-tag">Limited</div>
+            </div>
+          </div>
+          <div class="hcard">
+            <div class="hcard-img warm">🕐</div>
+            <div class="hcard-body">
+              <div class="hcard-name">Diamond Dial</div>
+              <div class="hcard-price">₹45,000</div>
+              <div class="hcard-tag">Signature</div>
+            </div>
+          </div>
+          <div class="hcard">
+            <div class="hcard-img">⌚</div>
+            <div class="hcard-body">
+              <div class="hcard-name">Rose Gold</div>
+              <div class="hcard-price">₹28,000</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rakhi Strip -->
+      <div class="marquee-section rakhi-strip-bg">
+        <div class="marquee-heading">
+          <div class="marquee-title-group">
+            <div class="marquee-overline rakhi-strip-overline" style="color:rgba(155,28,28,0.6);">Raksha Bandhan · Festival Edit</div>
+            <div class="marquee-name rakhi-strip-name" style="color:#5c2000;">Rakhi Collection</div>
+          </div>
+          <span class="marquee-cta-right rakhi-strip-cta" style="color:#5c2000;border-color:rgba(92,32,0,0.3);">View All →</span>
+        </div>
+        <div class="marquee-rule rakhi-strip-rule" style="background:linear-gradient(to right,transparent,rgba(92,32,0,0.15),rgba(92,32,0,0.15),transparent);"></div>
+        <div class="hscroll" style="padding-bottom:20px;">
+          <div class="hcard rakhi">
+            <div class="hcard-img rakhi-card">🧵</div>
+            <div class="hcard-body rakhi">
+              <div class="hcard-name">Kundan Rakhi</div>
+              <div class="hcard-price">₹4,200</div>
+              <div class="hcard-tag">Handcrafted</div>
+            </div>
+          </div>
+          <div class="hcard rakhi">
+            <div class="hcard-img rakhi-card">💛</div>
+            <div class="hcard-body rakhi">
+              <div class="hcard-name">Gold Thread</div>
+              <div class="hcard-price">₹8,500</div>
+              <div class="hcard-tag">Bestseller</div>
+            </div>
+          </div>
+          <div class="hcard rakhi">
+            <div class="hcard-img rakhi-card">💎</div>
+            <div class="hcard-body rakhi">
+              <div class="hcard-name">Diamond Set</div>
+              <div class="hcard-price">₹12,000</div>
+              <div class="hcard-tag">Premium</div>
+            </div>
+          </div>
+          <div class="hcard rakhi">
+            <div class="hcard-img rakhi-card">🧵</div>
+            <div class="hcard-body rakhi">
+              <div class="hcard-name">Silver Rakhi</div>
+              <div class="hcard-price">₹3,500</div>
+            </div>
+          </div>
+          <div class="hcard rakhi">
+            <div class="hcard-img rakhi-card">💛</div>
+            <div class="hcard-body rakhi">
+              <div class="hcard-name">Bridal Bhaiya</div>
+              <div class="hcard-price">₹6,800</div>
+              <div class="hcard-tag">New</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="concept-label">
+      <h3>B — Horizontal Scroll Strips</h3>
+      <p>Each category becomes a horizontal scrolling product strip with a header, "View All" link, and individual product cards (image, name, price, tag). Watches on dark, Rakhi on warm cream. Very clean — works well when you have 5+ products per category to show.</p>
+    </div>
+    <button class="select-btn">Click to select this concept</button>
+  </div>
+
+  <!-- ═══ CONCEPT C: Cinematic Split ═══ -->
+  <div class="concept" id="concept-c" onclick="select('c')">
+    <div class="concept-c-preview">
+
+      <div class="section-heading" style="padding-top:24px;background:var(--bg-dark);">
+        <span class="ornament-line"></span>
+        <span class="section-title">Watches & Rakhi</span>
+        <span class="ornament-line"></span>
+      </div>
+
+      <div class="split-section" style="position:relative;">
+
+        <!-- Left: Watches -->
+        <div class="split-panel split-watches">
+          <div class="split-grid">
+            <div class="split-grid-cell" style="background:#120303;">⌚</div>
+            <div class="split-grid-cell" style="background:#1a0505;">🕐</div>
+            <div class="split-grid-cell" style="background:#0e0202;">⌚</div>
+            <div class="split-grid-cell" style="background:#180404;">⌚</div>
+          </div>
+          <div class="split-grid-overlay"></div>
+          <div class="split-text">
+            <div class="split-overline">New Arrivals · 2026</div>
+            <div class="split-title">Fine<br>Watches</div>
+            <div class="split-sub">Precision-crafted for every wrist. Heritage to modern.</div>
+            <span class="split-cta">Shop Watches →</span>
+          </div>
+        </div>
+
+        <!-- Divider -->
+        <div class="split-divider"></div>
+
+        <!-- Right: Rakhi -->
+        <div class="split-panel split-rakhi">
+          <div class="split-grid">
+            <div class="split-grid-cell" style="background:#2d1205;">🧵</div>
+            <div class="split-grid-cell" style="background:#3d1a08;">💛</div>
+            <div class="split-grid-cell" style="background:#251005;">💎</div>
+            <div class="split-grid-cell" style="background:#2a1005;">🧵</div>
+          </div>
+          <div class="split-grid-overlay" style="background:linear-gradient(to right,rgba(6,1,1,0.95) 0%,rgba(6,1,1,0.65) 40%,transparent 70%);"></div>
+          <div class="split-text">
+            <div class="split-overline" style="color:rgba(224,160,80,0.65);">Raksha Bandhan · Festival</div>
+            <div class="split-title">Rakhi<br>Collection</div>
+            <div class="split-sub">Gift in gold. Celebrate the bond that lasts forever.</div>
+            <span class="split-cta" style="border-color:rgba(201,169,110,0.45);color:var(--gold-pale);">Shop Rakhi →</span>
+          </div>
+        </div>
+
+      </div>
+      <div style="height:8px;background:var(--bg-dark);"></div>
+    </div>
+    <div class="concept-label">
+      <h3>C — Cinematic 50/50 Split</h3>
+      <p>One unified section with a full-bleed split — watches occupies the left half, rakhi the right. Product images in the background, editorial copy over a fade-in overlay. Dramatic, high-impact, very modern luxury feel. One section instead of two keeps the page tight.</p>
+    </div>
+    <button class="select-btn">Click to select this concept</button>
+  </div>
+
+</div>
+
+<script>
+  function select(id) {
+    document.querySelectorAll('.concept').forEach(el => el.classList.remove('selected'));
+    document.getElementById('concept-' + id).classList.add('selected');
+    if (window.__sendEvent) window.__sendEvent({ type: 'click', choice: id });
+  }
+</script>
+</body>
+</html>

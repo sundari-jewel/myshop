@@ -23,8 +23,8 @@ export default function AccountPage() {
     return null;
   }
 
-  function handleSignOut() {
-    signOut();
+  async function handleSignOut() {
+    await signOut();
     router.push("/signin" as Route);
   }
 

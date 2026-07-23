@@ -1,22 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
-import { connectDB } from "@/lib/mongodb";
-import { Product } from "@/models/Product";
+import { getShopifyProductsByIds, fetchAllShopifyProducts } from "@/lib/shopify-collections";
 
 export async function GET(req: NextRequest) {
-  await connectDB();
   const { searchParams } = new URL(req.url);
-  const collection = searchParams.get("collection");
-  const featured   = searchParams.get("featured");
-  const limit      = Number(searchParams.get("limit") ?? 100);
+  const ids = searchParams.get("ids");
 
-  const filter: Record<string, unknown> = { published: true };
-  if (collection) filter.collection = collection;
-  if (featured === "true") filter.featured = true;
+  if (ids) {
+    const idList = ids.split(",").map((id) => id.trim()).filter(Boolean);
+    const products = await getShopifyProductsByIds(idList);
+    return NextResponse.json(products);
+  }
 
-  const products = await Product.find(filter)
-    .sort({ createdAt: -1 })
-    .limit(limit)
-    .lean();
-
+  const products = await fetchAllShopifyProducts();
   return NextResponse.json(products);
 }

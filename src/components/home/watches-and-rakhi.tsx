@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import type { Route } from "next";
 
@@ -17,7 +18,7 @@ const RAKHI_CELLS = [
 
 export function WatchesAndRakhi() {
   return (
-    <section className="py-7 sm:py-8" style={{ background: "var(--bg-dark)" }}>
+    <section className="py-16 sm:py-20" style={{ background: "var(--bg-dark)" }}>
 
       {/* ── Header ── */}
       <div className="mb-5 flex items-center justify-center gap-5 sm:gap-7">
@@ -36,15 +37,13 @@ export function WatchesAndRakhi() {
           href={"/collections/watches" as Route}
           className="focus-ring group relative block min-h-[320px] overflow-hidden sm:min-h-[420px]"
         >
-          {/* Placeholder background grid */}
-          <div className="absolute inset-0 z-0 grid grid-cols-2 grid-rows-2 transition-transform duration-700 group-hover:scale-[1.04]">
-            {WATCHES_CELLS.map((bg) => (
-              <div
-                key={bg}
-                style={{ background: bg, border: "1px solid rgba(201,169,110,0.1)" }}
-              />
-            ))}
-          </div>
+          <Image
+            src="/assets/watches-collection.png"
+            alt="Fine Watches Collection"
+            fill
+            sizes="(min-width: 640px) 50vw, 100vw"
+            className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+          />
 
           {/* Gradient overlay — left to right fade */}
           <div
@@ -94,15 +93,13 @@ export function WatchesAndRakhi() {
           href={"/collections/rakhi" as Route}
           className="focus-ring group relative block min-h-[320px] overflow-hidden sm:min-h-[420px]"
         >
-          {/* Placeholder background grid */}
-          <div className="absolute inset-0 z-0 grid grid-cols-2 grid-rows-2 transition-transform duration-700 group-hover:scale-[1.04]">
-            {RAKHI_CELLS.map((bg) => (
-              <div
-                key={bg}
-                style={{ background: bg, border: "1px solid rgba(201,169,110,0.1)" }}
-              />
-            ))}
-          </div>
+          <Image
+            src="/assets/rakhi-collection.png"
+            alt="Rakhi Collection"
+            fill
+            sizes="(min-width: 640px) 50vw, 100vw"
+            className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+          />
 
           {/* Gradient overlay */}
           <div

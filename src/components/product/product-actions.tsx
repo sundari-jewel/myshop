@@ -2,8 +2,10 @@
 
 import { Heart, ShoppingBag, Zap } from "lucide-react";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useCart } from "@/context/cart-context";
+import { useCustomerAuth } from "@/context/customer-auth-context";
+import { useWishlist } from "@/context/wishlist-context";
 
 type ProductActionsProps = {
   productId: string;
@@ -17,15 +19,24 @@ type ProductActionsProps = {
 
 export function ProductActions({ productId, slug, productName, image, material, price, sizes }: ProductActionsProps) {
   const { addItem } = useCart();
+  const { customer } = useCustomerAuth();
+  const wishlist = useWishlist();
   const router = useRouter();
+  const pathname = usePathname();
 
-  const [selectedSize, setSelectedSize] = useState<string | null>(sizes?.length ? null : null);
+  const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [qty,          setQty]          = useState(1);
   const [added,        setAdded]        = useState(false);
-  const [wishlisted,   setWishlisted]   = useState(false);
   const [sizeError,    setSizeError]    = useState(false);
 
+  const saved = wishlist.isSaved(productId);
+
+  function requireAuth() {
+    router.push(`/signin?next=${encodeURIComponent(pathname)}`);
+  }
+
   function handleAddToCart() {
+    if (!customer) { requireAuth(); return; }
     if (sizes?.length && !selectedSize) { setSizeError(true); return; }
     setSizeError(false);
     for (let i = 0; i < qty; i++) {
@@ -36,10 +47,16 @@ export function ProductActions({ productId, slug, productName, image, material, 
   }
 
   function handleBuyNow() {
+    if (!customer) { requireAuth(); return; }
     if (sizes?.length && !selectedSize) { setSizeError(true); return; }
     setSizeError(false);
     addItem({ productId, slug, name: productName, image, material, price, qty, size: selectedSize ?? undefined });
     router.push("/checkout");
+  }
+
+  function handleWishlist() {
+    if (!customer) { requireAuth(); return; }
+    wishlist.toggle(productId);
   }
 
   return (
@@ -96,11 +113,11 @@ export function ProductActions({ productId, slug, productName, image, material, 
       </div>
 
       {/* Wishlist */}
-      <button type="button" onClick={() => setWishlisted(w => !w)}
+      <button type="button" onClick={handleWishlist}
         className="flex items-center gap-2 self-start text-[11px] font-medium uppercase tracking-[0.18em] transition-colors"
-        style={{ color: wishlisted ? "var(--ruby)" : "var(--ink-soft)" }}>
-        <Heart size={14} strokeWidth={1.8} fill={wishlisted ? "var(--ruby)" : "none"} />
-        {wishlisted ? "Saved to Wishlist" : "Add to Wishlist"}
+        style={{ color: saved ? "var(--ruby)" : "var(--ink-soft)" }}>
+        <Heart size={14} strokeWidth={1.8} fill={saved ? "var(--ruby)" : "none"} />
+        {saved ? "Saved to Wishlist" : "Add to Wishlist"}
       </button>
     </div>
   );
