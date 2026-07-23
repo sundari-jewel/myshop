@@ -19,7 +19,7 @@ export const GENDER_GIDS = {
   male: null as string | null,
 } as const;
 
-async function adminFetch<T>(query: string, variables?: Record<string, unknown>): Promise<T> {
+async function adminFetch<T>(query: string, variables?: Record<string, unknown>, cache: RequestCache = "no-store"): Promise<T> {
   const res = await fetch(ADMIN_API_URL, {
     method: "POST",
     headers: {
@@ -27,10 +27,10 @@ async function adminFetch<T>(query: string, variables?: Record<string, unknown>)
       "X-Shopify-Access-Token": ADMIN_TOKEN,
     },
     body: JSON.stringify(variables ? { query, variables } : { query }),
-    next: { revalidate: 300 },
+    cache,
   });
 
-  if (!res.ok) throw new Error(`Shopify Admin fetch failed: ${res.status}`);
+  if (!res.ok) throw new Error(`Shopify Admin fetch failed: ${res.status} ${res.statusText}`);
 
   const json = (await res.json()) as { data: T; errors?: unknown[] };
   if (json.errors?.length) throw new Error(`Shopify Admin GraphQL errors: ${JSON.stringify(json.errors)}`);
@@ -248,4 +248,123 @@ export async function getProductsByGenderGid(
   return all
     .filter((p) => p.targetGenderGid === genderGid)
     .map((p) => mapAdminProductToProduct(p, collectionHandle));
+}
+
+const DRAFT_ORDER_CREATE = `
+  mutation DraftOrderCreate($input: DraftOrderInput!) {
+    draftOrderCreate(input: $input) {
+      draftOrder {
+        id
+        name
+        invoiceUrl
+      }
+      userErrors {
+        field
+        message
+      }
+    }
+  }
+`;
+
+type DraftOrderCreateData = {
+  draftOrderCreate: {
+    draftOrder: { id: string; name: string; invoiceUrl: string } | null;
+    userErrors: { field: string; message: string }[];
+  };
+};
+
+export type DraftOrderInput = {
+  items: { name: string; price: number; qty: number; size?: string }[];
+  customer: {
+    name: string;
+    email: string;
+    phone: string;
+    address: { line1: string; line2?: string; city: string; state: string; pincode: string };
+  };
+  orderId: string;
+  paymentMethod: "cod" | "prepaid";
+  shippingCharge: number;
+};
+
+export async function createShopifyDraftOrder(input: DraftOrderInput): Promise<{ id: string; name: string } | null> {
+  const [firstName, ...rest] = input.customer.name.trim().split(" ");
+  const lastName = rest.join(" ") || ".";
+
+  const lineItems = input.items.map((item) => ({
+    title: item.size ? `${item.name} (Size: ${item.size})` : item.name,
+    originalUnitPrice: item.price.toFixed(2),
+    quantity: item.qty,
+    taxable: false,
+    requiresShipping: true,
+  }));
+
+  const draftInput: Record<string, unknown> = {
+    lineItems,
+    shippingAddress: {
+      firstName,
+      lastName,
+      address1: input.customer.address.line1,
+      address2: input.customer.address.line2 ?? "",
+      city: input.customer.address.city,
+      province: input.customer.address.state,
+      zip: input.customer.address.pincode,
+      country: "IN",
+      phone: input.customer.phone,
+    },
+    email: input.customer.email,
+    note: `Internal Order ID: ${input.orderId} | Payment: ${input.paymentMethod.toUpperCase()} | Phone: ${input.customer.phone}`,
+    tags: [input.paymentMethod === "cod" ? "COD" : "Prepaid", "website-order"],
+  };
+
+  if (input.shippingCharge > 0) {
+    draftInput.shippingLine = {
+      title: "Standard Shipping",
+      price: input.shippingCharge.toFixed(2),
+    };
+  }
+
+  console.log("[shopify-draft-order] creating draft for order:", input.orderId);
+
+  const data = await adminFetch<DraftOrderCreateData>(DRAFT_ORDER_CREATE, { input: draftInput });
+
+  if (data.draftOrderCreate.userErrors.length > 0) {
+    console.error("[shopify-draft-order] userErrors:", JSON.stringify(data.draftOrderCreate.userErrors));
+    return null;
+  }
+
+  const draft = data.draftOrderCreate.draftOrder;
+  if (!draft) return null;
+  console.log("[shopify-draft-order] created:", draft.name);
+  return { id: draft.id, name: draft.name };
+}
+
+const DRAFT_ORDER_COMPLETE = `
+  mutation DraftOrderComplete($id: ID!) {
+    draftOrderComplete(id: $id) {
+      draftOrder {
+        order { id name }
+      }
+      userErrors { field message }
+    }
+  }
+`;
+
+type DraftOrderCompleteData = {
+  draftOrderComplete: {
+    draftOrder: { order: { id: string; name: string } | null } | null;
+    userErrors: { field: string; message: string }[];
+  };
+};
+
+export async function completeDraftOrder(draftOrderGid: string): Promise<string | null> {
+  const data = await adminFetch<DraftOrderCompleteData>(DRAFT_ORDER_COMPLETE, { id: draftOrderGid });
+
+  if (data.draftOrderComplete.userErrors.length > 0) {
+    console.error("[shopify-complete-draft] userErrors:", JSON.stringify(data.draftOrderComplete.userErrors));
+    return null;
+  }
+
+  const orderName = data.draftOrderComplete.draftOrder?.order?.name ?? null;
+  console.log("[shopify-complete-draft] confirmed order:", orderName);
+  return orderName;
 }

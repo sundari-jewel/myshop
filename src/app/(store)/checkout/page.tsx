@@ -9,32 +9,50 @@ import { ArrowRight, Banknote, CreditCard, Loader2, LockKeyhole, ShieldCheck, Tr
 import { useCart } from "@/context/cart-context";
 import { useCustomerAuth } from "@/context/customer-auth-context";
 
+declare global {
+  interface Window {
+    Razorpay: new (opts: Record<string, unknown>) => { open(): void };
+  }
+}
+
 function formatPrice(n: number) {
   return new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(n);
 }
 
-interface CodForm {
+interface AddressForm {
   name: string; email: string; phone: string;
   line1: string; line2: string; city: string; state: string; pincode: string;
   notes: string;
+}
+
+function loadRazorpayScript(): Promise<boolean> {
+  return new Promise((resolve) => {
+    if (document.getElementById("rzp-script")) { resolve(true); return; }
+    const s = document.createElement("script");
+    s.id  = "rzp-script";
+    s.src = "https://checkout.razorpay.com/v1/checkout.js";
+    s.onload  = () => resolve(true);
+    s.onerror = () => resolve(false);
+    document.body.appendChild(s);
+  });
 }
 
 export default function CheckoutPage() {
   const { items, subtotal, clearCart } = useCart();
   const { customer, ready } = useCustomerAuth();
   const router = useRouter();
-  const shipping = subtotal >= 50000 ? 0 : 99;
+  const shipping = subtotal >= 50000 ? 0 : 1;
 
   const [method, setMethod]   = useState<"prepaid" | "cod" | null>(null);
   const [loading, setLoading] = useState(false);
   const [error,   setError]   = useState("");
-  const [form, setForm] = useState<CodForm>({
+  const [form, setForm] = useState<AddressForm>({
     name: "", email: "", phone: "",
     line1: "", line2: "", city: "", state: "", pincode: "",
     notes: "",
   });
 
-  function setField(key: keyof CodForm, val: string) {
+  function setField(key: keyof AddressForm, val: string) {
     setForm(prev => ({ ...prev, [key]: val }));
   }
 
@@ -67,21 +85,86 @@ export default function CheckoutPage() {
     );
   }
 
-  async function handlePrepaid() {
+  async function handleRazorpay(e: React.FormEvent) {
+    e.preventDefault();
+    if (!customer) return;
     setError("");
     setLoading(true);
+
     try {
-      const res = await fetch("/api/payment/shopify-checkout", {
+      const loaded = await loadRazorpayScript();
+      if (!loaded) { setError("Could not load payment gateway. Please try again."); return; }
+
+      const createRes = await fetch("/api/payment/razorpay/create-order", {
         method:  "POST",
         headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({
-          items: items.map(i => ({ slug: i.slug, qty: i.qty, size: i.size })),
-        }),
+        body:    JSON.stringify({ amount: subtotal + shipping }),
       });
-      const data = await res.json() as { checkoutUrl?: string; error?: string };
-      if (!res.ok) { setError(data.error ?? "Could not initiate payment. Please try again."); return; }
-      window.location.href = data.checkoutUrl!;
-    } finally {
+      const createData = await createRes.json() as {
+        orderId?: string; amount?: number; currency?: string; keyId?: string; error?: string;
+      };
+      if (!createRes.ok || !createData.orderId) {
+        setError(createData.error ?? "Could not initiate payment. Please try again.");
+        return;
+      }
+
+      const customerInfo = {
+        name:    form.name  || customer.name,
+        email:   form.email || customer.email,
+        phone:   form.phone || customer.phone || "",
+        address: { line1: form.line1, line2: form.line2 || undefined, city: form.city, state: form.state, pincode: form.pincode },
+      };
+
+      const cartItems = items.map(i => ({ productId: i.productId, slug: i.slug, qty: i.qty, size: i.size }));
+
+      const rzp = new window.Razorpay({
+        key:         createData.keyId,
+        amount:      createData.amount,
+        currency:    createData.currency ?? "INR",
+        name:        "Sundari Art Jewellery",
+        description: "Jewellery Order",
+        order_id:    createData.orderId,
+        prefill: {
+          name:    customerInfo.name,
+          email:   customerInfo.email,
+          contact: customerInfo.phone,
+        },
+        theme: { color: "#C9A96E" },
+        modal: {
+          ondismiss: () => setLoading(false),
+        },
+        handler: async (response: { razorpay_payment_id: string; razorpay_order_id: string; razorpay_signature: string }) => {
+          try {
+            const verifyRes = await fetch("/api/payment/razorpay/verify", {
+              method:  "POST",
+              headers: { "Content-Type": "application/json" },
+              body:    JSON.stringify({
+                razorpayPaymentId: response.razorpay_payment_id,
+                razorpayOrderId:   response.razorpay_order_id,
+                razorpaySignature: response.razorpay_signature,
+                items:             cartItems,
+                customer:          customerInfo,
+                notes:             form.notes || undefined,
+              }),
+            });
+            const verifyData = await verifyRes.json() as { orderId?: string; error?: string };
+            if (!verifyRes.ok || !verifyData.orderId) {
+              setError(verifyData.error ?? "Payment verified but order creation failed. Please contact support.");
+              setLoading(false);
+              return;
+            }
+            clearCart();
+            router.push(`/order-confirmation/${verifyData.orderId}` as Route);
+          } catch {
+            setError("Payment verified but order creation failed. Please contact support.");
+            setLoading(false);
+          }
+        },
+      });
+
+      rzp.open();
+    } catch {
+      setError("Something went wrong. Please try again.");
       setLoading(false);
     }
   }
@@ -120,7 +203,6 @@ export default function CheckoutPage() {
   const inpStyle = { background: "var(--surface-warm)", border: "1px solid rgba(138,106,58,0.25)", color: "var(--foreground)" };
   const lbl = "mb-1.5 block text-[10px] font-semibold uppercase tracking-[0.18em]";
 
-  // ── Order summary (reused in both paths) ──────────────────
   const orderSummary = (
     <div className="sticky top-6 rounded-xl p-6 space-y-5" style={{ background: "white", border: "1px solid rgba(138,106,58,0.15)" }}>
       <h2 className="text-xs font-bold uppercase tracking-[0.2em]" style={{ color: "var(--ink-soft)" }}>Order Summary</h2>
@@ -161,6 +243,62 @@ export default function CheckoutPage() {
     </div>
   );
 
+  const addressFormSections = (
+    <>
+      <section className="rounded-xl p-6 space-y-5" style={{ background: "white", border: "1px solid rgba(138,106,58,0.15)" }}>
+        <h2 className="text-xs font-bold uppercase tracking-[0.2em]" style={{ color: "var(--ink-soft)" }}>Contact</h2>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="sm:col-span-2">
+            <label className={lbl} style={{ color: "var(--ink-soft)" }}>Full Name *</label>
+            <input className={inp} style={inpStyle} required value={form.name || customer.name} onChange={e => setField("name", e.target.value)} placeholder="Priya Sharma" />
+          </div>
+          <div>
+            <label className={lbl} style={{ color: "var(--ink-soft)" }}>Email *</label>
+            <input className={inp} style={inpStyle} type="email" required value={form.email || customer.email} onChange={e => setField("email", e.target.value)} placeholder="priya@example.com" />
+          </div>
+          <div>
+            <label className={lbl} style={{ color: "var(--ink-soft)" }}>Phone *</label>
+            <input className={inp} style={inpStyle} type="tel" required value={form.phone || customer.phone || ""} onChange={e => setField("phone", e.target.value)} placeholder="+91 98765 43210" />
+          </div>
+        </div>
+      </section>
+
+      <section className="rounded-xl p-6 space-y-5" style={{ background: "white", border: "1px solid rgba(138,106,58,0.15)" }}>
+        <h2 className="text-xs font-bold uppercase tracking-[0.2em]" style={{ color: "var(--ink-soft)" }}>Delivery Address</h2>
+        <div className="grid gap-4">
+          <div>
+            <label className={lbl} style={{ color: "var(--ink-soft)" }}>Address Line 1 *</label>
+            <input className={inp} style={inpStyle} required value={form.line1} onChange={e => setField("line1", e.target.value)} placeholder="House / Flat no., Street" />
+          </div>
+          <div>
+            <label className={lbl} style={{ color: "var(--ink-soft)" }}>Address Line 2</label>
+            <input className={inp} style={inpStyle} value={form.line2} onChange={e => setField("line2", e.target.value)} placeholder="Landmark, Area (optional)" />
+          </div>
+          <div className="grid gap-4 sm:grid-cols-3">
+            <div>
+              <label className={lbl} style={{ color: "var(--ink-soft)" }}>City *</label>
+              <input className={inp} style={inpStyle} required value={form.city} onChange={e => setField("city", e.target.value)} placeholder="Mumbai" />
+            </div>
+            <div>
+              <label className={lbl} style={{ color: "var(--ink-soft)" }}>State *</label>
+              <input className={inp} style={inpStyle} required value={form.state} onChange={e => setField("state", e.target.value)} placeholder="Maharashtra" />
+            </div>
+            <div>
+              <label className={lbl} style={{ color: "var(--ink-soft)" }}>Pincode *</label>
+              <input className={inp} style={inpStyle} required value={form.pincode} onChange={e => setField("pincode", e.target.value)} placeholder="400001" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div>
+        <label className={lbl} style={{ color: "var(--ink-soft)" }}>Order Notes (optional)</label>
+        <textarea className={inp} style={{ ...inpStyle, resize: "none" }} rows={2}
+          value={form.notes} onChange={e => setField("notes", e.target.value)} placeholder="Special instructions, gift message…" />
+      </div>
+    </>
+  );
+
   return (
     <div style={{ background: "var(--surface)" }}>
       <div className="container-shell py-12">
@@ -177,8 +315,7 @@ export default function CheckoutPage() {
 
               {/* Online Payment */}
               <button
-                onClick={handlePrepaid}
-                disabled={loading}
+                onClick={() => setMethod("prepaid")}
                 className="group w-full rounded-xl p-6 text-left transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_8px_32px_rgba(138,106,58,0.14)]"
                 style={{ background: "var(--bg-dark)", border: "1.5px solid rgba(201,169,110,0.25)" }}
               >
@@ -191,9 +328,8 @@ export default function CheckoutPage() {
                       <div className="flex items-center gap-2">
                         <span className="font-semibold text-lg" style={{ color: "var(--gold-pale)" }}>Online Payment</span>
                         <span className="rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest" style={{ background: "rgba(201,169,110,0.18)", color: "var(--gold)" }}>Recommended</span>
-                        {loading && <Loader2 size={13} className="animate-spin" style={{ color: "var(--gold)" }} />}
                       </div>
-                      <p className="mt-1 text-sm" style={{ color: "var(--cream-muted)" }}>Secure payment via Shopify · Instant confirmation</p>
+                      <p className="mt-1 text-sm" style={{ color: "var(--cream-muted)" }}>Secure payment via Razorpay · Instant confirmation</p>
                       <div className="mt-3 flex flex-wrap gap-2">
                         {["UPI", "Credit Card", "Debit Card", "Net Banking"].map(tag => (
                           <span key={tag} className="rounded px-2 py-1 text-[10px] font-medium" style={{ background: "rgba(255,255,255,0.07)", color: "var(--cream-muted)", border: "1px solid rgba(201,169,110,0.2)" }}>
@@ -235,6 +371,30 @@ export default function CheckoutPage() {
           </div>
         )}
 
+        {/* ── Prepaid: collect address then open Razorpay ───── */}
+        {method === "prepaid" && (
+          <form onSubmit={handleRazorpay} className="grid gap-10 lg:grid-cols-[1fr_400px]">
+            <div className="space-y-8">
+              <button type="button" onClick={() => setMethod(null)} className="text-xs" style={{ color: "var(--ink-soft)" }}>
+                ← Back
+              </button>
+              {addressFormSections}
+            </div>
+            <div className="space-y-6">
+              <div className="sticky top-6 space-y-4">
+                {orderSummary}
+                {error && <p className="rounded-lg bg-red-50 px-4 py-2.5 text-sm text-red-600">{error}</p>}
+                <button type="submit" disabled={loading}
+                  className="flex w-full items-center justify-center gap-2 rounded-sm py-4 text-[11px] font-bold uppercase tracking-[0.26em] transition-opacity disabled:opacity-60"
+                  style={{ background: "var(--bg-dark)", color: "var(--gold-pale)" }}>
+                  {loading && <Loader2 size={14} className="animate-spin" />}
+                  {loading ? "Opening Payment…" : `Pay ${formatPrice(subtotal + shipping)}`}
+                </button>
+              </div>
+            </div>
+          </form>
+        )}
+
         {/* ── COD: collect delivery details ─────────────────── */}
         {method === "cod" && (
           <form onSubmit={handleCod} className="grid gap-10 lg:grid-cols-[1fr_400px]">
@@ -242,64 +402,8 @@ export default function CheckoutPage() {
               <button type="button" onClick={() => setMethod(null)} className="text-xs" style={{ color: "var(--ink-soft)" }}>
                 ← Back
               </button>
-
-              {/* Contact */}
-              <section className="rounded-xl p-6 space-y-5" style={{ background: "white", border: "1px solid rgba(138,106,58,0.15)" }}>
-                <h2 className="text-xs font-bold uppercase tracking-[0.2em]" style={{ color: "var(--ink-soft)" }}>Contact</h2>
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="sm:col-span-2">
-                    <label className={lbl} style={{ color: "var(--ink-soft)" }}>Full Name *</label>
-                    <input className={inp} style={inpStyle} required value={form.name || customer.name} onChange={e => setField("name", e.target.value)} placeholder="Priya Sharma" />
-                  </div>
-                  <div>
-                    <label className={lbl} style={{ color: "var(--ink-soft)" }}>Email *</label>
-                    <input className={inp} style={inpStyle} type="email" required value={form.email || customer.email} onChange={e => setField("email", e.target.value)} placeholder="priya@example.com" />
-                  </div>
-                  <div>
-                    <label className={lbl} style={{ color: "var(--ink-soft)" }}>Phone *</label>
-                    <input className={inp} style={inpStyle} type="tel" required value={form.phone || customer.phone || ""} onChange={e => setField("phone", e.target.value)} placeholder="+91 98765 43210" />
-                  </div>
-                </div>
-              </section>
-
-              {/* Address */}
-              <section className="rounded-xl p-6 space-y-5" style={{ background: "white", border: "1px solid rgba(138,106,58,0.15)" }}>
-                <h2 className="text-xs font-bold uppercase tracking-[0.2em]" style={{ color: "var(--ink-soft)" }}>Delivery Address</h2>
-                <div className="grid gap-4">
-                  <div>
-                    <label className={lbl} style={{ color: "var(--ink-soft)" }}>Address Line 1 *</label>
-                    <input className={inp} style={inpStyle} required value={form.line1} onChange={e => setField("line1", e.target.value)} placeholder="House / Flat no., Street" />
-                  </div>
-                  <div>
-                    <label className={lbl} style={{ color: "var(--ink-soft)" }}>Address Line 2</label>
-                    <input className={inp} style={inpStyle} value={form.line2} onChange={e => setField("line2", e.target.value)} placeholder="Landmark, Area (optional)" />
-                  </div>
-                  <div className="grid gap-4 sm:grid-cols-3">
-                    <div>
-                      <label className={lbl} style={{ color: "var(--ink-soft)" }}>City *</label>
-                      <input className={inp} style={inpStyle} required value={form.city} onChange={e => setField("city", e.target.value)} placeholder="Mumbai" />
-                    </div>
-                    <div>
-                      <label className={lbl} style={{ color: "var(--ink-soft)" }}>State *</label>
-                      <input className={inp} style={inpStyle} required value={form.state} onChange={e => setField("state", e.target.value)} placeholder="Maharashtra" />
-                    </div>
-                    <div>
-                      <label className={lbl} style={{ color: "var(--ink-soft)" }}>Pincode *</label>
-                      <input className={inp} style={inpStyle} required value={form.pincode} onChange={e => setField("pincode", e.target.value)} placeholder="400001" />
-                    </div>
-                  </div>
-                </div>
-              </section>
-
-              {/* Notes */}
-              <div>
-                <label className={lbl} style={{ color: "var(--ink-soft)" }}>Order Notes (optional)</label>
-                <textarea className={inp} style={{ ...inpStyle, resize: "none" }} rows={2}
-                  value={form.notes} onChange={e => setField("notes", e.target.value)} placeholder="Special instructions, gift message…" />
-              </div>
+              {addressFormSections}
             </div>
-
-            {/* Right — summary + submit */}
             <div className="space-y-6">
               <div className="sticky top-6 space-y-4">
                 {orderSummary}

@@ -17,7 +17,7 @@ export function CartDrawer() {
 
   if (!open) return null;
 
-  const shipping = subtotal >= 50000 ? 0 : 99;
+  const shipping = subtotal >= 50000 ? 0 : 1;
 
   return (
     <div className="fixed inset-0 z-50" role="dialog" aria-modal="true">

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import crypto from "crypto";
 import { connectDB } from "@/lib/mongodb";
 import { Order } from "@/models/Order";
 import type { IOrderItem } from "@/models/Order";
@@ -6,7 +7,7 @@ import { getShopifyProduct } from "@/lib/shopify-collections";
 import { createShopifyDraftOrder, completeDraftOrder } from "@/lib/shopify-admin";
 
 async function nextOrderId(): Promise<string> {
-  const last = await Order.findOne({}, { orderId: 1 }).sort({ createdAt: -1 }).lean();
+  const last = await Order.findOne({}, { orderId: 1 }).sort({ createdAt: -1 }).lean() as { orderId: string } | null;
   if (!last) return "SJ-000001";
   const num = parseInt(last.orderId.split("-")[1] ?? "0", 10);
   return `SJ-${String(num + 1).padStart(6, "0")}`;
@@ -14,21 +15,31 @@ async function nextOrderId(): Promise<string> {
 
 export async function POST(req: NextRequest) {
   try {
-    await connectDB();
-
     const body = await req.json() as {
+      razorpayPaymentId: string;
+      razorpayOrderId:   string;
+      razorpaySignature: string;
       items: { productId: string; slug: string; qty: number; size?: string }[];
       customer: {
-        name: string; email: string; phone: string;
+        name:  string;
+        email: string;
+        phone: string;
         address: { line1: string; line2?: string; city: string; state: string; pincode: string };
       };
-      paymentMethod: "cod" | "prepaid";
       notes?: string;
     };
 
-    if (!body.items?.length || !body.customer || !body.paymentMethod) {
-      return NextResponse.json({ error: "missing_fields" }, { status: 400 });
+    // Verify Razorpay signature
+    const expected = crypto
+      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET!)
+      .update(`${body.razorpayOrderId}|${body.razorpayPaymentId}`)
+      .digest("hex");
+
+    if (expected !== body.razorpaySignature) {
+      return NextResponse.json({ error: "invalid_signature" }, { status: 400 });
     }
+
+    await connectDB();
 
     const orderItems: IOrderItem[] = [];
     for (const item of body.items) {
@@ -55,36 +66,36 @@ export async function POST(req: NextRequest) {
 
     const order = await Order.create({
       orderId,
-      items:          orderItems,
-      customer:       body.customer,
+      items:             orderItems,
+      customer:          body.customer,
       subtotal,
       shippingCharge,
       total,
-      paymentMethod:  body.paymentMethod,
-      paymentStatus:  "pending",
-      notes:          body.notes,
+      paymentMethod:     "prepaid",
+      paymentStatus:     "paid",
+      razorpayPaymentId: body.razorpayPaymentId,
+      razorpayOrderId:   body.razorpayOrderId,
+      notes:             body.notes,
     });
 
-    // Push to Shopify as a draft then immediately complete it so Delhivery sees a confirmed order
-    let shopifyOrderName: string | null = null;
     try {
       const draft = await createShopifyDraftOrder({
-        items: orderItems.map((i) => ({ name: i.name, price: i.price, qty: i.qty, size: i.size })),
-        customer: body.customer,
-        orderId: order.orderId,
-        paymentMethod: body.paymentMethod,
+        items:         orderItems.map((i) => ({ name: i.name, price: i.price, qty: i.qty, size: i.size })),
+        customer:      body.customer,
+        orderId:       order.orderId,
+        paymentMethod: "prepaid",
         shippingCharge,
       });
       if (draft) {
-        shopifyOrderName = await completeDraftOrder(draft.id);
+        await completeDraftOrder(draft.id);
       }
     } catch (err) {
-      console.error("[checkout] shopify order failed:", err);
+      console.error("[razorpay/verify] shopify order failed:", err);
     }
 
-    return NextResponse.json({ orderId: order.orderId, total: order.total, shopifyOrder: shopifyOrderName }, { status: 201 });
-  } catch (err: unknown) {
-    console.error("[checkout]", err);
+    return NextResponse.json({ orderId: order.orderId });
+  } catch (err) {
+    console.error("[razorpay/verify]", err);
     return NextResponse.json({ error: "internal_error" }, { status: 500 });
   }
 }
