@@ -90,13 +90,13 @@ export function ProductExplorer({ products }: { products: Product[] }) {
 
   const filterPanel = (
     <aside
-      className="sticky top-6 h-fit border bg-[rgba(255,251,245,0.82)] p-4 shadow-[0_24px_70px_rgba(82,45,12,0.08)] backdrop-blur"
-      style={{ borderColor: "rgba(138,106,58,0.18)" }}
+      className="sticky top-6 h-fit border p-4 shadow-[0_24px_70px_rgba(0,0,0,0.3)] backdrop-blur"
+      style={{ borderColor: "rgba(201,169,110,0.2)", background: "rgba(201,169,110,0.05)" }}
     >
-      <div className="flex items-center justify-between border-b pb-4" style={{ borderColor: "rgba(138,106,58,0.18)" }}>
+      <div className="flex items-center justify-between border-b pb-4" style={{ borderColor: "rgba(201,169,110,0.15)" }}>
         <div>
           <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-[var(--gold-dim)]">Refine</p>
-          <h2 className="mt-1 text-sm font-semibold">Find your finish</h2>
+          <h2 className="mt-1 text-sm font-semibold text-[var(--cream)]">Find your finish</h2>
         </div>
         {activeFilterCount > 0 ? (
           <button
@@ -114,7 +114,7 @@ export function ProductExplorer({ products }: { products: Product[] }) {
 
       <div className="mt-5 grid gap-6">
         <fieldset>
-          <legend className="mb-3 text-[11px] font-bold uppercase tracking-[0.22em] text-[var(--ink-soft)]">
+          <legend className="mb-3 text-[11px] font-bold uppercase tracking-[0.22em] text-[rgba(201,169,110,0.7)]">
             Price
           </legend>
           <div className="grid gap-2">
@@ -127,8 +127,8 @@ export function ProductExplorer({ products }: { products: Product[] }) {
                 onClick={() => setPriceFilter(band.value)}
               >
                 <span>
-                  <span className="block text-xs font-semibold">{band.label}</span>
-                  <span className="mt-0.5 block text-[10px] text-[var(--ink-soft)]">{band.helper}</span>
+                  <span className="block text-xs font-semibold text-[var(--cream)]">{band.label}</span>
+                  <span className="mt-0.5 block text-[10px] text-[rgba(245,230,200,0.5)]">{band.helper}</span>
                 </span>
                 {priceFilter === band.value ? <Check size={14} className="text-[var(--ruby)]" /> : null}
               </button>
@@ -143,7 +143,7 @@ export function ProductExplorer({ products }: { products: Product[] }) {
   );
 
   return (
-    <section className="bg-[var(--surface)]">
+    <section style={{ background: "var(--bg-dark)" }}>
       <div className="w-full px-5 py-10 sm:px-8 sm:py-14">
         <div
           className="relative overflow-hidden border bg-[var(--bg-dark)] px-5 py-8 text-[var(--cream)] sm:px-8 lg:px-10 lg:py-11"
@@ -176,12 +176,12 @@ export function ProductExplorer({ products }: { products: Product[] }) {
 
           <div className="min-w-0">
             <div
-              className="mb-5 grid gap-3 border bg-[rgba(255,251,245,0.78)] p-3 backdrop-blur sm:grid-cols-[1fr_auto_auto]"
-              style={{ borderColor: "rgba(138,106,58,0.18)" }}
+              className="mb-5 grid gap-3 border p-3 backdrop-blur sm:grid-cols-[1fr_auto_auto]"
+              style={{ background: "rgba(201,169,110,0.05)", borderColor: "rgba(201,169,110,0.18)" }}
             >
               <label
-                className="focus-within:ring-2 focus-within:ring-[var(--gold)] grid h-12 grid-cols-[auto_1fr] items-center gap-3 rounded-sm border bg-white px-3"
-                style={{ borderColor: "rgba(138,106,58,0.2)" }}
+                className="focus-within:ring-2 focus-within:ring-[var(--gold)] grid h-12 grid-cols-[auto_1fr] items-center gap-3 rounded-sm border px-3"
+                style={{ borderColor: "rgba(201,169,110,0.2)", background: "rgba(201,169,110,0.04)" }}
               >
                 <Search size={17} className="text-[var(--gold-dim)]" />
                 <span className="sr-only">Search jewellery</span>
@@ -189,7 +189,7 @@ export function ProductExplorer({ products }: { products: Product[] }) {
                   value={query}
                   onChange={(event) => setQuery(event.target.value)}
                   placeholder="Search by name, material, stone..."
-                  className="h-full min-w-0 bg-transparent text-sm outline-none placeholder:text-[rgba(107,66,38,0.58)]"
+                  className="h-full min-w-0 bg-transparent text-sm text-[var(--cream)] outline-none placeholder:text-[rgba(245,230,200,0.35)]"
                 />
               </label>
 
@@ -205,15 +205,15 @@ export function ProductExplorer({ products }: { products: Product[] }) {
               </button>
 
               <label
-                className="grid h-12 grid-cols-[auto_1fr] items-center gap-3 rounded-sm border bg-white px-3"
-                style={{ borderColor: "rgba(138,106,58,0.2)" }}
+                className="grid h-12 grid-cols-[auto_1fr] items-center gap-3 rounded-sm border px-3"
+                style={{ borderColor: "rgba(201,169,110,0.2)", background: "rgba(201,169,110,0.04)" }}
               >
                 <ArrowDownAZ size={17} className="text-[var(--gold-dim)]" />
                 <span className="sr-only">Sort products</span>
                 <select
                   value={sortMode}
                   onChange={(event) => setSortMode(event.target.value as SortMode)}
-                  className="h-full min-w-[168px] bg-transparent text-sm font-semibold outline-none"
+                  className="h-full min-w-[168px] bg-transparent text-sm font-semibold text-[var(--cream)] outline-none"
                 >
                   {sortOptions.map((option) => (
                     <option key={option.value} value={option.value}>
@@ -241,8 +241,8 @@ export function ProductExplorer({ products }: { products: Product[] }) {
             ) : null}
 
             <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <p className="text-sm font-medium text-[var(--ink-soft)]">
-                Showing <span className="font-bold text-[var(--foreground)]">{visibleProducts.length}</span> of {products.length} pieces
+              <p className="text-sm font-medium text-[rgba(245,230,200,0.55)]">
+                Showing <span className="font-bold text-[var(--cream)]">{visibleProducts.length}</span> of {products.length} pieces
               </p>
               <div className="flex flex-wrap gap-2">
                 {activeFilterCount > 0 ? (
@@ -263,13 +263,13 @@ export function ProductExplorer({ products }: { products: Product[] }) {
               <ProductGrid products={visibleProducts} />
             ) : (
               <div
-                className="grid min-h-[320px] place-items-center border bg-[var(--surface-card)] px-6 text-center"
-                style={{ borderColor: "rgba(138,106,58,0.18)" }}
+                className="grid min-h-[320px] place-items-center border px-6 text-center"
+                style={{ borderColor: "rgba(201,169,110,0.18)", background: "rgba(201,169,110,0.04)" }}
               >
                 <div>
                   <Gem className="mx-auto text-[var(--gold-dim)]" size={30} />
-                  <h2 className="display-font mt-4 text-3xl font-semibold">No pieces found</h2>
-                  <p className="mt-2 max-w-md text-sm leading-6 text-[var(--ink-soft)]">
+                  <h2 className="display-font mt-4 text-3xl font-semibold text-[var(--cream)]">No pieces found</h2>
+                  <p className="mt-2 max-w-md text-sm leading-6 text-[rgba(245,230,200,0.55)]">
                     Try removing a filter or searching for a broader material, stone, or collection.
                   </p>
                   <button
@@ -317,7 +317,7 @@ function FilterChipGroup({
 }) {
   return (
     <fieldset>
-      <legend className="mb-3 text-[11px] font-bold uppercase tracking-[0.22em] text-[var(--ink-soft)]">
+      <legend className="mb-3 text-[11px] font-bold uppercase tracking-[0.22em] text-[rgba(201,169,110,0.7)]">
         {title}
       </legend>
       <div className="flex flex-wrap gap-2">

@@ -34,21 +34,25 @@ export function ProductCard({ product }: ProductCardProps) {
 
   return (
     <article
-      className="group relative overflow-hidden rounded-sm bg-[var(--surface-card)] shadow-[0_18px_50px_rgba(82,45,12,0.08)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_24px_70px_rgba(82,45,12,0.14)]"
-      style={{ border: "1px solid var(--line)" }}
+      className="group relative overflow-hidden rounded-sm transition duration-300 hover:-translate-y-1"
+      style={{
+        background: "rgba(201,169,110,0.05)",
+        border: "1px solid rgba(201,169,110,0.18)",
+        boxShadow: "0 4px 24px rgba(0,0,0,0.3)",
+      }}
     >
       <button
         type="button"
         aria-label={saved ? `Remove ${product.name} from wishlist` : `Save ${product.name} to wishlist`}
         title={saved ? "Saved to wishlist" : "Save to wishlist"}
         onClick={handleWishlist}
-        className="focus-ring absolute right-3 top-12 z-20 grid size-9 place-items-center rounded-full border bg-[rgba(255,251,245,0.9)] text-[var(--ruby)] shadow-[0_8px_24px_rgba(14,4,4,0.16)] transition hover:scale-105"
+        className="focus-ring absolute right-3 top-12 z-20 grid size-9 place-items-center rounded-full border bg-[rgba(24,6,6,0.85)] text-[var(--ruby)] shadow-[0_8px_24px_rgba(0,0,0,0.3)] transition hover:scale-105"
         style={{ borderColor: saved ? "rgba(155,28,28,0.35)" : "rgba(138,106,58,0.24)" }}
       >
         <Heart size={16} fill={saved ? "currentColor" : "none"} />
       </button>
       <Link href={`/products/${product.slug}` as Route} className="block">
-        <div className="relative aspect-[4/5] overflow-hidden bg-[#f4eadc]">
+        <div className="relative aspect-[4/5] overflow-hidden" style={{ background: "rgba(201,169,110,0.07)" }}>
           <div
             aria-hidden="true"
             className="absolute inset-0 opacity-0 transition duration-500 group-hover:opacity-100"
@@ -95,11 +99,11 @@ export function ProductCard({ product }: ProductCardProps) {
             <Sparkles size={12} />
             {product.material} / {product.stone}
           </p>
-          <h3 className="mt-1.5 text-sm font-semibold leading-snug sm:text-base">{product.name}</h3>
+          <h3 className="mt-1.5 text-sm font-semibold leading-snug sm:text-base" style={{ color: "var(--cream)" }}>{product.name}</h3>
           <div className="mt-2 flex flex-wrap items-baseline gap-2">
-            <p className="text-sm font-bold" style={{ color: "var(--foreground)" }}>{formatPrice(product.price)}</p>
+            <p className="text-sm font-bold" style={{ color: "var(--cream)" }}>{formatPrice(product.price)}</p>
             {hasMarkdown && product.originalPrice ? (
-              <p className="text-xs font-medium line-through" style={{ color: "rgba(107,66,38,0.55)" }}>
+              <p className="text-xs font-medium line-through" style={{ color: "rgba(245,230,200,0.38)" }}>
                 {formatPrice(product.originalPrice)}
               </p>
             ) : null}

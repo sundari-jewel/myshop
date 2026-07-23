@@ -46,7 +46,7 @@ const REVIEWS = [
     name: "Ritu Agarwal",
     location: "Delhi",
     rating: 5,
-    text: "Purchased the bridal set for my niece. The ceremony and reception looks were both perfection. The BIS certification gave us complete confidence.",
+    text: "Purchased the bridal set for my niece. The ceremony and reception looks were both perfection. The quality and finish gave us complete confidence.",
     avatar: "/assets/Ellipse_10_7.png",
     product: "Meera Pearl Choker",
     verified: true,
@@ -80,7 +80,7 @@ function StarRating({ count }: { count: number }) {
 
 export function CustomerReviews() {
   return (
-    <section className="overflow-hidden py-8 sm:py-10" style={{ background: "#f4f3f4" }}>
+    <section className="overflow-hidden py-8 sm:py-10" style={{ background: "var(--bg-dark)" }}>
       <div className="mb-8 flex items-center justify-center gap-5 sm:gap-7">
         <span className="hidden h-px w-28 bg-gradient-to-r from-transparent via-[var(--gold)] to-transparent sm:block" />
         <h2 className="display-font text-center text-[2.2rem] font-semibold italic leading-none tracking-[0.08em] text-[var(--gold)] drop-shadow-[0_2px_1px_rgba(70,40,0,0.32)] sm:text-[2.75rem]">
@@ -113,7 +113,7 @@ export function CustomerReviews() {
                   </div>
 
                   <div className="min-w-0 flex-1">
-                    <p className="text-[12px] font-bold leading-5 text-black">
+                    <p className="text-[12px] font-bold leading-5 text-[var(--cream)]">
                       My experience was amazing after purchasing this product. I was eagerly waiting to buy this. Price and quality is amazing you can buy it. It&apos;s give a tough competition to gold products.
                     </p>
                     <div className="mt-3">

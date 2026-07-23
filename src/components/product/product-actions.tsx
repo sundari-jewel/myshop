@@ -65,7 +65,7 @@ export function ProductActions({ productId, slug, productName, image, material, 
       {sizes && sizes.length > 0 && (
         <div>
           <div className="mb-2.5 flex items-center justify-between">
-            <span className="text-xs font-semibold uppercase tracking-[0.18em]" style={{ color: "var(--foreground)" }}>Ring Size</span>
+            <span className="text-xs font-semibold uppercase tracking-[0.18em]" style={{ color: "var(--cream)" }}>Ring Size</span>
             <button type="button" className="text-[11px] underline underline-offset-2" style={{ color: "var(--gold-dim)" }}>Size guide</button>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -87,11 +87,11 @@ export function ProductActions({ productId, slug, productName, image, material, 
 
       {/* Quantity */}
       <div className="flex items-center gap-4">
-        <span className="text-xs font-semibold uppercase tracking-[0.18em]" style={{ color: "var(--foreground)" }}>Qty</span>
+        <span className="text-xs font-semibold uppercase tracking-[0.18em]" style={{ color: "var(--cream)" }}>Qty</span>
         <div className="flex items-center overflow-hidden rounded-sm" style={{ border: "1.5px solid rgba(138,106,58,0.3)" }}>
-          <button type="button" onClick={() => setQty(q => Math.max(1, q - 1))} className="flex h-9 w-9 items-center justify-center text-lg transition-colors hover:bg-[var(--surface-warm)]">−</button>
-          <span className="flex h-9 w-10 items-center justify-center text-sm font-semibold">{qty}</span>
-          <button type="button" onClick={() => setQty(q => q + 1)} className="flex h-9 w-9 items-center justify-center text-lg transition-colors hover:bg-[var(--surface-warm)]">+</button>
+          <button type="button" onClick={() => setQty(q => Math.max(1, q - 1))} className="flex h-9 w-9 items-center justify-center text-lg text-[var(--cream)] transition-colors hover:bg-[rgba(201,169,110,0.12)]">−</button>
+          <span className="flex h-9 w-10 items-center justify-center text-sm font-semibold text-[var(--cream)]">{qty}</span>
+          <button type="button" onClick={() => setQty(q => q + 1)} className="flex h-9 w-9 items-center justify-center text-lg text-[var(--cream)] transition-colors hover:bg-[rgba(201,169,110,0.12)]">+</button>
         </div>
       </div>
 
@@ -105,8 +105,8 @@ export function ProductActions({ productId, slug, productName, image, material, 
         </button>
 
         <button type="button" onClick={handleBuyNow}
-          className="focus-ring flex items-center justify-center gap-2.5 rounded-sm border text-[11px] font-bold uppercase tracking-[0.22em] transition-colors duration-200 hover:bg-[var(--gold)] hover:text-[var(--bg-dark)]"
-          style={{ height: 52, border: "1.5px solid var(--gold)", color: "var(--gold)" }}>
+          className="focus-ring flex items-center justify-center gap-2.5 rounded-sm border text-[11px] font-bold uppercase tracking-[0.22em] text-[var(--gold)] transition-colors duration-200 hover:bg-[var(--gold)] hover:text-[var(--bg-dark)]"
+          style={{ height: 52, border: "1.5px solid var(--gold)" }}>
           <Zap size={15} strokeWidth={1.8} />
           Buy Now
         </button>

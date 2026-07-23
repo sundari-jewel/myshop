@@ -17,7 +17,7 @@ export function ImageGallery({ images, productName }: ImageGalleryProps) {
       <div
         className="relative flex-1 min-w-0 overflow-hidden"
         style={{
-          background: "var(--surface-warm)",
+          background: "rgba(201,169,110,0.07)",
           borderRadius: "6px",
           aspectRatio: "1 / 1",
         }}
@@ -47,7 +47,7 @@ export function ImageGallery({ images, productName }: ImageGalleryProps) {
                 width: 80,
                 height: 80,
                 borderRadius: "4px",
-                background: "var(--surface-warm)",
+                background: "rgba(201,169,110,0.07)",
                 border: active === i
                   ? "2px solid var(--gold)"
                   : "2px solid transparent",

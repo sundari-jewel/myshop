@@ -120,14 +120,14 @@ function CollectionLayout({
   products: import("@/types/commerce").Product[];
 }) {
   return (
-    <>
+    <div style={{ background: "var(--bg-dark)", minHeight: "60vh" }}>
       <section className="container-shell py-12">
         {products.length > 0 ? (
           <ProductGrid products={products} />
         ) : (
-          <p className="py-20 text-center text-sm text-[var(--ink-soft)]">No products found in this collection.</p>
+          <p className="py-20 text-center text-sm text-[rgba(245,230,200,0.55)]">No products found in this collection.</p>
         )}
       </section>
-    </>
+    </div>
   );
 }
