@@ -38,9 +38,19 @@ export async function GET(req: NextRequest) {
     console.error("[shopify/token] failed to write .env.local:", err);
   }
 
-  return NextResponse.json({
-    success: true,
-    message: ".env.local updated. Restart your dev server now (Ctrl+C then npm run dev).",
-    access_token: data.access_token,
-  });
+  const token = data.access_token;
+  return new Response(
+    `<!DOCTYPE html>
+<html>
+<head><title>Shopify Token</title></head>
+<body style="font-family:sans-serif;padding:40px;max-width:700px;margin:auto">
+  <h2>Access Token</h2>
+  <p>Copy this and set it as <strong>SHOPIFY_ADMIN_ACCESS_TOKEN</strong> in Vercel:</p>
+  <textarea id="t" rows="3" style="width:100%;font-size:14px;padding:10px;word-break:break-all" readonly>${token}</textarea>
+  <br/><br/>
+  <button onclick="navigator.clipboard.writeText(document.getElementById('t').value).then(()=>this.textContent='Copied!')" style="padding:10px 24px;font-size:16px;cursor:pointer">Copy Token</button>
+</body>
+</html>`,
+    { headers: { "Content-Type": "text/html" } },
+  );
 }
