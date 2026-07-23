@@ -116,11 +116,23 @@ export function SiteHeader() {
             <div className="hidden items-center justify-end gap-6 lg:flex">
               <Link
                 href={(customer ? "/wishlist" : "/signin?next=/wishlist") as Route}
-                className="focus-ring text-[11px] font-medium uppercase tracking-[0.28em] transition-colors hover:text-[var(--gold-light)]"
-                style={{ color: "var(--gold-pale)" }}
+                aria-label="Wishlist"
+                className="focus-ring group relative"
               >
-                Wish-list
-                {wishlist.count > 0 && <span className="ml-1 text-[var(--gold-light)]">({wishlist.count})</span>}
+                <Heart
+                  size={24}
+                  strokeWidth={1.8}
+                  className="transition-all duration-300 ease-out group-hover:scale-125 group-hover:fill-white group-hover:drop-shadow-[0_0_6px_rgba(255,255,255,0.5)]"
+                  style={{ color: "white" }}
+                />
+                {wishlist.count > 0 && (
+                  <span
+                    className="absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full text-[9px] font-bold"
+                    style={{ background: "var(--ruby)", color: "white" }}
+                  >
+                    {wishlist.count}
+                  </span>
+                )}
               </Link>
 <Link
                 href={(customer ? "/account" : "/signin?next=/account") as Route}
@@ -217,8 +229,14 @@ export function SiteHeader() {
                 <Link href={(customer ? "/account" : "/signin?next=/account") as Route} className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em]" style={{ color: "var(--cream-muted)" }}>
                   <User size={15} strokeWidth={1.5} /> Account
                 </Link>
-                <Link href={(customer ? "/wishlist" : "/signin?next=/wishlist") as Route} className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em]" style={{ color: "var(--cream-muted)" }}>
-                  <Heart size={15} strokeWidth={1.5} /> Wishlist {wishlist.count > 0 ? `(${wishlist.count})` : ""}
+                <Link href={(customer ? "/wishlist" : "/signin?next=/wishlist") as Route} className="group flex items-center gap-2 text-[10px] uppercase tracking-[0.2em]" style={{ color: "var(--cream-muted)" }}>
+                  <Heart
+                    size={18}
+                    strokeWidth={1.5}
+                    className="transition-all duration-300 ease-out group-hover:scale-125 group-hover:fill-white"
+                    style={{ color: "white" }}
+                  />
+                  Wishlist {wishlist.count > 0 ? `(${wishlist.count})` : ""}
                 </Link>
               </div>
             </div>

@@ -46,10 +46,18 @@ export function ProductCard({ product }: ProductCardProps) {
         aria-label={saved ? `Remove ${product.name} from wishlist` : `Save ${product.name} to wishlist`}
         title={saved ? "Saved to wishlist" : "Save to wishlist"}
         onClick={handleWishlist}
-        className="focus-ring absolute right-3 top-12 z-20 grid size-9 place-items-center rounded-full border bg-[rgba(24,6,6,0.85)] text-[var(--ruby)] shadow-[0_8px_24px_rgba(0,0,0,0.3)] transition hover:scale-105"
-        style={{ borderColor: saved ? "rgba(155,28,28,0.35)" : "rgba(138,106,58,0.24)" }}
+        className="focus-ring absolute right-3 top-3 z-20 grid size-10 place-items-center rounded-full border bg-[rgba(24,6,6,0.85)] shadow-[0_8px_24px_rgba(0,0,0,0.4)] transition-all duration-300 ease-out hover:scale-125 active:scale-95"
+        style={{
+          borderColor: saved ? "rgba(220,38,38,0.6)" : "rgba(255,255,255,0.25)",
+          color: saved ? "rgb(220,38,38)" : "white",
+        }}
       >
-        <Heart size={16} fill={saved ? "currentColor" : "none"} />
+        <Heart
+          size={19}
+          strokeWidth={1.8}
+          fill={saved ? "rgb(220,38,38)" : "none"}
+          className={saved ? "drop-shadow-[0_0_8px_rgba(220,38,38,0.7)]" : ""}
+        />
       </button>
       <Link href={`/products/${product.slug}` as Route} className="block">
         <div className="relative aspect-[4/5] overflow-hidden" style={{ background: "rgba(201,169,110,0.07)" }}>

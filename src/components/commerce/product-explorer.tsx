@@ -294,7 +294,7 @@ function FilterOption({ label, active, onClick }: { label: string; active: boole
   return (
     <button
       type="button"
-      className="focus-ring grid grid-cols-[1fr_auto] items-center rounded-sm border border-[rgba(138,106,58,0.2)] px-3 py-2.5 text-left text-sm font-semibold transition data-[active=true]:border-[var(--ruby)] data-[active=true]:bg-[rgba(155,28,28,0.06)]"
+      className="focus-ring grid grid-cols-[1fr_auto] items-center rounded-sm border border-[rgba(138,106,58,0.2)] px-3 py-2.5 text-left text-sm font-semibold text-[var(--cream)] transition data-[active=true]:border-[var(--ruby)] data-[active=true]:bg-[rgba(155,28,28,0.06)]"
       data-active={active}
       onClick={onClick}
     >
@@ -323,7 +323,7 @@ function FilterChipGroup({
       <div className="flex flex-wrap gap-2">
         <button
           type="button"
-          className="focus-ring rounded-sm border border-[rgba(138,106,58,0.22)] px-3 py-2 text-xs font-semibold transition data-[active=true]:border-[var(--ruby)] data-[active=true]:bg-[var(--ruby)] data-[active=true]:text-white"
+          className="focus-ring rounded-sm border border-[rgba(138,106,58,0.22)] px-3 py-2 text-xs font-semibold text-[var(--cream)] transition data-[active=true]:border-[var(--ruby)] data-[active=true]:bg-[var(--ruby)] data-[active=true]:text-white"
           data-active={value === "all"}
           onClick={() => onChange("all")}
         >
@@ -333,7 +333,7 @@ function FilterChipGroup({
           <button
             key={option}
             type="button"
-            className="focus-ring rounded-sm border border-[rgba(138,106,58,0.22)] px-3 py-2 text-xs font-semibold transition data-[active=true]:border-[var(--ruby)] data-[active=true]:bg-[var(--ruby)] data-[active=true]:text-white"
+            className="focus-ring rounded-sm border border-[rgba(138,106,58,0.22)] px-3 py-2 text-xs font-semibold text-[var(--cream)] transition data-[active=true]:border-[var(--ruby)] data-[active=true]:bg-[var(--ruby)] data-[active=true]:text-white"
             data-active={value === option}
             onClick={() => onChange(option)}
           >
