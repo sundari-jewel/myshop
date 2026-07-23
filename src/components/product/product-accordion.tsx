@@ -18,7 +18,7 @@ function AccordionRow({ label, content }: AccordionItem) {
         onClick={() => setOpen((o) => !o)}
         className="flex w-full items-center justify-between py-4 text-left"
       >
-        <span className="text-[11px] font-bold uppercase tracking-[0.22em]" style={{ color: "var(--foreground)" }}>
+        <span className="text-[11px] font-bold uppercase tracking-[0.22em]" style={{ color: "var(--cream)" }}>
           {label}
         </span>
         <ChevronDown
@@ -33,7 +33,7 @@ function AccordionRow({ label, content }: AccordionItem) {
         />
       </button>
       {open && (
-        <div className="pb-5 text-sm leading-relaxed" style={{ color: "var(--ink-soft)" }}>
+        <div className="pb-5 text-sm leading-relaxed" style={{ color: "rgba(245,230,200,0.7)" }}>
           {content}
         </div>
       )}
@@ -76,7 +76,7 @@ export function ProductAccordion({
             ].map(([k, v]) => (
               <div key={k}>
                 <dt className="text-[10px] uppercase tracking-[0.14em] mb-0.5" style={{ color: "var(--gold-dim)" }}>{k}</dt>
-                <dd className="font-medium" style={{ color: "var(--foreground)" }}>{v}</dd>
+                <dd className="font-medium" style={{ color: "var(--cream)" }}>{v}</dd>
               </div>
             ))}
           </dl>

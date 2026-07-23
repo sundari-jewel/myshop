@@ -4,27 +4,27 @@ import type { Route } from "next";
 
 const WEDDING_COLLECTIONS = [
   {
-    src: "/assets/shopforwedding1.png",
+    src: "/assets/shopforwedding1.webp",
     alt: "Haldi Collection",
     href: "/collections/bridal",
   },
   {
-    src: "/assets/shopforwedding2.png",
+    src: "/assets/shopforwedding2.webp",
     alt: "Wedding Bridal Collection",
     href: "/collections/bridal",
   },
   {
-    src: "/assets/shopforwedding3.png",
+    src: "/assets/shopforwedding3.webp",
     alt: "Sangeet Collection",
     href: "/collections/bridal",
   },
   {
-    src: "/assets/shopforwedding4.png",
+    src: "/assets/shopforwedding4.webp",
     alt: "Reception Collection",
     href: "/collections/bridal",
   },
   {
-    src: "/assets/shopforwedding5.png",
+    src: "/assets/shopforwedding5.webp",
     alt: "Mehendi Collection",
     href: "/collections/bridal",
   },
@@ -44,7 +44,7 @@ export function WeddingShop() {
       <div className="relative h-[120vh] overflow-hidden">
         <div className="absolute inset-0">
           <Image
-            src="/assets/Shop-for-wedding-bg.png"
+            src="/assets/Shop-for-wedding-bg.webp"
             alt="Shop for wedding jewellery"
             fill
             sizes="100vw"

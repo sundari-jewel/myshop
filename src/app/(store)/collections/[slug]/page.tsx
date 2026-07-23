@@ -4,6 +4,7 @@ import { ProductGrid } from "@/components/commerce/product-grid";
 import { collections } from "@/data/collections";
 import { getShopifyCollection } from "@/lib/shopify-collections";
 import { getProductsByGenderGid, getProductsByTaxonomyCategory, GENDER_GIDS, TAXONOMY_CATEGORY_IDS } from "@/lib/shopify-admin";
+import { fetchAllShopifyProducts } from "@/lib/shopify-collections";
 import { createMetadata } from "@/lib/seo";
 
 type CollectionPageProps = {
@@ -78,18 +79,25 @@ const GENDER_SLUGS: Record<string, { genderGid: string | null; title: string; de
     genderGid: GENDER_GIDS.female,
     title: "Crafted for Her",
     description: "Elegant jewellery for every woman, for every moment.",
-    image: "/assets/CrafterForHerLeft.png",
+    image: "/assets/CrafterForHerLeft.webp",
   },
   "mens-edit": {
     genderGid: GENDER_GIDS.male,
     title: "Crafted for Him",
     description: "Timeless jewellery for every man, for every occasion.",
-    image: "/assets/CraftedForHimRight.png",
+    image: "/assets/CraftedForHimRight.webp",
   },
 };
 
 export default async function CollectionPage({ params }: CollectionPageProps) {
   const { slug } = await params;
+
+  // 0. Gifting page — random selection of products
+  if (slug === "gifting") {
+    const all = await fetchAllShopifyProducts();
+    const shuffled = all.sort(() => Math.random() - 0.5).slice(0, 12);
+    return <CollectionLayout products={shuffled} title="Gifts They'll Love" subtitle="Handpicked for every occasion — thoughtful jewellery for the people who matter." />;
+  }
 
   // 1. Jewellery category pages: fetch from Shopify Admin API by taxonomy category_id
   const categoryConfig = CATEGORY_SLUGS[slug];
@@ -116,12 +124,23 @@ export default async function CollectionPage({ params }: CollectionPageProps) {
 
 function CollectionLayout({
   products,
+  title,
+  subtitle,
 }: {
   products: import("@/types/commerce").Product[];
+  title?: string;
+  subtitle?: string;
 }) {
   return (
     <div style={{ background: "var(--bg-dark)", minHeight: "60vh" }}>
-      <section className="container-shell py-12">
+      {title && (
+        <div className="container-shell pb-2 pt-12 text-center">
+          <h1 className="display-font text-4xl font-semibold italic text-[var(--gold)] sm:text-5xl">{title}</h1>
+          {subtitle && <p className="mx-auto mt-3 max-w-xl text-sm leading-7 text-[rgba(245,230,200,0.55)]">{subtitle}</p>}
+          <div className="mx-auto mt-6 h-px w-24" style={{ background: "linear-gradient(to right, transparent, var(--gold), transparent)" }} />
+        </div>
+      )}
+      <section className="container-shell py-10">
         {products.length > 0 ? (
           <ProductGrid products={products} />
         ) : (

@@ -3,10 +3,10 @@ import Link from "next/link";
 import type { Route } from "next";
 
 const SQUARE_IMAGES = [
-  { src: "/assets/squareImage1.png", alt: "Sundari jewellery style detail 1" },
-  { src: "/assets/squareImage2.png", alt: "Sundari jewellery style detail 2" },
-  { src: "/assets/squareImage3.png", alt: "Sundari jewellery style detail 3" },
-  { src: "/assets/squareImage4.png", alt: "Sundari jewellery style detail 4" },
+  { src: "/assets/squareImage1.webp", alt: "Sundari jewellery style detail 1" },
+  { src: "/assets/squareImage2.webp", alt: "Sundari jewellery style detail 2" },
+  { src: "/assets/squareImage3.webp", alt: "Sundari jewellery style detail 3" },
+  { src: "/assets/squareImage4.webp", alt: "Sundari jewellery style detail 4" },
 ] as const;
 
 export function ShopByGender() {
@@ -26,7 +26,7 @@ export function ShopByGender() {
           className="focus-ring group relative block overflow-hidden"
         >
           <Image
-            src="/assets/CrafterForHerLeft.png"
+            src="/assets/CrafterForHerLeft.webp"
             alt="Crafted for her"
             width={686}
             height={850}
@@ -40,7 +40,7 @@ export function ShopByGender() {
           className="focus-ring group relative block overflow-hidden"
         >
           <Image
-            src="/assets/CraftedForHimRight.png"
+            src="/assets/CraftedForHimRight.webp"
             alt="Crafted for him"
             width={686}
             height={850}

@@ -5,28 +5,32 @@ import type { Route } from "next";
 import { useState } from "react";
 
 const SHOP_LINKS = [
-  { label: "All Jewellery", href: "/products" },
-  { label: "Bridal Collections", href: "/collections/bridal" },
-  { label: "Daily Wear", href: "/collections/daily-gold" },
-  { label: "Diamond Edit", href: "/collections/diamond-edit" },
-  { label: "Mangalsutra", href: "/collections/mangalsutra" },
-  { label: "Men's Jewellery", href: "/collections/mens-edit" },
+  { label: "All Jewellery",    href: "/products" },
+  { label: "Earrings",         href: "/collections/earrings" },
+  { label: "Necklaces",        href: "/collections/necklaces" },
+  { label: "Bangles",          href: "/collections/bangles" },
+  { label: "Rings",            href: "/collections/rings" },
+  { label: "Tika",             href: "/collections/tika" },
+  { label: "Watches",          href: "/collections/watches" },
+  { label: "Rakhi",            href: "/collections/rakhi" },
+  { label: "Gifting",          href: "/collections/gifting" },
 ];
 
-const CARE_LINKS = [
-  { label: "Size Guide", href: "/size-guide" },
-  { label: "Metal & Stone Guide", href: "/material-guide" },
-  { label: "Certification Verify", href: "/certification" },
-  { label: "Book Appointment", href: "/app/book-appointment" },
-  { label: "Gift Cards", href: "/gift-cards" },
+const COLLECTION_LINKS = [
+  { label: "Bridal Collection", href: "/collections/bridal" },
+  { label: "Diamond Edit",      href: "/collections/diamond-edit" },
+  { label: "Daily Wear",        href: "/collections/daily-gold" },
+  { label: "Women's Edit",      href: "/collections/womens-edit" },
+  { label: "Men's Edit",        href: "/collections/mens-edit" },
 ];
 
 const SUPPORT_LINKS: Array<{ label: string; href: string; external?: boolean }> = [
-  { label: "Track Your Order", href: "https://shiprocket.co/tracking/", external: true },
-  { label: "Returns & Exchanges", href: "/returns" },
-  { label: "Shipping Policy", href: "/shipping" },
-  { label: "FAQs", href: "/faq" },
-  { label: "Contact Us", href: "/contact" },
+  { label: "Track Your Order",   href: "https://shiprocket.co/tracking/", external: true },
+  { label: "My Account",         href: "/account" },
+  { label: "My Wishlist",        href: "/wishlist" },
+  { label: "Shipping Policy",    href: "/shipping" },
+  { label: "Returns & Exchanges",href: "/returns" },
+  { label: "Contact Us",         href: "/contact" },
 ];
 
 export function SiteFooter() {
@@ -169,16 +173,16 @@ export function SiteFooter() {
             </ul>
           </div>
 
-          {/* Col 3 - Care */}
+          {/* Col 3 - Collections */}
           <div>
             <h4
               className="text-[0.65rem] font-bold uppercase tracking-[0.3em] mb-5"
               style={{ color: "var(--gold)" }}
             >
-              Guides &amp; Services
+              Collections
             </h4>
             <ul className="space-y-3">
-              {CARE_LINKS.map((l) => (
+              {COLLECTION_LINKS.map((l) => (
                 <li key={l.label}>
                   <Link
                     href={l.href as Route}

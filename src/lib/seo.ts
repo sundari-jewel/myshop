@@ -13,7 +13,7 @@ type SeoInput = {
 export function createMetadata({ title, description, path = "/", image }: SeoInput): Metadata {
   const resolvedTitle = title ? `${title} | ${brandName}` : brandName;
   const url = new URL(path, siteUrl).toString();
-  const imageUrl = image ? new URL(image, siteUrl).toString() : new URL("/assets/Final_product_reveal.png", siteUrl).toString();
+  const imageUrl = image ? new URL(image, siteUrl).toString() : new URL("/assets/Final_product_reveal.webp", siteUrl).toString();
 
   return {
     title: resolvedTitle,

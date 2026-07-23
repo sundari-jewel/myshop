@@ -1,21 +1,21 @@
 import Image from "next/image";
 
 const ROW_A = [
-  { src: "/assets/image_25.png",         alt: "Customer wearing Sundari necklace" },
-  { src: "/assets/image_26.png",         alt: "Customer in Sundari earrings" },
-  { src: "/assets/image_27.png",         alt: "Customer wearing Sundari bangles" },
-  { src: "/assets/image_23.png",         alt: "Sundari jewellery on customer" },
-  { src: "/assets/image_24_2.png",       alt: "Sundari gold necklace worn" },
-  { src: "/assets/image_24_4.png",       alt: "Sundari bridal look" },
+  { src: "/assets/image_25.webp",         alt: "Customer wearing Sundari necklace" },
+  { src: "/assets/image_26.webp",         alt: "Customer in Sundari earrings" },
+  { src: "/assets/image_27.webp",         alt: "Customer wearing Sundari bangles" },
+  { src: "/assets/image_23.webp",         alt: "Sundari jewellery on customer" },
+  { src: "/assets/image_24_2.webp",       alt: "Sundari gold necklace worn" },
+  { src: "/assets/image_24_4.webp",       alt: "Sundari bridal look" },
 ] as const;
 
 const ROW_B = [
-  { src: "/assets/catalog-asset-01.png", alt: "Sundari jewellery close-up" },
-  { src: "/assets/image_24_3.png",       alt: "Sundari collection worn" },
-  { src: "/assets/catalog-asset-02.png", alt: "Sundari gold necklace detail" },
-  { src: "/assets/image_28.png",         alt: "Customer wearing Sundari ring" },
-  { src: "/assets/catalog-asset-03.png", alt: "Sundari diamond earrings" },
-  { src: "/assets/image_24_5.png",       alt: "Sundari bridal jewellery" },
+  { src: "/assets/catalog-asset-01.webp", alt: "Sundari jewellery close-up" },
+  { src: "/assets/image_24_3.webp",       alt: "Sundari collection worn" },
+  { src: "/assets/catalog-asset-02.webp", alt: "Sundari gold necklace detail" },
+  { src: "/assets/image_28.webp",         alt: "Customer wearing Sundari ring" },
+  { src: "/assets/catalog-asset-03.webp", alt: "Sundari diamond earrings" },
+  { src: "/assets/image_24_5.webp",       alt: "Sundari bridal jewellery" },
 ] as const;
 
 const TRACK_A = [...ROW_A, ...ROW_A];

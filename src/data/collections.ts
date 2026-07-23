@@ -5,18 +5,18 @@ export const collections: Collection[] = [
     slug: "bridal",
     name: "Bridal Heirlooms",
     description: "Statement sets designed for wedding rituals, receptions, and family keepsakes.",
-    image: "/assets/Final_product_reveal.png",
+    image: "/assets/Final_product_reveal.webp",
   },
   {
     slug: "daily-gold",
     name: "Daily Gold",
     description: "Lightweight gold pieces for office days, dinners, and effortless gifting.",
-    image: "/assets/2567012-removebg-preview_2.png",
+    image: "/assets/2567012-removebg-preview_2.webp",
   },
   {
     slug: "diamond-edit",
     name: "Diamond Edit",
     description: "Clean diamond silhouettes with refined settings and modern proportions.",
-    image: "/assets/Diamond_close_up.png",
+    image: "/assets/Diamond_close_up.webp",
   },
 ];

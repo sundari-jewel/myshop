@@ -9,7 +9,7 @@ export function TryBeforeShine() {
       <div className="grid lg:grid-cols-[1.155fr_1fr]">
         <div className="relative">
           <Image
-            src="/assets/try-before-you-shine-content-empty.png"
+            src="/assets/try-before-you-shine-content-empty.webp"
             alt="Try before you shine virtual atelier"
             width={736}
             height={858}
@@ -20,7 +20,7 @@ export function TryBeforeShine() {
 
         <div className="relative">
           <Image
-            src="/assets/try-before-you-shine-img.png"
+            src="/assets/try-before-you-shine-img.webp"
             alt="Jewellery try-on model wearing a necklace and earrings"
             width={637}
             height={858}

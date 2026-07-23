@@ -32,7 +32,7 @@ export function Hero() {
       </div>
       <div className="relative min-h-[520px] overflow-hidden rounded-md bg-[var(--surface-deep)]">
         <Image
-          src="/assets/golden-swirl-frame-dark-background-with-text-space.png"
+          src="/assets/golden-swirl-frame-dark-background-with-text-space.webp"
           alt="Gold jewellery campaign background"
           fill
           priority
@@ -40,7 +40,7 @@ export function Hero() {
           className="object-cover"
         />
         <Image
-          src="/assets/ChatGPT_Image_Apr_25__2026__01_41_00_PM_1.png"
+          src="/assets/ChatGPT_Image_Apr_25__2026__01_41_00_PM_1.webp"
           alt="Sundari gold jewellery hero piece"
           fill
           priority

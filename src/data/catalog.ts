@@ -5,19 +5,19 @@ export const collections: Collection[] = [
     slug: "bridal",
     name: "Bridal Heirlooms",
     description: "Statement sets designed for wedding rituals, receptions, and family keepsakes.",
-    image: "/assets/Final_product_reveal.png"
+    image: "/assets/Final_product_reveal.webp"
   },
   {
     slug: "daily-gold",
     name: "Daily Gold",
     description: "Lightweight gold pieces for office days, dinners, and effortless gifting.",
-    image: "/assets/2567012-removebg-preview_2.png"
+    image: "/assets/2567012-removebg-preview_2.webp"
   },
   {
     slug: "diamond-edit",
     name: "Diamond Edit",
     description: "Clean diamond silhouettes with refined settings and modern proportions.",
-    image: "/assets/Diamond_close_up.png"
+    image: "/assets/Diamond_close_up.webp"
   }
 ];
 
@@ -30,11 +30,11 @@ export const products: Product[] = [
     price: 189000,
     originalPrice: 210000,
     currency: "INR",
-    image: "/assets/3d70f83f-42c8-45a5-ac77-ba56028663a3_1.png",
+    image: "/assets/3d70f83f-42c8-45a5-ac77-ba56028663a3_1.webp",
     images: [
-      "/assets/3d70f83f-42c8-45a5-ac77-ba56028663a3_1.png",
-      "/assets/image_24.png",
-      "/assets/Final_product_reveal.png",
+      "/assets/3d70f83f-42c8-45a5-ac77-ba56028663a3_1.webp",
+      "/assets/image_24.webp",
+      "/assets/Final_product_reveal.webp",
     ],
     material: "22K Gold",
     stone: "Ruby accents",
@@ -51,10 +51,10 @@ export const products: Product[] = [
     collection: "bridal",
     price: 146500,
     currency: "INR",
-    image: "/assets/3d70f83f-42c8-45a5-ac77-ba56028663a3_2.png",
+    image: "/assets/3d70f83f-42c8-45a5-ac77-ba56028663a3_2.webp",
     images: [
-      "/assets/3d70f83f-42c8-45a5-ac77-ba56028663a3_2.png",
-      "/assets/image_24_2.png",
+      "/assets/3d70f83f-42c8-45a5-ac77-ba56028663a3_2.webp",
+      "/assets/image_24_2.webp",
     ],
     material: "18K Gold",
     stone: "Freshwater pearls",
@@ -71,11 +71,11 @@ export const products: Product[] = [
     price: 78000,
     originalPrice: 92000,
     currency: "INR",
-    image: "/assets/catalog-asset-01.png",
+    image: "/assets/catalog-asset-01.webp",
     images: [
-      "/assets/catalog-asset-01.png",
-      "/assets/image_24_3.png",
-      "/assets/Diamond_close_up.png",
+      "/assets/catalog-asset-01.webp",
+      "/assets/image_24_3.webp",
+      "/assets/Diamond_close_up.webp",
     ],
     material: "18K Gold",
     stone: "Lab-grown diamonds",
@@ -92,8 +92,8 @@ export const products: Product[] = [
     collection: "daily-gold",
     price: 32500,
     currency: "INR",
-    image: "/assets/9110-removebg-preview_1.png",
-    images: ["/assets/9110-removebg-preview_1.png"],
+    image: "/assets/9110-removebg-preview_1.webp",
+    images: ["/assets/9110-removebg-preview_1.webp"],
     material: "18K Gold",
     stone: "Plain gold",
     weight: "4.1g",
@@ -109,8 +109,8 @@ export const products: Product[] = [
     collection: "bridal",
     price: 98500,
     currency: "INR",
-    image: "/assets/catalog-asset-05.png",
-    images: ["/assets/catalog-asset-05.png", "/assets/image_24_4.png"],
+    image: "/assets/catalog-asset-05.webp",
+    images: ["/assets/catalog-asset-05.webp", "/assets/image_24_4.webp"],
     material: "22K Gold",
     stone: "Polki",
     weight: "18.5g",
@@ -126,8 +126,8 @@ export const products: Product[] = [
     price: 64200,
     originalPrice: 72000,
     currency: "INR",
-    image: "/assets/2567012-removebg-preview_1.png",
-    images: ["/assets/2567012-removebg-preview_1.png", "/assets/image_24_5.png"],
+    image: "/assets/2567012-removebg-preview_1.webp",
+    images: ["/assets/2567012-removebg-preview_1.webp", "/assets/image_24_5.webp"],
     material: "22K Gold",
     stone: "Plain gold",
     weight: "22.3g",

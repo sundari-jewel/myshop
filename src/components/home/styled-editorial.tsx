@@ -4,22 +4,22 @@ import Image from "next/image";
 //   {
 //     label: "Women's Edit",
 //     href: "/collections/womens-edit",
-//     image: "/assets/Final_product_reveal.png",
+//     image: "/assets/Final_product_reveal.webp",
 //   },
 //   {
 //     label: "Bridal Edit",
 //     href: "/collections/bridal",
-//     image: "/assets/Artisan_working_on_gold.png",
+//     image: "/assets/Artisan_working_on_gold.webp",
 //   },
 //   {
 //     label: "Workday Elegance",
 //     href: "/collections/daily-gold",
-//     image: "/assets/Diamond_close_up.png",
+//     image: "/assets/Diamond_close_up.webp",
 //   },
 //   {
 //     label: "Feminine Gold",
 //     href: "/collections/daily-gold",
-//     image: "/assets/Gold_texture_reel.png",
+//     image: "/assets/Gold_texture_reel.webp",
 //   },
 // ] as const;
 
@@ -38,7 +38,7 @@ export function StyledEditorial() {
       </div>
       <div className="relative w-full">
         <Image
-          src="/assets/CrafterForHerLeft.png"
+          src="/assets/CrafterForHerLeft.webp"
           alt="Styled for every side of her"
           width={1920}
           height={1080}

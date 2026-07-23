@@ -12,7 +12,7 @@ export async function HeroSection() {
         style={{ background: "var(--bg-dark)" }}
       >
         <Image
-          src="/assets/hero/heroimage.png"
+          src="/assets/hero/heroimage.webp"
           alt="Sundari Jewellers bridal collection"
           fill
           priority

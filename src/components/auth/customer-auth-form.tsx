@@ -64,7 +64,7 @@ export function CustomerAuthForm({ mode }: { mode: Mode }) {
             className="absolute inset-0 opacity-55"
             style={{
               background:
-                "linear-gradient(135deg, rgba(14,4,4,0.96), rgba(42,14,14,0.8)), url('/assets/Final_product_reveal.png')",
+                "linear-gradient(135deg, rgba(14,4,4,0.96), rgba(42,14,14,0.8)), url('/assets/Final_product_reveal.webp')",
               backgroundPosition: "center",
               backgroundSize: "cover",
             }}

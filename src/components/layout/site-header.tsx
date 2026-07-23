@@ -70,7 +70,7 @@ export function SiteHeader() {
         className="relative z-50 w-full overflow-hidden transition-shadow duration-300"
         style={{
           backgroundColor: "var(--bg-dark)",
-          backgroundImage: "url('/assets/navbar/navbg.png')",
+          backgroundImage: "url('/assets/navbar/navbg.webp')",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
           backgroundSize: "100% 100%",

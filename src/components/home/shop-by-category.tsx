@@ -7,11 +7,11 @@ import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 
 const CATEGORIES = [
-  { label: "Earing",   href: "/collections/earrings",  image: "/assets/category-earring.png" },
-  { label: "Bangles",  href: "/collections/bangles",   image: "/assets/category-bangles.png" },
-  { label: "Rings",    href: "/collections/rings",     image: "/assets/category-ring.png" },
-  { label: "Tika",     href: "/collections/tika",      image: "/assets/category-tika.png" },
-  { label: "Necklace", href: "/collections/necklaces", image: "/assets/category-necklace.png" },
+  { label: "Earing",   href: "/collections/earrings",  image: "/assets/category-earring.webp" },
+  { label: "Bangles",  href: "/collections/bangles",   image: "/assets/category-bangles.webp" },
+  { label: "Rings",    href: "/collections/rings",     image: "/assets/category-ring.webp" },
+  { label: "Tika",     href: "/collections/tika",      image: "/assets/category-tika.webp" },
+  { label: "Necklace", href: "/collections/necklaces", image: "/assets/category-necklace.webp" },
 ] as const;
 
 const CARD_HEIGHT = 520;

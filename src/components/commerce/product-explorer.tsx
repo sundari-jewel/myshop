@@ -154,7 +154,7 @@ export function ProductExplorer({ products }: { products: Product[] }) {
             className="absolute inset-0 opacity-60"
             style={{
               background:
-                "linear-gradient(105deg, rgba(14,4,4,0.95) 0%, rgba(42,14,14,0.86) 48%, rgba(155,28,28,0.34) 100%), url('/assets/golden-swirl-frame-dark-background-with-text-space.png')",
+                "linear-gradient(105deg, rgba(14,4,4,0.95) 0%, rgba(42,14,14,0.86) 48%, rgba(155,28,28,0.34) 100%), url('/assets/golden-swirl-frame-dark-background-with-text-space.webp')",
               backgroundPosition: "center",
               backgroundSize: "cover",
             }}

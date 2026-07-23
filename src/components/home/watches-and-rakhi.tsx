@@ -38,7 +38,7 @@ export function WatchesAndRakhi() {
           className="focus-ring group relative block min-h-[320px] overflow-hidden sm:min-h-[420px]"
         >
           <Image
-            src="/assets/watches-collection.png"
+            src="/assets/watches-collection.webp"
             alt="Fine Watches Collection"
             fill
             sizes="(min-width: 640px) 50vw, 100vw"
@@ -94,7 +94,7 @@ export function WatchesAndRakhi() {
           className="focus-ring group relative block min-h-[320px] overflow-hidden sm:min-h-[420px]"
         >
           <Image
-            src="/assets/rakhi-collection.png"
+            src="/assets/rakhi-collection.webp"
             alt="Rakhi Collection"
             fill
             sizes="(min-width: 640px) 50vw, 100vw"
