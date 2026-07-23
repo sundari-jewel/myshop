@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import bcrypt from "bcryptjs";
 import { connectDB } from "@/lib/mongodb";
 import { Customer } from "@/models/Customer";
 import { createSession } from "@/lib/session";
@@ -24,12 +23,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "email_taken" }, { status: 409 });
     }
 
-    const passwordHash = await bcrypt.hash(password, 12);
     const customer = await Customer.create({
       name: name.trim(),
       email: email.toLowerCase().trim(),
       phone: phone?.trim() || undefined,
-      passwordHash,
+      passwordHash: password,
     });
 
     await createSession({

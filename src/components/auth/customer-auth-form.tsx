@@ -4,7 +4,7 @@ import Link from "next/link";
 import type { Route } from "next";
 import { useRouter, useSearchParams } from "next/navigation";
 import { FormEvent, useMemo, useState, type ReactNode } from "react";
-import { Gem, Loader2, LockKeyhole, Mail, Phone, UserRound } from "lucide-react";
+import { Eye, EyeOff, Gem, Loader2, LockKeyhole, Mail, Phone, UserRound } from "lucide-react";
 import { useCustomerAuth } from "@/context/customer-auth-context";
 
 type Mode = "signin" | "signup";
@@ -24,6 +24,7 @@ export function CustomerAuthForm({ mode }: { mode: Mode }) {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const alternateHref = useMemo(() => {
     const base = isSignup ? "/signin" : "/signup";
@@ -133,15 +134,32 @@ export function CustomerAuthForm({ mode }: { mode: Mode }) {
                 placeholder="+91 98765 43210"
               />
             ) : null}
-            <Field
-              icon={<LockKeyhole size={17} />}
-              label="Password"
-              type="password"
-              value={form.password}
-              onChange={(value) => set("password", value)}
-              placeholder="Minimum 6 characters"
-              required
-            />
+            <label>
+              <span className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--ink-soft)]">Password</span>
+              <span
+                className="focus-within:ring-2 focus-within:ring-[var(--gold)] grid h-12 grid-cols-[auto_1fr_auto] items-center gap-3 rounded-sm border bg-white px-3"
+                style={{ borderColor: "rgba(138,106,58,0.2)" }}
+              >
+                <span className="text-[var(--gold-dim)]"><LockKeyhole size={17} /></span>
+                <input
+                  type={showPassword ? "text" : "password"}
+                  value={form.password}
+                  onChange={(e) => set("password", e.target.value)}
+                  placeholder="Minimum 6 characters"
+                  required
+                  className="h-full min-w-0 bg-transparent text-sm outline-none placeholder:text-[rgba(107,66,38,0.58)]"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((v) => !v)}
+                  className="text-[var(--gold-dim)] transition-colors hover:text-[var(--gold)]"
+                  tabIndex={-1}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </span>
+            </label>
 
             {error ? <p className="rounded-sm bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p> : null}
 

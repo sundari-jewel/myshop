@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import bcrypt from "bcryptjs";
 import { connectDB } from "@/lib/mongodb";
 import { Customer } from "@/models/Customer";
 import { createSession } from "@/lib/session";
@@ -19,8 +18,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "invalid_credentials" }, { status: 401 });
     }
 
-    const valid = await bcrypt.compare(password, customer.passwordHash);
-    if (!valid) {
+    if (password !== customer.passwordHash) {
       return NextResponse.json({ error: "invalid_credentials" }, { status: 401 });
     }
 
