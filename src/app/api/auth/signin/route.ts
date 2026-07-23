@@ -22,19 +22,21 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "invalid_credentials" }, { status: 401 });
     }
 
-    await createSession({
+    const response = NextResponse.json({
       id:    String(customer._id),
       name:  customer.name,
       email: customer.email,
       phone: customer.phone,
     });
 
-    return NextResponse.json({
+    await createSession({
       id:    String(customer._id),
       name:  customer.name,
       email: customer.email,
       phone: customer.phone,
-    });
+    }, response);
+
+    return response;
   } catch (err) {
     console.error("[signin]", err);
     return NextResponse.json({ error: "internal_error" }, { status: 500 });

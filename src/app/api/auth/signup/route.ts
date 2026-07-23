@@ -30,19 +30,21 @@ export async function POST(req: NextRequest) {
       passwordHash: password,
     });
 
-    await createSession({
-      id:    String(customer._id),
-      name:  customer.name,
-      email: customer.email,
-      phone: customer.phone,
-    });
-
-    return NextResponse.json({
+    const response = NextResponse.json({
       id:    String(customer._id),
       name:  customer.name,
       email: customer.email,
       phone: customer.phone,
     }, { status: 201 });
+
+    await createSession({
+      id:    String(customer._id),
+      name:  customer.name,
+      email: customer.email,
+      phone: customer.phone,
+    }, response);
+
+    return response;
   } catch (err) {
     console.error("[signup]", err);
     return NextResponse.json({ error: "internal_error" }, { status: 500 });
