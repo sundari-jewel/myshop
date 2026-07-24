@@ -69,20 +69,24 @@ export function ProductCard({ product }: ProductCardProps) {
                 "radial-gradient(circle at 50% 18%, rgba(240,221,176,0.72), transparent 42%), linear-gradient(180deg, rgba(255,251,245,0), rgba(155,28,28,0.1))",
             }}
           />
-          {product.badge ? (
+          {/* Sale ribbon — top left */}
+          {hasMarkdown ? (
+            <div className="absolute left-0 top-0 z-10 flex flex-col items-center justify-center w-14 h-14 md:w-16 md:h-16"
+              style={{
+                background: "var(--ruby)",
+                clipPath: "polygon(0 0, 100% 0, 0 100%)",
+              }}
+            >
+              <span className="absolute top-1.5 left-1.5 text-[8px] font-black leading-none text-white md:top-2 md:left-2 md:text-[10px]">
+                {discount}%<br />OFF
+              </span>
+            </div>
+          ) : product.badge ? (
             <span
               className="absolute left-1.5 top-1.5 z-10 max-w-[calc(100%-42px)] truncate rounded-sm px-1.5 py-0.5 text-[7px] font-bold uppercase tracking-[0.08em] md:left-3 md:top-3 md:px-2.5 md:py-1 md:text-[10px] md:tracking-[0.14em]"
               style={{ background: "var(--bg-dark)", color: "var(--gold)" }}
             >
               {product.badge}
-            </span>
-          ) : null}
-          {hasMarkdown ? (
-            <span
-              className="absolute bottom-1.5 right-1.5 z-10 rounded-sm px-1.5 py-0.5 text-[7px] font-bold uppercase tracking-[0.08em] md:bottom-3 md:right-3 md:px-2.5 md:py-1 md:text-[10px] md:tracking-[0.14em]"
-              style={{ background: "var(--ruby)", color: "white" }}
-            >
-              {discount}% off
             </span>
           ) : null}
           <Image
@@ -108,11 +112,18 @@ export function ProductCard({ product }: ProductCardProps) {
             {product.material} / {product.stone}
           </p>
           <h3 className="line-clamp-2 text-xs font-semibold leading-snug md:mt-1.5 md:text-base" style={{ color: "var(--cream)" }}>{product.name}</h3>
-          <div className="mt-1.5 flex flex-wrap items-baseline gap-1 md:mt-2 md:gap-2">
-            <p className="text-xs font-bold md:text-sm" style={{ color: "var(--cream)" }}>{formatPrice(product.price)}</p>
+          <div className="mt-1.5 md:mt-2">
+            <div className="flex flex-wrap items-baseline gap-1 md:gap-2">
+              <p className="text-xs font-bold md:text-sm" style={{ color: "var(--cream)" }}>{formatPrice(product.price)}</p>
+              {hasMarkdown && product.originalPrice ? (
+                <p className="text-[9px] font-medium line-through md:text-xs" style={{ color: "rgba(245,230,200,0.38)" }}>
+                  {formatPrice(product.originalPrice)}
+                </p>
+              ) : null}
+            </div>
             {hasMarkdown && product.originalPrice ? (
-              <p className="text-[9px] font-medium line-through md:text-xs" style={{ color: "rgba(245,230,200,0.38)" }}>
-                {formatPrice(product.originalPrice)}
+              <p className="mt-0.5 text-[9px] font-semibold md:text-[10px]" style={{ color: "rgb(252,165,165)" }}>
+                You save {formatPrice(product.originalPrice - product.price)}
               </p>
             ) : null}
           </div>
