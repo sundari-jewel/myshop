@@ -12,6 +12,34 @@ export const TAXONOMY_CATEGORY_IDS = {
 const ADMIN_API_URL = process.env.SHOPIFY_ADMIN_API_URL!;
 const ADMIN_TOKEN = process.env.SHOPIFY_ADMIN_ACCESS_TOKEN!;
 
+// Fetch announcement bar items from the Shop metafield `sundari.announcement_items`.
+// Uses ISR (1 hour) so it doesn't block static/ISR page generation.
+// To edit: Shopify Admin → Settings → Custom data → Shop → Add metafield
+//   Namespace: sundari  |  Key: announcement_items  |  Type: List of single line text
+export async function getAnnouncementItems(): Promise<string[]> {
+  try {
+    const res = await fetch(ADMIN_API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Shopify-Access-Token": ADMIN_TOKEN,
+      },
+      body: JSON.stringify({
+        query: `{ shop { metafield(namespace: "sundari", key: "announcement_items") { value } } }`,
+      }),
+      next: { revalidate: 3600 },
+    });
+    if (!res.ok) return [];
+    const json = (await res.json()) as { data?: { shop?: { metafield?: { value: string } | null } } };
+    const raw = json.data?.shop?.metafield?.value;
+    if (!raw) return [];
+    const parsed: unknown = JSON.parse(raw);
+    return Array.isArray(parsed) ? (parsed as unknown[]).filter((s): s is string => typeof s === "string") : [];
+  } catch {
+    return [];
+  }
+}
+
 // GIDs for the shopify--target-gender metaobjects
 export const GENDER_GIDS = {
   female: "gid://shopify/Metaobject/251505311879",

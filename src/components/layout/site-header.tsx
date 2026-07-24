@@ -19,15 +19,6 @@ const NAV_LINKS: Array<{ href: string; label: string; highlight?: boolean }> = [
   { href: "/collections/sale", label: "Sale", highlight: true },
 ];
 
-const OFFER_ITEMS = [
-  "Minimum 10% off on all jewellery",
-  "Minimum 10% off on mens",
-  "Minimum 10% off on womens",
-  "Minimum 10% off",
-  "Minimum 10% off",
-  "Minimum 10% off",
-];
-
 const UTILITY_LINKS = ["About", "Contact"];
 
 export function SiteHeader() {
@@ -51,22 +42,6 @@ export function SiteHeader() {
 
   return (
     <>
-      {/* Announcement strip */}
-      <Link
-        href={"/collections/sale" as Route}
-        className="block w-full overflow-hidden border-y py-[9px] cursor-pointer"
-        style={{ background: "#120404", borderColor: "rgba(201,169,110,0.18)", contain: "paint" }}
-      >
-        <div className="announcement-track flex w-max items-center gap-12 text-[8px] font-medium uppercase tracking-[0.42em]" style={{ color: "var(--gold-pale)" }}>
-          {[...OFFER_ITEMS, ...OFFER_ITEMS].map((item, index) => (
-            <span key={index} className="whitespace-nowrap">
-              {item}
-              <span className="mx-6 opacity-40">✦</span>
-            </span>
-          ))}
-        </div>
-      </Link>
-
       {/* Main navbar */}
       <header
         className="relative z-50 w-full overflow-hidden transition-shadow duration-300"
