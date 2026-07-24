@@ -7,7 +7,9 @@ import { formatPrice } from "@/lib/seo";
 export function TopSelling({ products }: { products: Product[] }) {
   if (!products.length) return null;
 
-  const items = [...products, ...products];
+  // Repeat enough times so the track is always wider than the viewport
+  const repeatCount = Math.max(2, Math.ceil(12 / products.length));
+  const items = Array.from({ length: repeatCount * 2 }, () => products).flat();
 
   return (
     <section className="overflow-hidden py-10 sm:py-16" style={{ background: "var(--bg-dark)" }}>
