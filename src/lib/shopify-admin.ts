@@ -251,9 +251,13 @@ export async function getProductsByGenderGid(
 }
 
 export async function getTopSellingProducts(): Promise<Product[]> {
-  const data = await adminFetch<AdminProductsData>(PRODUCTS_QUERY, { first: 12, after: null });
+  const data = await adminFetch<AdminProductsData>(CATEGORY_PRODUCTS_QUERY, {
+    first: 20,
+    after: null,
+    query: "tag:top-selling AND status:active",
+  });
   return data.products.nodes
-    .filter((n) => n.status === "ACTIVE" && n.tags.some((t) => t.toLowerCase() === "top-selling"))
+    .filter((n) => n.status === "ACTIVE")
     .map((node) => {
       const price = Math.round(parseFloat(node.priceRangeV2.minVariantPrice.amount));
       const compareAt = node.compareAtPriceRange
