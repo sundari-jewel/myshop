@@ -12,7 +12,7 @@ type CollectionPageProps = {
 };
 
 export const dynamicParams = true;
-export const revalidate = 300;
+export const dynamic = "force-dynamic";
 
 export async function generateStaticParams() {
   return collections.map((collection) => ({ slug: collection.slug }));
