@@ -72,6 +72,7 @@ export async function POST(req: NextRequest) {
       shippingCharge,
       total,
       paymentMethod:     "prepaid",
+      status:            "confirmed",
       paymentStatus:     "paid",
       razorpayPaymentId: body.razorpayPaymentId,
       razorpayOrderId:   body.razorpayOrderId,

@@ -6,6 +6,7 @@ import type { Route } from "next";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
 import { Heart, LogOut, Package, ShoppingBag, UserRound } from "lucide-react";
+import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { useCart } from "@/context/cart-context";
 import { useCustomerAuth } from "@/context/customer-auth-context";
 import { useWishlist } from "@/context/wishlist-context";
@@ -30,6 +31,8 @@ type Order = {
   status: string;
   paymentMethod: string;
   paymentStatus: string;
+  trackingNumber?: string;
+  trackingUrl?: string;
   createdAt: string;
 };
 
@@ -58,6 +61,7 @@ export default function AccountPage() {
   const wishlist = useWishlist();
   const [orders, setOrders] = useState<Order[]>([]);
   const [ordersLoading, setOrdersLoading] = useState(true);
+  const [confirmSignOut, setConfirmSignOut] = useState(false);
 
   useEffect(() => {
     if (!customer) return;
@@ -81,7 +85,7 @@ export default function AccountPage() {
 
   return (
     <div style={{ background: "var(--bg-dark)", minHeight: "100vh" }}>
-      <div className="container-shell py-10 sm:py-14">
+      <div className="container-shell py-7 sm:py-14">
 
         {/* Header */}
         <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
@@ -90,12 +94,12 @@ export default function AccountPage() {
               <UserRound size={16} />
               Account
             </p>
-            <h1 className="display-font mt-3 text-5xl font-semibold text-[var(--cream)]">Hello, {customer.name.split(" ")[0]}</h1>
+            <h1 className="display-font mt-3 text-4xl font-semibold text-[var(--cream)] sm:text-5xl">Hello, {customer.name.split(" ")[0]}</h1>
             <p className="mt-2 text-sm text-[rgba(245,230,200,0.55)]">{customer.email}</p>
           </div>
           <button
             type="button"
-            onClick={handleSignOut}
+            onClick={() => setConfirmSignOut(true)}
             className="focus-ring inline-flex h-11 items-center justify-center gap-2 rounded-sm border px-4 text-[11px] font-bold uppercase tracking-[0.2em] text-[var(--ruby)]"
             style={{ borderColor: "rgba(155,28,28,0.24)" }}
           >
@@ -105,7 +109,7 @@ export default function AccountPage() {
         </div>
 
         {/* Quick action cards */}
-        <div className="grid gap-5 md:grid-cols-3">
+        <div className="grid gap-3 sm:gap-5 md:grid-cols-3">
           <AccountCard
             icon={<ShoppingBag size={20} />}
             title="Cart"
@@ -123,7 +127,7 @@ export default function AccountPage() {
             action="View wishlist"
           />
           <div
-            className="border p-5"
+            className="border p-4 sm:p-5"
             style={{ borderColor: "rgba(201,169,110,0.18)", background: "rgba(201,169,110,0.05)" }}
           >
             <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-[var(--gold-dim)]">Profile</p>
@@ -172,7 +176,7 @@ export default function AccountPage() {
               {orders.map((order) => (
                 <div
                   key={order._id}
-                  className="rounded-sm border p-5"
+                  className="rounded-sm border p-4 sm:p-5"
                   style={{ borderColor: "rgba(201,169,110,0.18)", background: "rgba(201,169,110,0.04)" }}
                 >
                   {/* Order header */}
@@ -231,6 +235,29 @@ export default function AccountPage() {
                       </div>
                     ))}
                   </div>
+
+                  {/* Tracking */}
+                  {order.trackingNumber && (
+                    <div
+                      className="mt-4 flex flex-wrap items-center justify-between gap-2 rounded-sm border px-4 py-3"
+                      style={{ borderColor: "rgba(168,85,247,0.25)", background: "rgba(168,85,247,0.06)" }}
+                    >
+                      <div>
+                        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[rgb(216,180,254)]">Tracking</p>
+                        <p className="mt-0.5 font-mono text-xs text-[var(--cream)]">{order.trackingNumber}</p>
+                      </div>
+                      {order.trackingUrl && (
+                        <a
+                          href={order.trackingUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-[11px] font-bold uppercase tracking-[0.15em] text-[rgb(216,180,254)] hover:underline"
+                        >
+                          Track Shipment →
+                        </a>
+                      )}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -238,6 +265,15 @@ export default function AccountPage() {
         </div>
 
       </div>
+
+      <ConfirmationDialog
+        open={confirmSignOut}
+        title="Sign out of your account?"
+        description="You will need to sign in again to access your orders and saved jewellery."
+        confirmLabel="Sign out"
+        onCancel={() => setConfirmSignOut(false)}
+        onConfirm={handleSignOut}
+      />
     </div>
   );
 }
@@ -255,7 +291,7 @@ function AccountCard({
   return (
     <Link
       href={href as Route}
-      className="focus-ring group border p-5 transition hover:-translate-y-1"
+      className="focus-ring group border p-4 transition hover:-translate-y-1 sm:p-5"
       style={{ borderColor: "rgba(201,169,110,0.18)", background: "rgba(201,169,110,0.05)" }}
     >
       <div className="flex items-center justify-between">
@@ -263,7 +299,7 @@ function AccountCard({
         <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--ruby)]">{action}</span>
       </div>
       <p className="mt-5 text-[10px] font-bold uppercase tracking-[0.24em] text-[var(--gold-dim)]">{title}</p>
-      <h2 className="display-font mt-1 text-4xl font-semibold text-[var(--cream)]">{value}</h2>
+      <h2 className="display-font mt-1 text-3xl font-semibold text-[var(--cream)] sm:text-4xl">{value}</h2>
       <p className="mt-2 text-sm leading-6 text-[rgba(245,230,200,0.5)]">{detail}</p>
     </Link>
   );

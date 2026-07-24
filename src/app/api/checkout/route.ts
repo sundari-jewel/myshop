@@ -61,6 +61,7 @@ export async function POST(req: NextRequest) {
       shippingCharge,
       total,
       paymentMethod:  body.paymentMethod,
+      status:         "confirmed",
       paymentStatus:  "pending",
       notes:          body.notes,
     });
