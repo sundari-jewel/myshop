@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Plus, Pencil, Trash2, Loader2, Eye, EyeOff, ChevronLeft, ChevronRight } from "lucide-react";
+import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 
 interface Product {
   _id:       string;
@@ -30,6 +31,7 @@ export default function AdminProductsPage() {
   const [loading,  setLoading]  = useState(true);
   const [seeding,  setSeeding]  = useState(false);
   const [page,     setPage]     = useState(1);
+  const [pendingDelete, setPendingDelete] = useState<Product | null>(null);
 
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
@@ -62,14 +64,14 @@ export default function AdminProductsPage() {
   }
 
   async function deleteProduct(id: string) {
-    if (!confirm("Delete this product? This cannot be undone.")) return;
+    setPendingDelete(null);
     await fetch(`/api/admin/products/${id}`, { method: "DELETE" });
     setProducts(prev => prev.filter(p => p._id !== id));
     setTotal(t => t - 1);
   }
 
   return (
-    <div className="p-8" style={{ color: "var(--cream)" }}>
+    <div className="p-4 sm:p-8" style={{ color: "var(--cream)" }}>
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="font-cormorant text-3xl font-semibold text-[var(--gold)]">Products</h1>
@@ -110,8 +112,8 @@ export default function AdminProductsPage() {
         </div>
       ) : (
         <>
-          <div className="overflow-hidden rounded-xl" style={{ border: "1px solid rgba(138,106,58,0.18)" }}>
-            <table className="w-full text-sm">
+          <div className="overflow-x-auto rounded-xl" style={{ border: "1px solid rgba(138,106,58,0.18)" }}>
+            <table className="min-w-[680px] w-full text-sm">
               <thead>
                 <tr style={{ background: "rgba(138,106,58,0.08)", borderBottom: "1px solid rgba(138,106,58,0.15)" }}>
                   {["Product", "Collection", "Price", "Sold", "Status", "Actions"].map(h => (
@@ -160,7 +162,8 @@ export default function AdminProductsPage() {
                           <Pencil size={14} />
                         </Link>
                         <button
-                          onClick={() => deleteProduct(p._id)}
+                          onClick={() => setPendingDelete(p)}
+                          aria-label={`Delete ${p.name}`}
                           className="rounded p-1.5 transition-colors hover:text-red-400"
                           style={{ color: "var(--cream-muted)" }}
                         >
@@ -200,6 +203,18 @@ export default function AdminProductsPage() {
           )}
         </>
       )}
+
+      <ConfirmationDialog
+        open={pendingDelete !== null}
+        title="Delete this product?"
+        description={pendingDelete
+          ? `${pendingDelete.name} will be permanently removed from the catalogue. This cannot be undone.`
+          : "This product will be permanently removed from the catalogue."}
+        confirmLabel="Delete product"
+        tone="danger"
+        onCancel={() => setPendingDelete(null)}
+        onConfirm={() => pendingDelete ? deleteProduct(pendingDelete._id) : undefined}
+      />
     </div>
   );
 }

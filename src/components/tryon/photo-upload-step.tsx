@@ -81,10 +81,10 @@ export function PhotoUploadStep({ onPhotoSelected, isHandJewellery = false }: Pr
   });
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-4 md:gap-6">
       <div
         {...getRootProps()}
-        className={`relative flex flex-col items-center justify-center gap-4 rounded-xl border-2 border-dashed p-10 cursor-pointer transition-colors ${
+        className={`relative flex cursor-pointer flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed p-4 transition-colors md:gap-4 md:rounded-xl md:p-10 ${
           dragging
             ? "border-[var(--gold)] bg-[rgba(138,106,58,0.08)]"
             : "border-[rgba(138,106,58,0.3)] hover:border-[var(--gold)]"
@@ -93,17 +93,17 @@ export function PhotoUploadStep({ onPhotoSelected, isHandJewellery = false }: Pr
         <input {...getInputProps()} />
 
         {preview ? (
-          <div className="relative w-48 h-64">
+          <div className="relative h-48 w-36 md:h-64 md:w-48">
             <Image src={preview} alt="Your photo" fill className="object-cover rounded-lg" />
           </div>
         ) : (
           <>
-            <div className="flex h-16 w-16 items-center justify-center rounded-full border border-[rgba(138,106,58,0.3)] text-[var(--gold)]">
-              <Upload size={28} />
+            <div className="flex size-12 items-center justify-center rounded-full border border-[rgba(138,106,58,0.3)] text-[var(--gold)] md:size-16">
+              <Upload className="size-6 md:size-7" />
             </div>
             <div className="text-center">
-              <p className="font-medium text-[var(--parchment)]">Drop your photo here</p>
-              <p className="mt-1 text-sm text-[var(--parchment-dim)]">or click to browse · JPG, PNG · max 10 MB</p>
+              <p className="text-sm font-medium text-[var(--parchment)] md:text-base">Drop your photo here</p>
+              <p className="mt-1 text-xs text-[var(--parchment-dim)] md:text-sm">or click to browse · JPG, PNG · max 10 MB</p>
             </div>
           </>
         )}
@@ -113,7 +113,7 @@ export function PhotoUploadStep({ onPhotoSelected, isHandJewellery = false }: Pr
         <p className="rounded-lg bg-red-900/20 px-4 py-3 text-sm text-red-300">{preflightErr}</p>
       )}
 
-      <div className="flex items-start gap-3 rounded-lg bg-[rgba(138,106,58,0.06)] px-4 py-3 text-sm text-[var(--parchment-dim)]">
+      <div className="flex items-start gap-2.5 rounded-md bg-[rgba(138,106,58,0.06)] px-3 py-2.5 text-xs leading-5 text-[var(--parchment-dim)] md:gap-3 md:rounded-lg md:px-4 md:py-3 md:text-sm">
         <Camera size={16} className="mt-0.5 shrink-0 text-[var(--gold)]" />
         <span>
           {isHandJewellery

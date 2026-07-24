@@ -125,20 +125,20 @@ export function TryOnDrawer({ skuId, productName, isHandJewellery = false, open,
       <div
         ref={drawerRef}
         role="dialog" aria-modal="true" aria-label="Virtual Try-On"
-        className="fixed bottom-0 right-0 top-0 z-50 flex w-full max-w-md flex-col bg-[var(--bg-dark)] shadow-2xl"
+        className="fixed bottom-0 right-0 top-0 z-50 flex w-[92vw] max-w-sm flex-col bg-[var(--bg-dark)] pb-[env(safe-area-inset-bottom)] shadow-2xl md:w-full md:max-w-md"
         style={{ borderLeft: "1px solid rgba(138,106,58,0.2)" }}
       >
-        <div className="flex items-center justify-between border-b border-[rgba(138,106,58,0.15)] px-6 py-4">
+        <div className="flex items-center justify-between border-b border-[rgba(138,106,58,0.15)] px-3 py-2.5 md:px-6 md:py-4">
           <div>
-            <p className="text-xs uppercase tracking-widest text-[var(--gold)] opacity-80">Virtual Try-On</p>
-            <h2 className="font-cormorant mt-0.5 text-lg text-[var(--parchment)]">{productName}</h2>
+            <p className="text-[10px] uppercase tracking-widest text-[var(--gold)] opacity-80 md:text-xs">Virtual Try-On</p>
+            <h2 className="font-cormorant mt-0.5 text-base text-[var(--parchment)] md:text-lg">{productName}</h2>
           </div>
           <button onClick={onClose} className="flex h-8 w-8 items-center justify-center rounded-full text-[var(--parchment-dim)] hover:text-[var(--parchment)]">
             <X size={18} />
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-6 py-6">
+        <div className="flex-1 overflow-y-auto px-3 py-3 md:px-6 md:py-6">
           {step === "upload" && (
             <PhotoUploadStep onPhotoSelected={handlePhotoSelected} isHandJewellery={isHandJewellery} />
           )}

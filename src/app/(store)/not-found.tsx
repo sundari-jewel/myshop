@@ -7,7 +7,7 @@ export default function NotFound() {
         <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[var(--ruby)]">
           Not found
         </p>
-        <h1 className="display-font mt-3 text-6xl font-semibold">This piece is missing</h1>
+        <h1 className="display-font mt-3 text-4xl font-semibold sm:text-6xl">This piece is missing</h1>
         <p className="mt-4 max-w-lg text-[var(--ink-soft)]">
           The page may have moved, or the product is waiting for its next collection drop.
         </p>

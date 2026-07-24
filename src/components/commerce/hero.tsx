@@ -3,12 +3,12 @@ import Link from "next/link";
 
 export function Hero() {
   return (
-    <section className="container-shell grid min-h-[calc(100vh-5rem)] items-center gap-10 py-10 lg:grid-cols-[1.02fr_0.98fr]">
+    <section className="container-shell grid items-center gap-7 py-8 sm:gap-10 sm:py-10 lg:min-h-[calc(100vh-5rem)] lg:grid-cols-[1.02fr_0.98fr]">
       <div className="max-w-2xl">
         <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[var(--ruby)]">
           Fine jewellery / India
         </p>
-        <h1 className="display-font mt-5 text-6xl font-semibold leading-[0.94] sm:text-7xl lg:text-8xl">
+        <h1 className="display-font mt-5 text-4xl font-semibold leading-[0.94] sm:text-7xl lg:text-8xl">
           Sundari Jewels
         </h1>
         <p className="mt-6 max-w-xl text-lg leading-8 text-[var(--ink-soft)]">
@@ -30,7 +30,7 @@ export function Hero() {
           </Link>
         </div>
       </div>
-      <div className="relative min-h-[520px] overflow-hidden rounded-md bg-[var(--surface-deep)]">
+      <div className="relative aspect-square min-h-0 overflow-hidden rounded-md bg-[var(--surface-deep)] sm:min-h-[520px]">
         <Image
           src="/assets/golden-swirl-frame-dark-background-with-text-space.webp"
           alt="Gold jewellery campaign background"
@@ -45,7 +45,7 @@ export function Hero() {
           fill
           priority
           sizes="(min-width: 1024px) 42vw, 100vw"
-          className="object-contain p-8"
+          className="object-contain p-4 sm:p-8"
         />
       </div>
     </section>

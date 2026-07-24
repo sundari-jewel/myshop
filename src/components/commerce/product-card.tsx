@@ -46,21 +46,21 @@ export function ProductCard({ product }: ProductCardProps) {
         aria-label={saved ? `Remove ${product.name} from wishlist` : `Save ${product.name} to wishlist`}
         title={saved ? "Saved to wishlist" : "Save to wishlist"}
         onClick={handleWishlist}
-        className="focus-ring absolute right-3 top-3 z-20 grid size-10 place-items-center rounded-full border bg-[rgba(24,6,6,0.85)] shadow-[0_8px_24px_rgba(0,0,0,0.4)] transition-all duration-300 ease-out hover:scale-125 active:scale-95"
+        className="focus-ring absolute right-1.5 top-1.5 z-20 grid size-8 place-items-center rounded-full border bg-[rgba(24,6,6,0.85)] shadow-[0_8px_24px_rgba(0,0,0,0.4)] transition-all duration-300 ease-out hover:scale-110 active:scale-95 md:right-3 md:top-3 md:size-10"
         style={{
           borderColor: saved ? "rgba(220,38,38,0.6)" : "rgba(255,255,255,0.25)",
           color: saved ? "rgb(220,38,38)" : "white",
         }}
       >
         <Heart
-          size={19}
+          size={15}
           strokeWidth={1.8}
           fill={saved ? "rgb(220,38,38)" : "none"}
           className={saved ? "drop-shadow-[0_0_8px_rgba(220,38,38,0.7)]" : ""}
         />
       </button>
       <Link href={`/products/${product.slug}` as Route} className="block">
-        <div className="relative aspect-[4/5] overflow-hidden" style={{ background: "rgba(201,169,110,0.07)" }}>
+        <div className="relative aspect-square overflow-hidden md:aspect-[4/5]" style={{ background: "rgba(201,169,110,0.07)" }}>
           <div
             aria-hidden="true"
             className="absolute inset-0 opacity-0 transition duration-500 group-hover:opacity-100"
@@ -71,7 +71,7 @@ export function ProductCard({ product }: ProductCardProps) {
           />
           {product.badge ? (
             <span
-              className="absolute left-3 top-3 z-10 rounded-sm px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em]"
+              className="absolute left-1.5 top-1.5 z-10 max-w-[calc(100%-42px)] truncate rounded-sm px-1.5 py-0.5 text-[7px] font-bold uppercase tracking-[0.08em] md:left-3 md:top-3 md:px-2.5 md:py-1 md:text-[10px] md:tracking-[0.14em]"
               style={{ background: "var(--bg-dark)", color: "var(--gold)" }}
             >
               {product.badge}
@@ -79,7 +79,7 @@ export function ProductCard({ product }: ProductCardProps) {
           ) : null}
           {hasMarkdown ? (
             <span
-              className="absolute right-3 top-3 z-10 rounded-sm px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em]"
+              className="absolute bottom-1.5 right-1.5 z-10 rounded-sm px-1.5 py-0.5 text-[7px] font-bold uppercase tracking-[0.08em] md:bottom-3 md:right-3 md:px-2.5 md:py-1 md:text-[10px] md:tracking-[0.14em]"
               style={{ background: "var(--ruby)", color: "white" }}
             >
               {discount}% off
@@ -89,7 +89,7 @@ export function ProductCard({ product }: ProductCardProps) {
             src={product.image}
             alt={product.name}
             fill
-            sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+            sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
             className="object-cover transition duration-500 group-hover:scale-105"
           />
           <span
@@ -101,17 +101,17 @@ export function ProductCard({ product }: ProductCardProps) {
           </span>
         </div>
       </Link>
-      <div className="grid gap-4 p-4">
+      <div className="grid gap-2 p-2 md:gap-4 md:p-4">
         <div>
-          <p className="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.16em]" style={{ color: "var(--gold-dim)" }}>
-            <Sparkles size={12} />
+          <p className="hidden max-w-full items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.16em] md:inline-flex" style={{ color: "var(--gold-dim)" }}>
+            <Sparkles className="shrink-0" size={9} />
             {product.material} / {product.stone}
           </p>
-          <h3 className="mt-1.5 text-sm font-semibold leading-snug sm:text-base" style={{ color: "var(--cream)" }}>{product.name}</h3>
-          <div className="mt-2 flex flex-wrap items-baseline gap-2">
-            <p className="text-sm font-bold" style={{ color: "var(--cream)" }}>{formatPrice(product.price)}</p>
+          <h3 className="line-clamp-2 text-xs font-semibold leading-snug md:mt-1.5 md:text-base" style={{ color: "var(--cream)" }}>{product.name}</h3>
+          <div className="mt-1.5 flex flex-wrap items-baseline gap-1 md:mt-2 md:gap-2">
+            <p className="text-xs font-bold md:text-sm" style={{ color: "var(--cream)" }}>{formatPrice(product.price)}</p>
             {hasMarkdown && product.originalPrice ? (
-              <p className="text-xs font-medium line-through" style={{ color: "rgba(245,230,200,0.38)" }}>
+              <p className="text-[9px] font-medium line-through md:text-xs" style={{ color: "rgba(245,230,200,0.38)" }}>
                 {formatPrice(product.originalPrice)}
               </p>
             ) : null}

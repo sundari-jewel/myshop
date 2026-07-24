@@ -81,9 +81,9 @@ function StarRating({ count }: { count: number }) {
 export function CustomerReviews() {
   return (
     <section className="overflow-hidden py-8 sm:py-10" style={{ background: "var(--bg-dark)" }}>
-      <div className="mb-8 flex items-center justify-center gap-5 sm:gap-7">
+      <div className="mb-7 flex items-center justify-center gap-5 sm:mb-8 sm:gap-7">
         <span className="hidden h-px w-28 bg-gradient-to-r from-transparent via-[var(--gold)] to-transparent sm:block" />
-        <h2 className="display-font text-center text-[2.2rem] font-semibold italic leading-none tracking-[0.08em] text-[var(--gold)] drop-shadow-[0_2px_1px_rgba(70,40,0,0.32)] sm:text-[2.75rem]">
+        <h2 className="display-font text-center text-[1.75rem] font-semibold italic leading-none tracking-[0.05em] text-[var(--gold)] drop-shadow-[0_2px_1px_rgba(70,40,0,0.32)] sm:text-[2.75rem] sm:tracking-[0.08em]">
           Customers Review
         </h2>
         <span className="hidden h-px w-28 bg-gradient-to-r from-transparent via-[var(--gold)] to-transparent sm:block" />
@@ -102,7 +102,7 @@ export function CustomerReviews() {
                 aria-label={`Review from ${review.name}`}
               >
                 <div className="review-frame-content">
-                  <div className="relative size-16 shrink-0 overflow-hidden rounded-full shadow-[0_3px_10px_rgba(40,24,10,0.22)]">
+                  <div className="relative size-14 shrink-0 overflow-hidden rounded-full shadow-[0_3px_10px_rgba(40,24,10,0.22)] sm:size-16">
                     <Image
                       src={review.avatar}
                       alt={review.name}
@@ -113,7 +113,7 @@ export function CustomerReviews() {
                   </div>
 
                   <div className="min-w-0 flex-1">
-                    <p className="text-[12px] font-bold leading-5 text-[var(--cream)]">
+                    <p className="text-[11px] font-bold leading-[1.45] text-[var(--cream)] sm:text-[12px] sm:leading-5">
                       My experience was amazing after purchasing this product. I was eagerly waiting to buy this. Price and quality is amazing you can buy it. It&apos;s give a tough competition to gold products.
                     </p>
                     <div className="mt-3">

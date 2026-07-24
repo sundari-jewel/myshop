@@ -32,16 +32,16 @@ const WEDDING_COLLECTIONS = [
 
 export function WeddingShop() {
   return (
-    <section className="py-16 sm:py-20" style={{ background: "var(--bg-dark)" }}>
-      <div className="mb-10 flex items-center justify-center gap-5 sm:mb-14 sm:gap-7">
+    <section className="py-10 sm:py-20" style={{ background: "var(--bg-dark)" }}>
+      <div className="mb-7 flex items-center justify-center gap-5 sm:mb-14 sm:gap-7">
         <span className="hidden h-px w-24 bg-gradient-to-r from-transparent via-[var(--gold)] to-transparent sm:block" />
-        <span className="display-font text-center text-[2.05rem] font-semibold italic leading-none tracking-[0.08em] text-[var(--gold)] drop-shadow-[0_2px_1px_rgba(70,40,0,0.32)] sm:text-[2.45rem]">
+        <span className="display-font text-center text-[1.75rem] font-semibold italic leading-none tracking-[0.05em] text-[var(--gold)] drop-shadow-[0_2px_1px_rgba(70,40,0,0.32)] sm:text-[2.45rem] sm:tracking-[0.08em]">
           Shop for Wedding
         </span>
         <span className="hidden h-px w-24 bg-gradient-to-r from-transparent via-[var(--gold)] to-transparent sm:block" />
       </div>
 
-      <div className="relative h-[120vh] overflow-hidden">
+      <div className="relative h-[clamp(360px,92vw,900px)] overflow-hidden">
         <div className="absolute inset-0">
           <Image
             src="/assets/Shop-for-wedding-bg.webp"

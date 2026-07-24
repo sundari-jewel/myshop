@@ -63,13 +63,13 @@ export function ShopByCategory() {
         }
       `}</style>
       <section
-        className="py-14 sm:py-20"
+        className="py-10 sm:py-20"
         style={{ background: "var(--bg-dark)" }}
       >
         {/* Heading */}
-        <div className="mx-auto mb-10 w-[min(1160px,calc(100%-40px))] flex items-center justify-center gap-5 sm:gap-7">
+        <div className="mx-auto mb-7 flex w-[min(1160px,calc(100%-24px))] items-center justify-center gap-5 sm:mb-10 sm:w-[min(1160px,calc(100%-40px))] sm:gap-7">
           <span className="hidden h-px w-24 bg-gradient-to-r from-transparent via-[var(--gold)] to-transparent sm:block" />
-          <span className="display-font text-center text-[2.05rem] font-semibold italic leading-none tracking-[0.08em] text-[var(--gold)] drop-shadow-[0_2px_1px_rgba(70,40,0,0.32)] sm:text-[2.45rem]">
+          <span className="display-font text-center text-[1.75rem] font-semibold italic leading-none tracking-[0.05em] text-[var(--gold)] drop-shadow-[0_2px_1px_rgba(70,40,0,0.32)] sm:text-[2.45rem] sm:tracking-[0.08em]">
             Shop by Category
           </span>
           <span className="hidden h-px w-24 bg-gradient-to-r from-transparent via-[var(--gold)] to-transparent sm:block" />
@@ -186,8 +186,8 @@ export function ShopByCategory() {
         </div>
 
         {/* ── Mobile: static grid ─────────────────────────────────── */}
-        <div className="mx-auto w-[min(1160px,calc(100%-40px))]">
-          <div className="grid grid-cols-2 items-center gap-3 sm:grid-cols-3 lg:hidden">
+        <div className="mx-auto w-[min(1160px,calc(100%-24px))] sm:w-[min(1160px,calc(100%-40px))]">
+          <div className="grid grid-cols-2 items-center gap-2.5 sm:grid-cols-3 sm:gap-3 lg:hidden">
             {CATEGORIES.map((cat) => (
               <Link
                 key={cat.label}
@@ -195,7 +195,7 @@ export function ShopByCategory() {
                 className="focus-ring group w-full"
               >
                 <div
-                  className="relative aspect-[4/5.15] overflow-hidden rounded-xl shadow-[0_2px_7px_rgba(33,20,12,0.28)] transition-transform duration-300 group-hover:-translate-y-1"
+                  className="relative aspect-[4/5] overflow-hidden rounded-lg shadow-[0_2px_7px_rgba(33,20,12,0.28)] transition-transform duration-300 group-hover:-translate-y-1 sm:aspect-[4/5.15] sm:rounded-xl"
                   style={{ background: "var(--bg-dark)" }}
                 >
                   <Image
@@ -212,7 +212,7 @@ export function ShopByCategory() {
                         "linear-gradient(to top, rgba(35,12,6,0.72) 0%, rgba(35,12,6,0.18) 55%, transparent 100%)",
                     }}
                   />
-                  <span className="display-font absolute bottom-4 left-4 text-[1.65rem] italic leading-none text-white drop-shadow-[0_2px_3px_rgba(0,0,0,0.58)] sm:text-[1.9rem]">
+                  <span className="display-font absolute bottom-3 left-3 text-[1.35rem] italic leading-none text-white drop-shadow-[0_2px_3px_rgba(0,0,0,0.58)] sm:bottom-4 sm:left-4 sm:text-[1.9rem]">
                     {cat.label}
                   </span>
                 </div>

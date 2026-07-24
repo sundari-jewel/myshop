@@ -5,6 +5,7 @@ import {
   Database, Trash2, RefreshCw, CheckCircle2, XCircle,
   Package, ShoppingBag, Sparkles, BarChart2, Clock, Loader2,
 } from "lucide-react";
+import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 
 interface SeedSummary {
   products:        { slug: string; action: string }[];
@@ -36,6 +37,7 @@ export default function AdminSeedPage() {
   const [result,  setResult]  = useState<SeedResult | null>(null);
   const [cleared, setCleared] = useState(false);
   const [error,   setError]   = useState("");
+  const [confirmAction, setConfirmAction] = useState<"reset" | "clear" | null>(null);
 
   async function safeJson<T>(res: Response): Promise<T> {
     const text = await res.text();
@@ -66,7 +68,6 @@ export default function AdminSeedPage() {
   }
 
   async function clearAll() {
-    if (!confirm("This will delete ALL seed data from every collection. Continue?")) return;
     setPhase("clearing");
     setResult(null);
     setError("");
@@ -96,7 +97,7 @@ export default function AdminSeedPage() {
     : [];
 
   return (
-    <div className="mx-auto max-w-2xl p-8" style={{ color: "var(--cream)" }}>
+    <div className="mx-auto max-w-2xl p-4 sm:p-8" style={{ color: "var(--cream)" }}>
       {/* Header */}
       <div className="mb-8 flex items-center gap-3">
         <Database size={22} className="text-[var(--gold)]" />
@@ -142,7 +143,7 @@ export default function AdminSeedPage() {
         </button>
 
         <button
-          onClick={() => runSeed(true)}
+          onClick={() => setConfirmAction("reset")}
           disabled={busy}
           className="flex items-center gap-2 rounded-lg px-5 py-3 text-sm disabled:opacity-50"
           style={{ background: "rgba(138,106,58,0.15)", border: "1px solid rgba(138,106,58,0.3)", color: "var(--gold)" }}
@@ -152,7 +153,7 @@ export default function AdminSeedPage() {
         </button>
 
         <button
-          onClick={clearAll}
+          onClick={() => setConfirmAction("clear")}
           disabled={busy}
           className="ml-auto flex items-center gap-2 rounded-lg px-5 py-3 text-sm disabled:opacity-50 hover:text-red-400 transition-colors"
           style={{ background: "rgba(239,68,68,0.06)", border: "1px solid rgba(239,68,68,0.15)", color: "rgba(239,68,68,0.7)" }}
@@ -206,6 +207,23 @@ export default function AdminSeedPage() {
         <p>• <strong className="text-[var(--cream)]">Reset &amp; Re-seed</strong> — clears orders, try-on data, then re-inserts everything. Products are kept.</p>
         <p>• <strong className="text-[var(--cream)]">Clear All Data</strong> — wipes every collection including products. Cannot be undone.</p>
       </div>
+
+      <ConfirmationDialog
+        open={confirmAction !== null}
+        title={confirmAction === "clear" ? "Clear all database data?" : "Reset and re-seed the database?"}
+        description={confirmAction === "clear"
+          ? "Every seeded collection, including all products, will be permanently deleted. This cannot be undone."
+          : "Existing orders and try-on data will be replaced with fresh seed data. Products will be retained."}
+        confirmLabel={confirmAction === "clear" ? "Clear all data" : "Reset & re-seed"}
+        tone={confirmAction === "clear" ? "danger" : "warning"}
+        onCancel={() => setConfirmAction(null)}
+        onConfirm={async () => {
+          const action = confirmAction;
+          setConfirmAction(null);
+          if (action === "clear") await clearAll();
+          if (action === "reset") await runSeed(true);
+        }}
+      />
     </div>
   );
 }

@@ -234,7 +234,7 @@ export default function AdminTryOnPage() {
   }
 
   return (
-    <div className="min-h-screen px-6 py-10" style={{ background: "var(--bg-dark)", color: "var(--cream)" }}>
+    <div className="min-h-screen px-3 py-7 sm:px-6 sm:py-10" style={{ background: "var(--bg-dark)", color: "var(--cream)" }}>
       {/* Header */}
       <div className="mb-8 flex items-center gap-3">
         <Sparkles size={22} className="text-[var(--gold)]" />

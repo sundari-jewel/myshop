@@ -100,8 +100,8 @@ export default function AdminOrdersPage() {
   }
 
   return (
-    <div className="p-8" style={{ color: "var(--cream)" }}>
-      <div className="mb-6 flex items-center justify-between">
+    <div className="p-4 sm:p-8" style={{ color: "var(--cream)" }}>
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="font-cormorant text-3xl font-semibold text-[var(--gold)]">Orders</h1>
           <p className="mt-1 text-sm text-[var(--cream-muted)]">{total} total</p>
@@ -136,16 +136,16 @@ export default function AdminOrdersPage() {
 
                 {/* Header row */}
                 <button
-                  className="flex w-full items-center gap-4 px-6 py-4 text-left"
+                  className="grid w-full grid-cols-[1fr_auto] items-center gap-2 px-4 py-4 text-left sm:flex sm:gap-4 sm:px-6"
                   onClick={() => setExpanded(expanded === order._id ? null : order._id)}
                 >
                   <code className="shrink-0 text-xs font-semibold text-[var(--gold)]">{order.orderId}</code>
-                  <span className="flex-1 text-sm text-[var(--cream)]">{order.customer.name}</span>
+                  <span className="min-w-0 truncate text-sm text-[var(--cream)] sm:flex-1">{order.customer.name}</span>
                   <span className="text-sm font-medium text-[var(--cream)]">{formatPrice(order.total)}</span>
                   <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-semibold capitalize ${STATUS_COLORS[order.status] ?? ""}`}>
                     {order.status}
                   </span>
-                  <span className="text-xs text-[var(--cream-muted)]">
+                  <span className="hidden text-xs text-[var(--cream-muted)] sm:inline">
                     {new Date(order.createdAt).toLocaleDateString("en-IN")}
                   </span>
                   <ChevronDown
@@ -156,7 +156,7 @@ export default function AdminOrdersPage() {
 
                 {/* Expanded detail */}
                 {expanded === order._id && (
-                  <div className="px-6 pb-6" style={{ borderTop: "1px solid rgba(138,106,58,0.1)" }}>
+                  <div className="px-4 pb-5 sm:px-6 sm:pb-6" style={{ borderTop: "1px solid rgba(138,106,58,0.1)" }}>
 
                     {/* Info grid */}
                     <div className="mt-5 grid gap-6 md:grid-cols-3">

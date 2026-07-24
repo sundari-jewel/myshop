@@ -90,10 +90,10 @@ export function ProductExplorer({ products }: { products: Product[] }) {
 
   const filterPanel = (
     <aside
-      className="sticky top-6 h-fit border p-4 shadow-[0_24px_70px_rgba(0,0,0,0.3)] backdrop-blur"
+      className="h-fit border p-3 shadow-[0_24px_70px_rgba(0,0,0,0.3)] backdrop-blur md:p-4 lg:sticky lg:top-6"
       style={{ borderColor: "rgba(201,169,110,0.2)", background: "rgba(201,169,110,0.05)" }}
     >
-      <div className="flex items-center justify-between border-b pb-4" style={{ borderColor: "rgba(201,169,110,0.15)" }}>
+      <div className="flex items-center justify-between border-b pb-3 md:pb-4" style={{ borderColor: "rgba(201,169,110,0.15)" }}>
         <div>
           <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-[var(--gold-dim)]">Refine</p>
           <h2 className="mt-1 text-sm font-semibold text-[var(--cream)]">Find your finish</h2>
@@ -112,7 +112,7 @@ export function ProductExplorer({ products }: { products: Product[] }) {
         ) : null}
       </div>
 
-      <div className="mt-5 grid gap-6">
+      <div className="mt-4 grid gap-4 md:mt-5 md:gap-6">
         <fieldset>
           <legend className="mb-3 text-[11px] font-bold uppercase tracking-[0.22em] text-[rgba(201,169,110,0.7)]">
             Price
@@ -122,7 +122,7 @@ export function ProductExplorer({ products }: { products: Product[] }) {
               <button
                 key={band.value}
                 type="button"
-                className="focus-ring grid grid-cols-[1fr_auto] items-center gap-3 rounded-sm border border-[rgba(138,106,58,0.2)] px-3 py-2.5 text-left transition data-[active=true]:border-[var(--ruby)] data-[active=true]:bg-[rgba(155,28,28,0.06)]"
+                className="focus-ring grid grid-cols-[1fr_auto] items-center gap-2 rounded-sm border border-[rgba(138,106,58,0.2)] px-2.5 py-2 text-left transition data-[active=true]:border-[var(--ruby)] data-[active=true]:bg-[rgba(155,28,28,0.06)] md:gap-3 md:px-3 md:py-2.5"
                 data-active={priceFilter === band.value}
                 onClick={() => setPriceFilter(band.value)}
               >
@@ -144,9 +144,9 @@ export function ProductExplorer({ products }: { products: Product[] }) {
 
   return (
     <section style={{ background: "var(--bg-dark)" }}>
-      <div className="w-full px-5 py-10 sm:px-8 sm:py-14">
+      <div className="w-full px-2.5 py-4 md:px-8 md:py-14">
         <div
-          className="relative overflow-hidden border bg-[var(--bg-dark)] px-5 py-8 text-[var(--cream)] sm:px-8 lg:px-10 lg:py-11"
+          className="relative overflow-hidden border bg-[var(--bg-dark)] px-3.5 py-4 text-[var(--cream)] md:px-8 md:py-8 lg:px-10 lg:py-11"
           style={{ borderColor: "rgba(201,169,110,0.24)" }}
         >
           <div
@@ -159,61 +159,61 @@ export function ProductExplorer({ products }: { products: Product[] }) {
               backgroundSize: "cover",
             }}
           />
-          <div className="relative grid gap-8 lg:grid-cols-[1fr_330px] lg:items-end">
+          <div className="relative grid gap-5 md:gap-8 lg:grid-cols-[1fr_330px] lg:items-end">
             <div>
-              <h1 className="display-font max-w-3xl text-5xl font-semibold leading-[0.94] sm:text-6xl lg:text-7xl">
+              <h1 className="display-font max-w-3xl text-[2rem] font-semibold leading-none md:text-6xl lg:text-7xl">
                 All Jewellery
               </h1>
-              <p className="mt-5 max-w-2xl text-sm leading-7 text-[var(--cream-muted)] sm:text-base">
+              <p className="mt-2.5 max-w-2xl text-xs leading-5 text-[var(--cream-muted)] md:mt-5 md:text-base md:leading-7">
                 Browse bridal heirlooms, daily gold, diamond essentials, and modern classics with filters tuned for real jewellery decisions.
               </p>
             </div>
           </div>
         </div>
 
-        <div className="mt-7 grid gap-5 lg:grid-cols-[286px_1fr] lg:items-start">
+        <div className="mt-4 grid gap-4 md:mt-7 md:gap-5 lg:grid-cols-[286px_1fr] lg:items-start">
           <div className="hidden lg:block">{filterPanel}</div>
 
           <div className="min-w-0">
             <div
-              className="mb-5 grid gap-3 border p-3 backdrop-blur sm:grid-cols-[1fr_auto_auto]"
+              className="mb-3 grid grid-cols-2 gap-2 border p-2 backdrop-blur md:mb-5 md:grid-cols-[1fr_auto_auto] md:gap-3 md:p-3"
               style={{ background: "rgba(201,169,110,0.05)", borderColor: "rgba(201,169,110,0.18)" }}
             >
               <label
-                className="focus-within:ring-2 focus-within:ring-[var(--gold)] grid h-12 grid-cols-[auto_1fr] items-center gap-3 rounded-sm border px-3"
+                className="focus-within:ring-2 focus-within:ring-[var(--gold)] col-span-2 grid h-10 grid-cols-[auto_1fr] items-center gap-2 rounded-sm border px-2.5 md:col-span-1 md:h-12 md:gap-3 md:px-3"
                 style={{ borderColor: "rgba(201,169,110,0.2)", background: "rgba(201,169,110,0.04)" }}
               >
-                <Search size={17} className="text-[var(--gold-dim)]" />
+                <Search size={15} className="text-[var(--gold-dim)] md:size-[17px]" />
                 <span className="sr-only">Search jewellery</span>
                 <input
                   value={query}
                   onChange={(event) => setQuery(event.target.value)}
                   placeholder="Search by name, material, stone..."
-                  className="h-full min-w-0 bg-transparent text-sm text-[var(--cream)] outline-none placeholder:text-[rgba(245,230,200,0.35)]"
+                  className="h-full min-w-0 bg-transparent text-xs text-[var(--cream)] outline-none placeholder:text-[rgba(245,230,200,0.35)] md:text-sm"
                 />
               </label>
 
               <button
                 type="button"
-                className="focus-ring inline-flex h-12 items-center justify-center gap-2 rounded-sm border px-4 text-xs font-bold uppercase tracking-[0.2em] text-[var(--bg-dark)] lg:hidden"
+                className="focus-ring inline-flex h-10 min-w-0 items-center justify-center gap-1.5 rounded-sm border px-2 text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--bg-dark)] md:h-12 md:gap-2 md:px-4 md:text-xs md:tracking-[0.2em] lg:hidden"
                 style={{ borderColor: "rgba(138,106,58,0.24)", background: "var(--gold-pale)" }}
                 onClick={() => setShowMobileFilters((open) => !open)}
               >
-                <SlidersHorizontal size={16} />
+                <SlidersHorizontal size={14} />
                 Filters
                 {activeFilterCount > 0 ? <span className="text-[var(--ruby)]">({activeFilterCount})</span> : null}
               </button>
 
               <label
-                className="grid h-12 grid-cols-[auto_1fr] items-center gap-3 rounded-sm border px-3"
+                className="grid h-10 min-w-0 grid-cols-[auto_1fr] items-center gap-1.5 rounded-sm border px-2 md:h-12 md:gap-3 md:px-3"
                 style={{ borderColor: "rgba(201,169,110,0.2)", background: "rgba(201,169,110,0.04)" }}
               >
-                <ArrowDownAZ size={17} className="text-[var(--gold-dim)]" />
+                <ArrowDownAZ size={15} className="text-[var(--gold-dim)] md:size-[17px]" />
                 <span className="sr-only">Sort products</span>
                 <select
                   value={sortMode}
                   onChange={(event) => setSortMode(event.target.value as SortMode)}
-                  className="h-full min-w-[168px] bg-transparent text-sm font-semibold text-[var(--cream)] outline-none"
+                className="h-full min-w-0 w-full bg-transparent text-xs font-semibold text-[var(--cream)] outline-none md:min-w-[168px] md:text-sm"
                 >
                   {sortOptions.map((option) => (
                     <option key={option.value} value={option.value}>
@@ -225,7 +225,7 @@ export function ProductExplorer({ products }: { products: Product[] }) {
             </div>
 
             {showMobileFilters ? (
-              <div className="mb-5 lg:hidden">
+              <div className="mb-4 lg:hidden">
                 <div className="mb-2 flex justify-end">
                   <button
                     type="button"
@@ -240,8 +240,8 @@ export function ProductExplorer({ products }: { products: Product[] }) {
               </div>
             ) : null}
 
-            <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <p className="text-sm font-medium text-[rgba(245,230,200,0.55)]">
+            <div className="mb-3 flex flex-col gap-2 md:mb-5 md:flex-row md:items-center md:justify-between md:gap-3">
+              <p className="text-xs font-medium text-[rgba(245,230,200,0.55)] md:text-sm">
                 Showing <span className="font-bold text-[var(--cream)]">{visibleProducts.length}</span> of {products.length} pieces
               </p>
               <div className="flex flex-wrap gap-2">
@@ -290,20 +290,6 @@ export function ProductExplorer({ products }: { products: Product[] }) {
   );
 }
 
-function FilterOption({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
-  return (
-    <button
-      type="button"
-      className="focus-ring grid grid-cols-[1fr_auto] items-center rounded-sm border border-[rgba(138,106,58,0.2)] px-3 py-2.5 text-left text-sm font-semibold text-[var(--cream)] transition data-[active=true]:border-[var(--ruby)] data-[active=true]:bg-[rgba(155,28,28,0.06)]"
-      data-active={active}
-      onClick={onClick}
-    >
-      {label}
-      {active ? <Check size={14} className="text-[var(--ruby)]" /> : null}
-    </button>
-  );
-}
-
 function FilterChipGroup({
   title,
   options,
@@ -344,4 +330,3 @@ function FilterChipGroup({
     </fieldset>
   );
 }
-

@@ -5,7 +5,6 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Route } from "next";
 import { useEffect, useRef, useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { HeroBanner } from "@/lib/hero-banners";
 
 type HeroCarouselProps = {
@@ -18,8 +17,6 @@ export function HeroCarousel({ banners }: HeroCarouselProps) {
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const count = banners.length;
-
-  if (count === 0) return null;
 
   function go(index: number) {
     setActive(((index % count) + count) % count);
@@ -35,9 +32,11 @@ export function HeroCarousel({ banners }: HeroCarouselProps) {
     };
   }, [count, paused]);
 
+  if (count === 0) return null;
+
   return (
     <div
-      className="group relative min-h-[98vh] w-full overflow-hidden"
+      className="group relative aspect-[1370/606] min-h-[150px] w-full overflow-hidden sm:min-h-[260px]"
       style={{ background: "var(--bg-dark)" }}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
@@ -62,31 +61,9 @@ export function HeroCarousel({ banners }: HeroCarouselProps) {
         </div>
       ))}
 
-      {/* Prev / Next arrows — only shown when >1 banner */}
-      {count > 1 && (
-        <>
-          <button
-            type="button"
-            aria-label="Previous banner"
-            onClick={() => go(active - 1)}
-            className="focus-ring absolute left-4 top-1/2 z-20 -translate-y-1/2 grid size-10 place-items-center rounded-full border border-[rgba(201,169,110,0.35)] bg-[rgba(14,4,4,0.55)] text-[var(--gold)] opacity-0 transition hover:bg-[rgba(14,4,4,0.8)] group-hover:opacity-100 sm:opacity-60"
-          >
-            <ChevronLeft size={20} />
-          </button>
-          <button
-            type="button"
-            aria-label="Next banner"
-            onClick={() => go(active + 1)}
-            className="focus-ring absolute right-4 top-1/2 z-20 -translate-y-1/2 grid size-10 place-items-center rounded-full border border-[rgba(201,169,110,0.35)] bg-[rgba(14,4,4,0.55)] text-[var(--gold)] opacity-0 transition hover:bg-[rgba(14,4,4,0.8)] group-hover:opacity-100 sm:opacity-60"
-          >
-            <ChevronRight size={20} />
-          </button>
-        </>
-      )}
-
       {/* Dot indicators — only shown when >1 banner */}
       {count > 1 && (
-        <div className="absolute bottom-5 left-1/2 z-20 flex -translate-x-1/2 gap-2">
+        <div className="absolute bottom-2.5 left-1/2 z-20 flex -translate-x-1/2 gap-2 sm:bottom-5">
           {banners.map((_, i) => (
             <button
               key={i}

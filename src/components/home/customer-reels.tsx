@@ -22,7 +22,6 @@ const TRACK_A = [...ROW_A, ...ROW_A];
 const TRACK_B = [...ROW_B, ...ROW_B];
 
 const CARD_W = 190;
-const CARD_H = Math.round(CARD_W * 16 / 9); // 338px
 
 const INSTAGRAM_SVG = (
   <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
@@ -35,16 +34,7 @@ const INSTAGRAM_SVG = (
 
 function ReelCard({ src, alt }: { src: string; alt: string }) {
   return (
-    <div
-      style={{
-        position: "relative",
-        flexShrink: 0,
-        width: `${CARD_W}px`,
-        height: `${CARD_H}px`,
-        cursor: "pointer",
-      }}
-      className="reel-card-root"
-    >
+    <div className="reel-card-root">
       {/* Card frame — hover effects via CSS class */}
       <div
         className="reel-card-inner"
@@ -104,9 +94,9 @@ const STATS = [
 export function CustomerReels() {
   return (
     <section
+      className="py-12 sm:py-[76px] sm:pb-[84px]"
       style={{
         background: "var(--bg-deep)",
-        paddingBlock: "76px 84px",
         position: "relative",
         overflow: "hidden",
       }}
@@ -120,7 +110,7 @@ export function CustomerReels() {
       }} />
 
       {/* ── Header ─────────────────────────────────────────── */}
-      <div className="container-shell" style={{ textAlign: "center", marginBottom: "52px" }}>
+      <div className="container-shell mb-8 text-center sm:mb-[52px]">
         <p style={{
           fontSize: "10px",
           fontWeight: 600,
@@ -183,14 +173,14 @@ export function CustomerReels() {
       </div>
 
       {/* ── Stats + CTA ────────────────────────────────────── */}
-      <div className="container-shell" style={{ marginTop: "52px", display: "flex", flexDirection: "column", alignItems: "center", gap: "28px" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "48px" }}>
+      <div className="container-shell mt-9 flex flex-col items-center gap-6 sm:mt-[52px] sm:gap-7">
+        <div className="reel-stats">
           {STATS.map(({ value, label }) => (
             <div key={label} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "4px" }}>
-              <span className="display-font" style={{ fontSize: "1.75rem", fontWeight: 600, color: "var(--gold)", lineHeight: 1 }}>
+              <span className="display-font text-xl sm:text-[1.75rem]" style={{ fontWeight: 600, color: "var(--gold)", lineHeight: 1 }}>
                 {value}
               </span>
-              <span style={{ fontSize: "10px", letterSpacing: "0.22em", textTransform: "uppercase", color: "rgba(200,160,112,0.45)" }}>
+              <span className="text-center text-[8px] uppercase tracking-[0.12em] sm:text-[10px] sm:tracking-[0.22em]" style={{ color: "rgba(200,160,112,0.45)" }}>
                 {label}
               </span>
             </div>

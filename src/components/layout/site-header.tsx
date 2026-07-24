@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { Route } from "next";
-import { Heart, Menu, User, X } from "lucide-react";
+import { Heart, Menu, ShoppingCart, User, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { CartDrawer } from "@/components/commerce/cart-drawer";
 import { useCart } from "@/context/cart-context";
@@ -87,7 +87,7 @@ export function SiteHeader() {
           }}
         />
 
-        <div className="relative mx-auto flex min-h-[226px] w-[min(980px,calc(100%-40px))] flex-col justify-end pb-9 pt-10">
+        <div className="relative mx-auto flex min-h-[106px] w-[min(980px,calc(100%-24px))] flex-col justify-end pb-4 pt-4 lg:min-h-[226px] lg:w-[min(980px,calc(100%-40px))] lg:pb-9 lg:pt-10">
           <div className="grid items-end gap-6 lg:grid-cols-[1fr_auto_1fr]">
             <div className="hidden items-center gap-6 lg:flex">
               {UTILITY_LINKS.map((item) => (
@@ -109,7 +109,8 @@ export function SiteHeader() {
                 width={140}
                 height={140}
                 priority
-                className="rounded-t-full shadow-[0_12px_30px_rgba(0,0,0,0.35)]"
+                sizes="(min-width: 1024px) 140px, 72px"
+                className="h-auto w-[72px] rounded-t-full shadow-[0_8px_20px_rgba(0,0,0,0.35)] sm:w-[88px] lg:w-[140px] lg:shadow-[0_12px_30px_rgba(0,0,0,0.35)]"
               />
             </Link>
 
@@ -144,11 +145,12 @@ export function SiteHeader() {
               <button
                 aria-label="Open cart"
                 type="button"
-                className="focus-ring relative text-[11px] font-medium uppercase tracking-[0.28em] transition-colors hover:text-[var(--gold-light)]"
+                className="focus-ring relative inline-flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.28em] transition-colors hover:text-[var(--gold-light)]"
                 style={{ color: "var(--gold-pale)" }}
                 onClick={() => setCartOpen(true)}
               >
                 Cart
+                <ShoppingCart size={15} strokeWidth={1.7} aria-hidden="true" />
                 {count > 0 && (
                   <span className="absolute -right-4 -top-2 flex h-4 w-4 items-center justify-center rounded-full text-[9px] font-bold" style={{ background: "var(--ruby)", color: "white" }}>
                     {count}
@@ -157,15 +159,16 @@ export function SiteHeader() {
               </button>
             </div>
 
-            <div className="absolute right-0 top-8 flex items-center gap-2 lg:hidden">
+            <div className="absolute right-0 top-1/2 flex -translate-y-1/2 items-center gap-1 lg:hidden">
               <button
                 aria-label="Open cart"
                 type="button"
-                className="focus-ring relative rounded-sm border px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.22em]"
+                className="focus-ring relative inline-flex h-9 items-center gap-1 rounded-sm border px-2 text-[9px] font-semibold uppercase tracking-[0.16em] sm:gap-1.5 sm:px-3 sm:text-[10px] sm:tracking-[0.22em]"
                 style={{ borderColor: "rgba(228,200,138,0.45)", color: "var(--gold-pale)" }}
                 onClick={() => setCartOpen(true)}
               >
                 Cart
+                <ShoppingCart size={13} strokeWidth={1.8} aria-hidden="true" />
                 {count > 0 && (
                   <span className="absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full text-[9px] font-bold" style={{ background: "var(--ruby)", color: "white" }}>
                     {count}
@@ -175,7 +178,7 @@ export function SiteHeader() {
               <button
                 aria-label={menuOpen ? "Close menu" : "Open menu"}
                 type="button"
-                className="focus-ring grid size-10 place-items-center rounded-sm border transition-colors duration-200 hover:text-[var(--gold)]"
+                className="focus-ring grid size-9 place-items-center rounded-sm border transition-colors duration-200 hover:text-[var(--gold)]"
                 style={{ borderColor: "rgba(228,200,138,0.45)", color: "var(--gold-pale)" }}
                 onClick={() => setMenuOpen((o) => !o)}
               >

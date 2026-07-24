@@ -5,13 +5,13 @@ import { collections } from "@/data/collections";
 
 export function CollectionStrip() {
   return (
-    <section className="container-shell py-16">
+    <section className="container-shell py-10 sm:py-16">
       <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-end">
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[var(--ruby)]">
             Collections
           </p>
-          <h2 className="display-font mt-2 text-5xl font-semibold">Shop by occasion</h2>
+          <h2 className="display-font mt-2 text-4xl font-semibold sm:text-5xl">Shop by occasion</h2>
         </div>
         <p className="max-w-md text-sm leading-6 text-[var(--ink-soft)]">
           Server-rendered collection pages are ready for SEO growth, seasonal edits, and editorial
@@ -23,7 +23,7 @@ export function CollectionStrip() {
           <Link
             key={collection.slug}
             href={`/collections/${collection.slug}` as Route}
-            className="group relative min-h-80 overflow-hidden rounded-md bg-[var(--surface-deep)] text-white"
+            className="group relative min-h-64 overflow-hidden rounded-md bg-[var(--surface-deep)] text-white sm:min-h-80"
           >
             <Image
               src={collection.image}

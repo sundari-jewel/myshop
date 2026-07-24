@@ -69,7 +69,7 @@ export default function AdminDashboard() {
   ];
 
   return (
-    <div className="p-8" style={{ color: "var(--cream)" }}>
+    <div className="p-4 sm:p-8" style={{ color: "var(--cream)" }}>
       <div className="mb-8 flex items-center justify-between">
         <h1 className="font-cormorant text-3xl font-semibold text-[var(--gold)]">Dashboard</h1>
         {error && (
@@ -92,12 +92,12 @@ export default function AdminDashboard() {
       )}
 
       {/* Stat cards */}
-      <div className="mb-10 grid grid-cols-2 gap-4 xl:grid-cols-4">
+      <div className="mb-8 grid grid-cols-1 gap-3 sm:mb-10 sm:grid-cols-2 sm:gap-4 xl:grid-cols-4">
         {cards.map(({ label, value, icon: Icon, link }) => (
           <Link
             key={label}
             href={link}
-            className="flex flex-col gap-3 rounded-xl p-5 transition-colors hover:border-[rgba(138,106,58,0.4)]"
+            className="flex flex-col gap-3 rounded-xl p-4 transition-colors hover:border-[rgba(138,106,58,0.4)] sm:p-5"
             style={{ background: "var(--bg-dark)", border: "1px solid rgba(138,106,58,0.18)" }}
           >
             <div className="flex items-center justify-between">
@@ -123,7 +123,8 @@ export default function AdminDashboard() {
         ) : recentOrders.length === 0 ? (
           <div className="px-6 py-8 text-center text-sm text-[var(--cream-muted)]">No orders yet.</div>
         ) : (
-          <table className="w-full text-sm">
+          <div className="overflow-x-auto">
+          <table className="min-w-[680px] w-full text-sm">
             <thead>
               <tr style={{ borderBottom: "1px solid rgba(138,106,58,0.1)" }}>
                 {["Order ID", "Customer", "Total", "Status", "Date"].map(h => (
@@ -149,6 +150,7 @@ export default function AdminDashboard() {
               ))}
             </tbody>
           </table>
+          </div>
         )}
       </div>
     </div>

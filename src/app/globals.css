@@ -51,19 +51,30 @@ html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+  text-size-adjust: 100%;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   margin: 0;
+  min-width: 0;
   overflow-x: hidden;
 }
 
 img,
 video {
+  display: block;
   max-width: 100%;
   height: auto;
+}
+
+button,
+a,
+input,
+select,
+textarea {
+  touch-action: manipulation;
 }
 
 /* ---------------------------------------------------------------------
@@ -79,6 +90,18 @@ video {
 .container-shell {
   width: min(1280px, calc(100% - 40px));
   margin-inline: auto;
+}
+
+@media (max-width: 639px) {
+  .container-shell {
+    width: calc(100% - 24px);
+  }
+
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
 }
 
 /* ---------------------------------------------------------------------
@@ -336,13 +359,20 @@ video {
 
 @media (max-width: 640px) {
   .review-track {
-    gap: 28px;
-    padding-inline: 16px;
+    gap: 18px;
+    padding-inline: 12px;
     animation-duration: 28s;
   }
 
   .review-frame {
-    width: 280px;
+    width: min(260px, calc(100vw - 40px));
+    min-height: 132px;
+  }
+
+  .review-frame-content {
+    min-height: 132px;
+    gap: 14px;
+    padding: 20px 18px 18px;
   }
 }
 
@@ -407,6 +437,32 @@ video {
 }
 .reel-card-inner:hover .reel-card-overlay {
   opacity: 1;
+}
+
+.reel-card-root {
+  position: relative;
+  width: 190px;
+  height: 338px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.reel-stats {
+  display: grid;
+  width: min(100%, 520px);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 48px;
+}
+
+@media (max-width: 640px) {
+  .reel-card-root {
+    width: 148px;
+    height: 263px;
+  }
+
+  .reel-stats {
+    gap: 10px;
+  }
 }
 
 /* =====================================================================
@@ -533,9 +589,23 @@ video {
 }
 
 @media (max-width: 640px) {
+  .sale-section {
+    padding-block: 44px 48px;
+  }
+
+  .sale-header {
+    margin-bottom: 26px;
+  }
+
   .sale-cat-grid {
-    grid-template-columns: 1fr;
-    gap: 14px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .sale-cat-card:last-child {
+    grid-column: 1 / -1;
+    width: calc(50% - 5px);
+    justify-self: center;
   }
 }
 
@@ -668,4 +738,97 @@ video {
 .sale-cat-card:hover .sale-cat-cta {
   opacity: 1;
   transform: translateY(0);
+}
+
+@media (max-width: 640px) {
+  .sale-cat-card {
+    height: clamp(218px, 64vw, 250px);
+    border-radius: 8px;
+  }
+
+  .sale-cat-content {
+    padding: 14px 12px;
+  }
+
+  .sale-cat-tag {
+    display: none;
+  }
+
+  .sale-cat-label {
+    font-size: 1.45rem;
+  }
+
+  .sale-cat-discount {
+    margin-bottom: 10px;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+  }
+
+  .sale-cat-cta {
+    gap: 5px;
+    padding: 7px 10px;
+    font-size: 8px;
+    letter-spacing: 0.14em;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 900px) {
+  .sale-cat-card {
+    height: 320px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ---------------------------------------------------------------------
+   HERO BANNER GOLD CUTOUT
+   --------------------------------------------------------------------- */
+.hero-banner-cutout {
+  position: absolute;
+  z-index: 30;
+  right: 0;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: clamp(74px, 8vw, 120px);
+  pointer-events: none;
+}
+
+.hero-banner-cutout svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.hero-banner-ornament {
+  position: absolute;
+  z-index: 1;
+  bottom: 7px;
+  left: 50%;
+  width: clamp(82px, 8vw, 116px) !important;
+  height: auto !important;
+  transform: translateX(-50%);
+}
+
+@media (max-width: 640px) {
+  .hero-banner-cutout {
+    height: 56px;
+  }
+
+  .hero-banner-ornament {
+    bottom: 4px;
+    width: 70px !important;
+  }
 }

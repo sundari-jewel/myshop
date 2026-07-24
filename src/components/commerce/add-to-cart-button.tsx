@@ -39,11 +39,11 @@ export function AddToCartButton({ productId, slug, productName, image, material,
   return (
     <button
       onClick={handleAdd}
-      className="focus-ring inline-flex h-12 w-full items-center justify-center gap-2 rounded-sm text-[11px] font-bold uppercase tracking-[0.22em] transition-all duration-200"
+      className="focus-ring inline-flex h-10 w-full items-center justify-center gap-1 rounded-sm px-1.5 text-[8px] font-bold uppercase tracking-[0.08em] transition-all duration-200 md:h-12 md:gap-2 md:px-2 md:text-[11px] md:tracking-[0.22em]"
       style={{ background: added ? "var(--ruby)" : "var(--bg-dark)", color: "var(--gold-pale)" }}
       aria-label={`Add ${productName} to cart`}
     >
-      {added ? <Check size={16} /> : <ShoppingBag size={16} />}
+      {added ? <Check className="shrink-0" size={13} /> : <ShoppingBag className="shrink-0" size={13} />}
       {added ? "Added to Cart" : "Add to Cart"}
     </button>
   );

@@ -9,7 +9,7 @@ const items = [
 export function TrustBar() {
   return (
     <section className="border-y border-[var(--line)] bg-[var(--surface)]">
-      <div className="container-shell grid gap-6 py-8 md:grid-cols-3">
+      <div className="container-shell grid gap-4 py-6 sm:gap-6 sm:py-8 md:grid-cols-3">
         {items.map((item) => {
           const Icon = item.icon;
           return (

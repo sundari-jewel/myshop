@@ -130,7 +130,7 @@ export function ProductForm({ initial, mode }: Props) {
   const inp = "admin-input";
 
   return (
-    <form onSubmit={handleSubmit} className="mx-auto max-w-3xl space-y-8 p-8">
+    <form onSubmit={handleSubmit} className="mx-auto max-w-3xl space-y-6 p-4 sm:space-y-8 sm:p-8">
       <h1 className="font-cormorant text-3xl font-semibold text-[var(--gold)]">
         {mode === "create" ? "Add Product" : "Edit Product"}
       </h1>

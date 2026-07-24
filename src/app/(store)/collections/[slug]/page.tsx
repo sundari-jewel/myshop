@@ -134,13 +134,13 @@ function CollectionLayout({
   return (
     <div style={{ background: "var(--bg-dark)", minHeight: "60vh" }}>
       {title && (
-        <div className="container-shell pb-2 pt-12 text-center">
+        <div className="container-shell pb-2 pt-8 text-center sm:pt-12">
           <h1 className="display-font text-4xl font-semibold italic text-[var(--gold)] sm:text-5xl">{title}</h1>
           {subtitle && <p className="mx-auto mt-3 max-w-xl text-sm leading-7 text-[rgba(245,230,200,0.55)]">{subtitle}</p>}
           <div className="mx-auto mt-6 h-px w-24" style={{ background: "linear-gradient(to right, transparent, var(--gold), transparent)" }} />
         </div>
       )}
-      <section className="container-shell py-10">
+      <section className="container-shell py-7 sm:py-10">
         {products.length > 0 ? (
           <ProductGrid products={products} />
         ) : (

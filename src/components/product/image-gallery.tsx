@@ -29,13 +29,13 @@ export function ImageGallery({ images, productName }: ImageGalleryProps) {
           fill
           priority
           sizes="(min-width: 1024px) 52vw, 100vw"
-          className="object-contain p-10 transition-opacity duration-300"
+          className="object-contain p-5 transition-opacity duration-300 sm:p-10"
         />
       </div>
 
       {/* Thumbnails */}
       {images.length > 1 && (
-        <div className="flex gap-2 lg:flex-col lg:w-[88px] lg:shrink-0">
+        <div className="flex max-w-full gap-2 overflow-x-auto pb-1 lg:w-[88px] lg:shrink-0 lg:flex-col lg:overflow-visible lg:pb-0">
           {images.map((src, i) => (
             <button
               key={src}
@@ -44,8 +44,8 @@ export function ImageGallery({ images, productName }: ImageGalleryProps) {
               onClick={() => setActive(i)}
               className="relative shrink-0 overflow-hidden transition-all duration-200"
               style={{
-                width: 80,
-                height: 80,
+                width: "clamp(64px, 20vw, 80px)",
+                height: "clamp(64px, 20vw, 80px)",
                 borderRadius: "4px",
                 background: "rgba(201,169,110,0.07)",
                 border: active === i

@@ -25,7 +25,7 @@ export default function HomePage() {
     <>
       <HeroSection />
       <ShopByCategory />
-<ArchivalCollection />
+      <ArchivalCollection />
       <WatchesAndRakhi />
       <ShopByGender />
       {/* <FeatureBanners /> */}

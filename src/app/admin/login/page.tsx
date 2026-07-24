@@ -28,7 +28,7 @@ export default function AdminLoginPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center" style={{ background: "var(--bg-deep)" }}>
-      <div className="w-full max-w-sm rounded-2xl p-8" style={{ background: "var(--bg-dark)", border: "1px solid rgba(138,106,58,0.2)" }}>
+      <div className="w-full max-w-sm rounded-2xl p-5 sm:p-8" style={{ background: "var(--bg-dark)", border: "1px solid rgba(138,106,58,0.2)" }}>
         <div className="mb-8 text-center">
           <p className="text-[10px] uppercase tracking-[0.3em] text-[var(--gold-dim)]">Sundari Jewellers</p>
           <h1 className="font-cormorant mt-1 text-3xl font-semibold text-[var(--gold)]">Admin</h1>

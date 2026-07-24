@@ -58,9 +58,9 @@ export function ResultStep({
   };
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-4 md:gap-6">
       {/* Result image */}
-      <div className="relative aspect-[3/4] w-full overflow-hidden rounded-xl">
+      <div className="relative mx-auto aspect-[3/4] w-[min(100%,270px)] overflow-hidden rounded-lg md:w-full md:rounded-xl">
         <Image src={resultUrl} alt="Your try-on result" fill className="object-cover" />
         {isRefining && (
           <div className="absolute inset-0 flex items-end justify-center bg-black/30 pb-4">
@@ -72,10 +72,10 @@ export function ResultStep({
       </div>
 
       {/* Action buttons */}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-2 md:gap-3">
         <button
           onClick={handleCart}
-          className="col-span-2 flex items-center justify-center gap-2 rounded-lg bg-[var(--gold)] py-3 text-sm font-medium text-[var(--bg-dark)] transition-opacity hover:opacity-90"
+          className="col-span-2 flex items-center justify-center gap-2 rounded-md bg-[var(--gold)] py-2.5 text-xs font-medium text-[var(--bg-dark)] transition-opacity hover:opacity-90 md:rounded-lg md:py-3 md:text-sm"
         >
           <ShoppingBag size={16} />
           Add to Cart
@@ -83,7 +83,7 @@ export function ResultStep({
 
         <button
           onClick={handleDownload}
-          className="flex items-center justify-center gap-2 rounded-lg border border-[rgba(138,106,58,0.4)] py-2.5 text-sm text-[var(--parchment)] transition-colors hover:border-[var(--gold)]"
+          className="flex items-center justify-center gap-2 rounded-md border border-[rgba(138,106,58,0.4)] py-2 text-xs text-[var(--parchment)] transition-colors hover:border-[var(--gold)] md:rounded-lg md:py-2.5 md:text-sm"
         >
           <Download size={15} />
           Save
@@ -91,7 +91,7 @@ export function ResultStep({
 
         <button
           onClick={handleShare}
-          className="flex items-center justify-center gap-2 rounded-lg border border-[rgba(138,106,58,0.4)] py-2.5 text-sm text-[var(--parchment)] transition-colors hover:border-[var(--gold)]"
+          className="flex items-center justify-center gap-2 rounded-md border border-[rgba(138,106,58,0.4)] py-2 text-xs text-[var(--parchment)] transition-colors hover:border-[var(--gold)] md:rounded-lg md:py-2.5 md:text-sm"
         >
           <Share2 size={15} />
           Share

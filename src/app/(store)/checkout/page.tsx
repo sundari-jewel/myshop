@@ -204,11 +204,11 @@ export default function CheckoutPage() {
   const lbl = "mb-1.5 block text-[10px] font-semibold uppercase tracking-[0.18em]";
 
   const orderSummary = (
-    <div className="sticky top-6 rounded-xl p-6 space-y-5" style={{ background: "white", border: "1px solid rgba(138,106,58,0.15)" }}>
+    <div className="sticky top-6 space-y-5 rounded-xl p-4 sm:p-6" style={{ background: "white", border: "1px solid rgba(138,106,58,0.15)" }}>
       <h2 className="text-xs font-bold uppercase tracking-[0.2em]" style={{ color: "var(--ink-soft)" }}>Order Summary</h2>
       <ul className="space-y-4">
         {items.map(item => (
-          <li key={`${item.productId}-${item.size ?? ""}`} className="flex gap-3">
+          <li key={`${item.productId}-${item.size ?? ""}`} className="flex min-w-0 gap-3">
             <div className="relative h-16 w-14 shrink-0 overflow-hidden rounded-sm" style={{ background: "var(--surface-warm)" }}>
               <Image src={item.image} alt={item.name} fill className="object-contain p-1.5" />
               <span className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full text-[9px] font-bold"
@@ -216,11 +216,11 @@ export default function CheckoutPage() {
                 {item.qty}
               </span>
             </div>
-            <div className="flex-1">
-              <p className="text-sm font-medium leading-snug" style={{ color: "var(--foreground)" }}>{item.name}</p>
+            <div className="min-w-0 flex-1">
+              <p className="break-words text-sm font-medium leading-snug" style={{ color: "var(--foreground)" }}>{item.name}</p>
               {item.size && <p className="text-[11px]" style={{ color: "var(--ink-soft)" }}>Size {item.size}</p>}
             </div>
-            <p className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>{formatPrice(item.price * item.qty)}</p>
+            <p className="shrink-0 text-sm font-semibold" style={{ color: "var(--foreground)" }}>{formatPrice(item.price * item.qty)}</p>
           </li>
         ))}
       </ul>
@@ -245,7 +245,7 @@ export default function CheckoutPage() {
 
   const addressFormSections = (
     <>
-      <section className="rounded-xl p-6 space-y-5" style={{ background: "white", border: "1px solid rgba(138,106,58,0.15)" }}>
+      <section className="space-y-5 rounded-xl p-4 sm:p-6" style={{ background: "white", border: "1px solid rgba(138,106,58,0.15)" }}>
         <h2 className="text-xs font-bold uppercase tracking-[0.2em]" style={{ color: "var(--ink-soft)" }}>Contact</h2>
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="sm:col-span-2">
@@ -263,7 +263,7 @@ export default function CheckoutPage() {
         </div>
       </section>
 
-      <section className="rounded-xl p-6 space-y-5" style={{ background: "white", border: "1px solid rgba(138,106,58,0.15)" }}>
+      <section className="space-y-5 rounded-xl p-4 sm:p-6" style={{ background: "white", border: "1px solid rgba(138,106,58,0.15)" }}>
         <h2 className="text-xs font-bold uppercase tracking-[0.2em]" style={{ color: "var(--ink-soft)" }}>Delivery Address</h2>
         <div className="grid gap-4">
           <div>
@@ -301,12 +301,12 @@ export default function CheckoutPage() {
 
   return (
     <div style={{ background: "var(--surface)" }}>
-      <div className="container-shell py-12">
-        <h1 className="display-font mb-10 text-4xl font-semibold" style={{ color: "var(--foreground)" }}>Checkout</h1>
+      <div className="container-shell py-7 sm:py-12">
+        <h1 className="display-font mb-7 text-3xl font-semibold sm:mb-10 sm:text-4xl" style={{ color: "var(--foreground)" }}>Checkout</h1>
 
         {/* ── Step 1: choose payment method ─────────────────── */}
         {!method && (
-          <div className="grid gap-10 lg:grid-cols-[1fr_400px]">
+          <div className="grid gap-7 lg:grid-cols-[1fr_400px] lg:gap-10">
             <div className="space-y-5">
               <div>
                 <p className="display-font text-2xl font-semibold" style={{ color: "var(--foreground)" }}>How would you like to pay?</p>
@@ -316,18 +316,18 @@ export default function CheckoutPage() {
               {/* Online Payment */}
               <button
                 onClick={() => setMethod("prepaid")}
-                className="group w-full rounded-xl p-6 text-left transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_8px_32px_rgba(138,106,58,0.14)]"
+                className="group w-full rounded-xl p-4 text-left transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_8px_32px_rgba(138,106,58,0.14)] sm:p-6"
                 style={{ background: "var(--bg-dark)", border: "1.5px solid rgba(201,169,110,0.25)" }}
               >
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex items-start gap-4">
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full" style={{ background: "rgba(201,169,110,0.15)" }}>
+                <div className="flex items-start justify-between gap-2 sm:gap-4">
+                  <div className="flex min-w-0 items-start gap-3 sm:gap-4">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full sm:h-12 sm:w-12" style={{ background: "rgba(201,169,110,0.15)" }}>
                       <CreditCard size={22} style={{ color: "var(--gold)" }} />
                     </div>
                     <div>
-                      <div className="flex items-center gap-2">
-                        <span className="font-semibold text-lg" style={{ color: "var(--gold-pale)" }}>Online Payment</span>
-                        <span className="rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest" style={{ background: "rgba(201,169,110,0.18)", color: "var(--gold)" }}>Recommended</span>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="text-base font-semibold sm:text-lg" style={{ color: "var(--gold-pale)" }}>Online Payment</span>
+                        <span className="rounded-full px-2 py-0.5 text-[8px] font-bold uppercase tracking-wider sm:text-[9px] sm:tracking-widest" style={{ background: "rgba(201,169,110,0.18)", color: "var(--gold)" }}>Recommended</span>
                       </div>
                       <p className="mt-1 text-sm" style={{ color: "var(--cream-muted)" }}>Secure payment via Razorpay · Instant confirmation</p>
                       <div className="mt-3 flex flex-wrap gap-2">
@@ -346,16 +346,16 @@ export default function CheckoutPage() {
               {/* Cash on Delivery */}
               <button
                 onClick={() => setMethod("cod")}
-                className="group w-full rounded-xl p-6 text-left transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_8px_32px_rgba(138,106,58,0.10)]"
+                className="group w-full rounded-xl p-4 text-left transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_8px_32px_rgba(138,106,58,0.10)] sm:p-6"
                 style={{ background: "white", border: "1.5px solid rgba(138,106,58,0.18)" }}
               >
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex items-start gap-4">
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full" style={{ background: "rgba(138,106,58,0.08)" }}>
+                <div className="flex items-start justify-between gap-2 sm:gap-4">
+                  <div className="flex min-w-0 items-start gap-3 sm:gap-4">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full sm:h-12 sm:w-12" style={{ background: "rgba(138,106,58,0.08)" }}>
                       <Truck size={22} style={{ color: "var(--gold-dim)" }} />
                     </div>
                     <div>
-                      <span className="font-semibold text-lg" style={{ color: "var(--foreground)" }}>Cash on Delivery</span>
+                      <span className="text-base font-semibold sm:text-lg" style={{ color: "var(--foreground)" }}>Cash on Delivery</span>
                       <p className="mt-1 text-sm" style={{ color: "var(--ink-soft)" }}>Pay when your order arrives at your door</p>
                       <div className="mt-3 flex items-center gap-1.5">
                         <Banknote size={13} style={{ color: "var(--gold-dim)" }} />
@@ -373,7 +373,7 @@ export default function CheckoutPage() {
 
         {/* ── Prepaid: collect address then open Razorpay ───── */}
         {method === "prepaid" && (
-          <form onSubmit={handleRazorpay} className="grid gap-10 lg:grid-cols-[1fr_400px]">
+          <form onSubmit={handleRazorpay} className="grid gap-7 lg:grid-cols-[1fr_400px] lg:gap-10">
             <div className="space-y-8">
               <button type="button" onClick={() => setMethod(null)} className="text-xs" style={{ color: "var(--ink-soft)" }}>
                 ← Back
@@ -397,7 +397,7 @@ export default function CheckoutPage() {
 
         {/* ── COD: collect delivery details ─────────────────── */}
         {method === "cod" && (
-          <form onSubmit={handleCod} className="grid gap-10 lg:grid-cols-[1fr_400px]">
+          <form onSubmit={handleCod} className="grid gap-7 lg:grid-cols-[1fr_400px] lg:gap-10">
             <div className="space-y-8">
               <button type="button" onClick={() => setMethod(null)} className="text-xs" style={{ color: "var(--ink-soft)" }}>
                 ← Back

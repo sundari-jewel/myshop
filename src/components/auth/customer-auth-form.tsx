@@ -55,9 +55,9 @@ export function CustomerAuthForm({ mode }: { mode: Mode }) {
 
   return (
     <div className="bg-[var(--surface)]">
-      <div className="container-shell grid min-h-[72vh] items-center gap-8 py-10 lg:grid-cols-[0.9fr_1.1fr]">
+      <div className="container-shell grid min-h-[72vh] items-center gap-6 py-7 sm:gap-8 sm:py-10 lg:grid-cols-[0.9fr_1.1fr]">
         <section
-          className="relative overflow-hidden border bg-[var(--bg-dark)] p-7 text-[var(--cream)] sm:p-9"
+          className="relative overflow-hidden border bg-[var(--bg-dark)] p-5 text-[var(--cream)] sm:p-9"
           style={{ borderColor: "rgba(201,169,110,0.24)" }}
         >
           <div
@@ -75,7 +75,7 @@ export function CustomerAuthForm({ mode }: { mode: Mode }) {
               <Gem size={16} />
               Sundari Circle
             </p>
-            <h1 className="display-font mt-4 max-w-xl text-5xl font-semibold leading-[0.95] sm:text-6xl">
+            <h1 className="display-font mt-4 max-w-xl text-4xl font-semibold leading-[0.95] sm:text-6xl">
               {isSignup ? "Create your jewellery vault" : "Welcome back to your vault"}
             </h1>
             <p className="mt-5 max-w-lg text-sm leading-7 text-[var(--cream-muted)]">
@@ -99,7 +99,7 @@ export function CustomerAuthForm({ mode }: { mode: Mode }) {
             <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-[var(--ruby)]">
               {isSignup ? "Sign up" : "Sign in"}
             </p>
-            <h2 className="display-font mt-2 text-4xl font-semibold">
+            <h2 className="display-font mt-2 text-3xl font-semibold sm:text-4xl">
               {isSignup ? "Start your account" : "Access your account"}
             </h2>
           </div>

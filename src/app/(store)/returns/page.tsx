@@ -12,13 +12,13 @@ export default function ReturnsPage() {
     <div style={{ background: "var(--bg-dark)", minHeight: "100vh" }}>
       {/* Hero */}
       <div
-        className="border-b py-14"
+        className="border-b py-9 sm:py-14"
         style={{ borderColor: "rgba(201,169,110,0.15)" }}
       >
         <div className="container-shell">
           <div className="mx-auto max-w-3xl">
             <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-[var(--gold-dim)]">Legal</p>
-            <h1 className="display-font mt-3 text-5xl font-semibold italic text-[var(--gold)] sm:text-6xl">
+            <h1 className="display-font mt-3 text-4xl font-semibold italic text-[var(--gold)] sm:text-6xl">
               Return &amp; Refunds Policy
             </h1>
             <p className="mt-4 max-w-xl text-sm leading-7 text-[rgba(245,230,200,0.5)]">
@@ -28,12 +28,12 @@ export default function ReturnsPage() {
         </div>
       </div>
 
-      <div className="container-shell py-14">
-        <div className="mx-auto max-w-3xl space-y-14">
+      <div className="container-shell py-9 sm:py-14">
+        <div className="mx-auto max-w-3xl space-y-10 sm:space-y-14">
 
           {/* Sale Items Warning */}
           <div
-            className="rounded-sm border p-6"
+            className="rounded-sm border p-4 sm:p-6"
             style={{ borderColor: "rgba(201,169,110,0.35)", background: "rgba(201,169,110,0.06)" }}
           >
             <p className="mb-4 text-[11px] font-bold uppercase tracking-[0.25em] text-[var(--gold)]">

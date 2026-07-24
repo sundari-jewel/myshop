@@ -18,12 +18,12 @@ const RAKHI_CELLS = [
 
 export function WatchesAndRakhi() {
   return (
-    <section className="py-16 sm:py-20" style={{ background: "var(--bg-dark)" }}>
+    <section className="py-10 sm:py-20" style={{ background: "var(--bg-dark)" }}>
 
       {/* ── Header ── */}
-      <div className="mb-10 flex items-center justify-center gap-5 sm:mb-14 sm:gap-7">
+      <div className="mb-7 flex items-center justify-center gap-5 sm:mb-14 sm:gap-7">
         <span className="hidden h-px w-24 bg-gradient-to-r from-transparent via-[var(--gold)] to-transparent sm:block" />
-        <span className="display-font text-center text-[2.05rem] font-semibold italic leading-none tracking-[0.08em] text-[var(--gold)] drop-shadow-[0_2px_1px_rgba(70,40,0,0.32)] sm:text-[2.45rem]">
+        <span className="display-font text-center text-[1.75rem] font-semibold italic leading-none tracking-[0.05em] text-[var(--gold)] drop-shadow-[0_2px_1px_rgba(70,40,0,0.32)] sm:text-[2.45rem] sm:tracking-[0.08em]">
           Watches &amp; Rakhi
         </span>
         <span className="hidden h-px w-24 bg-gradient-to-r from-transparent via-[var(--gold)] to-transparent sm:block" />
@@ -35,7 +35,7 @@ export function WatchesAndRakhi() {
         {/* Watches panel */}
         <Link
           href={"/collections/watches" as Route}
-          className="focus-ring group relative block min-h-[320px] overflow-hidden sm:min-h-[420px]"
+          className="focus-ring group relative block min-h-[260px] overflow-hidden sm:min-h-[420px]"
         >
           <Image
             src="/assets/watches-collection.webp"
@@ -55,7 +55,7 @@ export function WatchesAndRakhi() {
           />
 
           {/* Editorial text */}
-          <div className="absolute bottom-0 left-0 z-20 p-6 sm:p-10">
+          <div className="absolute bottom-0 left-0 z-20 p-5 sm:p-10">
             <p
               className="mb-2 text-[0.6rem] font-bold uppercase tracking-[0.28em]"
               style={{ color: "rgba(201,169,110,0.55)" }}
@@ -91,7 +91,7 @@ export function WatchesAndRakhi() {
         {/* Rakhi panel */}
         <Link
           href={"/collections/rakhi" as Route}
-          className="focus-ring group relative block min-h-[320px] overflow-hidden sm:min-h-[420px]"
+          className="focus-ring group relative block min-h-[260px] overflow-hidden sm:min-h-[420px]"
         >
           <Image
             src="/assets/rakhi-collection.webp"
@@ -111,7 +111,7 @@ export function WatchesAndRakhi() {
           />
 
           {/* Editorial text */}
-          <div className="absolute bottom-0 left-0 z-20 p-6 sm:p-10">
+          <div className="absolute bottom-0 left-0 z-20 p-5 sm:p-10">
             <p
               className="mb-2 text-[0.6rem] font-bold uppercase tracking-[0.28em]"
               style={{ color: "rgba(201,169,110,0.55)" }}
