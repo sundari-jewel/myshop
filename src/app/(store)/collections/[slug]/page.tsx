@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { ProductGrid } from "@/components/commerce/product-grid";
 import { collections } from "@/data/collections";
 import { getShopifyCollection } from "@/lib/shopify-collections";
-import { getProductsByGenderGid, getProductsByTaxonomyCategory, getProductsOnSale, GENDER_GIDS, TAXONOMY_CATEGORY_IDS } from "@/lib/shopify-admin";
+import { getProductsByGenderGid, getProductsByTaxonomyCategory, getProductsOnSale, getTopSellingProducts, GENDER_GIDS, TAXONOMY_CATEGORY_IDS } from "@/lib/shopify-admin";
 import { fetchAllShopifyProducts } from "@/lib/shopify-collections";
 import { createMetadata } from "@/lib/seo";
 
@@ -93,6 +93,18 @@ const GENDER_SLUGS: Record<string, { genderGid: string | null; title: string; de
 export default async function CollectionPage({ params, searchParams }: CollectionPageProps) {
   const { slug } = await params;
   const { category } = await searchParams;
+
+  // 0b. Top selling page
+  if (slug === "top-selling") {
+    const products = await getTopSellingProducts();
+    return (
+      <CollectionLayout
+        products={products}
+        title="Top Selling"
+        subtitle="Our community's most loved pieces — handpicked and highly sought after."
+      />
+    );
+  }
 
   // 0a. Sale page — products with a compare-at price set in Shopify
   if (slug === "sale") {

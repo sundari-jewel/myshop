@@ -250,6 +250,32 @@ export async function getProductsByGenderGid(
     .map((p) => mapAdminProductToProduct(p, collectionHandle));
 }
 
+export async function getTopSellingProducts(): Promise<Product[]> {
+  const data = await adminFetch<AdminProductsData>(PRODUCTS_QUERY, { first: 12, after: null });
+  return data.products.nodes
+    .filter((n) => n.status === "ACTIVE" && n.tags.some((t) => t.toLowerCase() === "top-selling"))
+    .map((node) => {
+      const price = Math.round(parseFloat(node.priceRangeV2.minVariantPrice.amount));
+      const compareAt = node.compareAtPriceRange
+        ? Math.round(parseFloat(node.compareAtPriceRange.minVariantCompareAtPrice.amount))
+        : 0;
+      return mapAdminProductToProduct(
+        {
+          id: node.id.split("/").pop() ?? node.id,
+          title: node.title,
+          handle: node.handle,
+          image: node.featuredImage?.url ?? "",
+          price,
+          originalPrice: compareAt > price ? compareAt : undefined,
+          tags: node.tags,
+          targetGenderGid: null,
+          material: "Gold",
+        },
+        "top-selling",
+      );
+    });
+}
+
 export async function getProductsOnSale(categorySlug?: string): Promise<Product[]> {
   if (categorySlug) {
     const categoryId = TAXONOMY_CATEGORY_IDS[categorySlug as keyof typeof TAXONOMY_CATEGORY_IDS];

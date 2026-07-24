@@ -404,6 +404,20 @@ textarea {
   to   { transform: translateX(0); }
 }
 
+/* ---------------------------------------------------------------------
+   TOP SELLING CAROUSEL
+   --------------------------------------------------------------------- */
+.top-selling-track {
+  animation: top-selling-scroll 32s linear infinite;
+}
+.top-selling-track:hover {
+  animation-play-state: paused;
+}
+@keyframes top-selling-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
 /* Card hover — lift + golden glow */
 .reel-card-inner {
   transition:
