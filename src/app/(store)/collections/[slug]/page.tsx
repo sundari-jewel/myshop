@@ -9,6 +9,7 @@ import { createMetadata } from "@/lib/seo";
 
 type CollectionPageProps = {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ category?: string }>;
 };
 
 export const dynamicParams = true;
@@ -89,16 +90,20 @@ const GENDER_SLUGS: Record<string, { genderGid: string | null; title: string; de
   },
 };
 
-export default async function CollectionPage({ params }: CollectionPageProps) {
+export default async function CollectionPage({ params, searchParams }: CollectionPageProps) {
   const { slug } = await params;
+  const { category } = await searchParams;
 
   // 0a. Sale page — products with a compare-at price set in Shopify
   if (slug === "sale") {
-    const products = await getProductsOnSale();
+    const products = await getProductsOnSale(category);
+    const title = category
+      ? `${category.charAt(0).toUpperCase() + category.slice(1)} on Sale`
+      : "Grand Sale for All Sundaris";
     return (
       <CollectionLayout
         products={products}
-        title="Grand Sale for All Sundaris"
+        title={title}
         subtitle="Exquisite pieces from our finest collections — now at extraordinary savings."
       />
     );

@@ -250,7 +250,14 @@ export async function getProductsByGenderGid(
     .map((p) => mapAdminProductToProduct(p, collectionHandle));
 }
 
-export async function getProductsOnSale(): Promise<Product[]> {
+export async function getProductsOnSale(categorySlug?: string): Promise<Product[]> {
+  if (categorySlug) {
+    const categoryId = TAXONOMY_CATEGORY_IDS[categorySlug as keyof typeof TAXONOMY_CATEGORY_IDS];
+    if (categoryId) {
+      const products = await getProductsByTaxonomyCategory(categoryId, "sale");
+      return products.filter((p) => p.originalPrice !== undefined && p.originalPrice > p.price);
+    }
+  }
   const all = await fetchAllAdminProducts();
   return all
     .filter((p) => p.originalPrice !== undefined && p.originalPrice > p.price)
