@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { ProductGrid } from "@/components/commerce/product-grid";
 import { collections } from "@/data/collections";
 import { getShopifyCollection } from "@/lib/shopify-collections";
-import { getProductsByGenderGid, getProductsByTaxonomyCategory, GENDER_GIDS, TAXONOMY_CATEGORY_IDS } from "@/lib/shopify-admin";
+import { getProductsByGenderGid, getProductsByTaxonomyCategory, getProductsOnSale, GENDER_GIDS, TAXONOMY_CATEGORY_IDS } from "@/lib/shopify-admin";
 import { fetchAllShopifyProducts } from "@/lib/shopify-collections";
 import { createMetadata } from "@/lib/seo";
 
@@ -91,6 +91,18 @@ const GENDER_SLUGS: Record<string, { genderGid: string | null; title: string; de
 
 export default async function CollectionPage({ params }: CollectionPageProps) {
   const { slug } = await params;
+
+  // 0a. Sale page — products with a compare-at price set in Shopify
+  if (slug === "sale") {
+    const products = await getProductsOnSale();
+    return (
+      <CollectionLayout
+        products={products}
+        title="Grand Sale for All Sundaris"
+        subtitle="Exquisite pieces from our finest collections — now at extraordinary savings."
+      />
+    );
+  }
 
   // 0. Gifting page — random selection of products
   if (slug === "gifting") {

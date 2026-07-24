@@ -250,6 +250,13 @@ export async function getProductsByGenderGid(
     .map((p) => mapAdminProductToProduct(p, collectionHandle));
 }
 
+export async function getProductsOnSale(): Promise<Product[]> {
+  const all = await fetchAllAdminProducts();
+  return all
+    .filter((p) => p.originalPrice !== undefined && p.originalPrice > p.price)
+    .map((p) => mapAdminProductToProduct(p, "sale"));
+}
+
 const DRAFT_ORDER_CREATE = `
   mutation DraftOrderCreate($input: DraftOrderInput!) {
     draftOrderCreate(input: $input) {

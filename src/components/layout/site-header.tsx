@@ -10,12 +10,13 @@ import { useCart } from "@/context/cart-context";
 import { useCustomerAuth } from "@/context/customer-auth-context";
 import { useWishlist } from "@/context/wishlist-context";
 
-const NAV_LINKS: Array<{ href: string; label: string }> = [
+const NAV_LINKS: Array<{ href: string; label: string; highlight?: boolean }> = [
   { href: "/", label: "Home" },
   { href: "/products", label: "All Jewellery" },
   { href: "/collections/daily-gold", label: "Daily Wear" },
   { href: "/collections/bridal", label: "Occasion Wear" },
   { href: "/collections/gifting", label: "Gifting" },
+  { href: "/collections/sale", label: "Sale", highlight: true },
 ];
 
 const OFFER_ITEMS = [
@@ -52,7 +53,7 @@ export function SiteHeader() {
     <>
       {/* Announcement strip */}
       <Link
-        href="/collections/sale"
+        href={"/collections/sale" as Route}
         className="block w-full overflow-hidden border-y py-[9px] cursor-pointer"
         style={{ background: "#120404", borderColor: "rgba(201,169,110,0.18)", contain: "paint" }}
       >
@@ -196,7 +197,7 @@ export function SiteHeader() {
                 key={item.href}
                 href={item.href as Route}
                 className="focus-ring group relative text-[15px] font-bold uppercase tracking-[0.18em] transition-colors duration-200"
-                style={{ color: "var(--gold-pale)" }}
+                style={{ color: item.highlight ? "var(--ruby)" : "var(--gold-pale)" }}
               >
                 <span className="transition-colors duration-200 group-hover:text-[var(--gold-light)]">
                   {item.label}
@@ -222,7 +223,7 @@ export function SiteHeader() {
                   key={item.href}
                   href={item.href as Route}
                   className="rounded px-3 py-2.5 text-xs font-semibold uppercase tracking-[0.2em] transition-colors hover:text-[var(--gold-light)]"
-                  style={{ color: "var(--cream-muted)" }}
+                  style={{ color: item.highlight ? "var(--ruby)" : "var(--cream-muted)" }}
                   onClick={() => setMenuOpen(false)}
                 >
                   {item.label}
