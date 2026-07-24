@@ -51,8 +51,9 @@ export function SiteHeader() {
   return (
     <>
       {/* Announcement strip */}
-      <div
-        className="w-full overflow-hidden border-y py-[9px]"
+      <Link
+        href="/collections/sale"
+        className="block w-full overflow-hidden border-y py-[9px] cursor-pointer"
         style={{ background: "#120404", borderColor: "rgba(201,169,110,0.18)", contain: "paint" }}
       >
         <div className="announcement-track flex w-max items-center gap-12 text-[8px] font-medium uppercase tracking-[0.42em]" style={{ color: "var(--gold-pale)" }}>
@@ -63,7 +64,7 @@ export function SiteHeader() {
             </span>
           ))}
         </div>
-      </div>
+      </Link>
 
       {/* Main navbar */}
       <header
