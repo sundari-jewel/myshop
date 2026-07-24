@@ -37,16 +37,16 @@ export default function WishlistPage() {
   }
 
   return (
-    <div className="bg-[var(--surface)]">
+    <div style={{ background: "var(--bg-dark)", minHeight: "60vh" }}>
       <div className="container-shell py-7 sm:py-14">
         <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.3em] text-[var(--ruby)]">
+            <p className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.3em] text-[var(--gold-dim)]">
               <Heart size={16} />
               Wishlist
             </p>
-            <h1 className="display-font mt-3 text-4xl font-semibold sm:text-5xl">Saved Jewellery</h1>
-            <p className="mt-2 text-sm text-[var(--ink-soft)]">
+            <h1 className="display-font mt-3 text-4xl font-semibold italic text-[var(--gold)] sm:text-5xl">Saved Jewellery</h1>
+            <p className="mt-2 text-sm" style={{ color: "rgba(245,230,200,0.55)" }}>
               {savedProducts.length} {savedProducts.length === 1 ? "piece" : "pieces"} saved to your account.
             </p>
           </div>
@@ -55,7 +55,7 @@ export default function WishlistPage() {
               type="button"
               onClick={() => setConfirmClear(true)}
               className="focus-ring inline-flex h-11 items-center justify-center rounded-sm border px-4 text-[11px] font-bold uppercase tracking-[0.2em] text-[var(--ruby)]"
-              style={{ borderColor: "rgba(155,28,28,0.24)" }}
+              style={{ borderColor: "rgba(155,28,28,0.35)" }}
             >
               Clear wishlist
             </button>
@@ -69,16 +69,20 @@ export default function WishlistPage() {
         ) : savedProducts.length > 0 ? (
           <ProductGrid products={savedProducts} />
         ) : (
-          <div className="grid min-h-[360px] place-items-center border bg-[var(--surface-card)] px-6 text-center" style={{ borderColor: "rgba(138,106,58,0.18)" }}>
+          <div
+            className="grid min-h-[360px] place-items-center border px-6 text-center"
+            style={{ borderColor: "rgba(201,169,110,0.18)", background: "rgba(201,169,110,0.04)" }}
+          >
             <div>
               <Heart className="mx-auto text-[var(--gold-dim)]" size={34} />
-              <h2 className="display-font mt-4 text-3xl font-semibold sm:text-4xl">Your wishlist is waiting</h2>
-              <p className="mt-2 max-w-md text-sm leading-6 text-[var(--ink-soft)]">
+              <h2 className="display-font mt-4 text-3xl font-semibold italic text-[var(--gold)] sm:text-4xl">Your wishlist is waiting</h2>
+              <p className="mt-2 max-w-md text-sm leading-6" style={{ color: "rgba(245,230,200,0.55)" }}>
                 Save pieces from the catalogue and they will stay here whenever you sign in.
               </p>
               <Link
                 href={"/products" as Route}
-                className="focus-ring mt-5 inline-flex h-11 items-center justify-center gap-2 rounded-sm bg-[var(--bg-dark)] px-5 text-[11px] font-bold uppercase tracking-[0.2em] text-[var(--gold-pale)]"
+                className="focus-ring mt-5 inline-flex h-11 items-center justify-center gap-2 border px-5 text-[11px] font-bold uppercase tracking-[0.2em] text-[var(--gold)] transition hover:bg-[var(--gold)] hover:text-[var(--bg-dark)]"
+                style={{ borderColor: "rgba(201,169,110,0.35)" }}
               >
                 <ShoppingBag size={15} />
                 Browse Jewellery
