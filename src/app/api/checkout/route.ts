@@ -77,7 +77,7 @@ export async function POST(req: NextRequest) {
         shippingCharge,
       });
       if (draft) {
-        shopifyOrderName = await completeDraftOrder(draft.id);
+        shopifyOrderName = await completeDraftOrder(draft.id, body.paymentMethod === "cod");
       }
     } catch (err) {
       console.error("[checkout] shopify order failed:", err);

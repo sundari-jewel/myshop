@@ -411,8 +411,8 @@ export async function createShopifyDraftOrder(input: DraftOrderInput): Promise<{
 }
 
 const DRAFT_ORDER_COMPLETE = `
-  mutation DraftOrderComplete($id: ID!) {
-    draftOrderComplete(id: $id) {
+  mutation DraftOrderComplete($id: ID!, $paymentPending: Boolean) {
+    draftOrderComplete(id: $id, paymentPending: $paymentPending) {
       draftOrder {
         order { id name }
       }
@@ -428,8 +428,8 @@ type DraftOrderCompleteData = {
   };
 };
 
-export async function completeDraftOrder(draftOrderGid: string): Promise<string | null> {
-  const data = await adminFetch<DraftOrderCompleteData>(DRAFT_ORDER_COMPLETE, { id: draftOrderGid });
+export async function completeDraftOrder(draftOrderGid: string, paymentPending = false): Promise<string | null> {
+  const data = await adminFetch<DraftOrderCompleteData>(DRAFT_ORDER_COMPLETE, { id: draftOrderGid, paymentPending });
 
   if (data.draftOrderComplete.userErrors.length > 0) {
     console.error("[shopify-complete-draft] userErrors:", JSON.stringify(data.draftOrderComplete.userErrors));
