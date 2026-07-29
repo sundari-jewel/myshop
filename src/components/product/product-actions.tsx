@@ -1,11 +1,17 @@
 "use client";
 
-import { Heart, ShoppingBag, Zap } from "lucide-react";
-import { useState } from "react";
+import { ExternalLink, Heart, MapPin, ShoppingBag, Zap } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useCart } from "@/context/cart-context";
 import { useCustomerAuth } from "@/context/customer-auth-context";
 import { useWishlist } from "@/context/wishlist-context";
+
+const STORE = {
+  name: "Sundari Art Jewellery",
+  lines: ["Mangalam, 72 Lakherwadi", "Ujjain, Madhya Pradesh"],
+  mapsUrl: "https://www.google.com/maps/dir/?api=1&destination=Mangalam+72+Lakherwadi+Ujjain+Madhya+Pradesh",
+};
 
 type ProductActionsProps = {
   productId: string;
@@ -28,6 +34,19 @@ export function ProductActions({ productId, slug, productName, image, material, 
   const [qty,          setQty]          = useState(1);
   const [added,        setAdded]        = useState(false);
   const [sizeError,    setSizeError]    = useState(false);
+  const [pickupOpen,   setPickupOpen]   = useState(false);
+  const pickupRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!pickupOpen) return;
+    function handleClick(e: MouseEvent) {
+      if (pickupRef.current && !pickupRef.current.contains(e.target as Node)) {
+        setPickupOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [pickupOpen]);
 
   const saved = wishlist.isSaved(productId);
 
@@ -115,10 +134,57 @@ export function ProductActions({ productId, slug, productName, image, material, 
       {/* Wishlist */}
       <button type="button" onClick={handleWishlist}
         className="flex items-center gap-2 self-start text-[11px] font-medium uppercase tracking-[0.18em] transition-colors"
-        style={{ color: saved ? "var(--ruby)" : "var(--ink-soft)" }}>
+        style={{ color: saved ? "var(--ruby)" : "var(--cream-muted)" }}>
         <Heart size={14} strokeWidth={1.8} fill={saved ? "var(--ruby)" : "none"} />
         {saved ? "Saved to Wishlist" : "Add to Wishlist"}
       </button>
+
+      {/* Store Pickup */}
+      <div ref={pickupRef} className="relative self-start">
+        <button
+          type="button"
+          onClick={() => setPickupOpen(o => !o)}
+          className="flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.18em] transition-colors hover:text-[var(--gold)]"
+          style={{ color: "var(--cream-muted)" }}
+        >
+          <MapPin size={14} strokeWidth={1.8} />
+          Store Pickup Available
+        </button>
+
+        {pickupOpen && (
+          <div
+            className="absolute left-0 top-full z-30 mt-2 w-64 rounded-lg p-4 shadow-2xl"
+            style={{ background: "var(--bg-dark)", border: "1px solid rgba(201,169,110,0.25)" }}
+          >
+            {/* Arrow */}
+            <span
+              className="absolute -top-1.5 left-4 h-3 w-3 rotate-45"
+              style={{ background: "var(--bg-dark)", border: "1px solid rgba(201,169,110,0.25)", borderBottom: "none", borderRight: "none" }}
+            />
+            <p className="text-[10px] font-bold uppercase tracking-[0.22em]" style={{ color: "var(--gold)" }}>
+              {STORE.name}
+            </p>
+            <div className="mt-2 space-y-0.5">
+              {STORE.lines.map(line => (
+                <p key={line} className="text-xs leading-5" style={{ color: "rgba(245,230,200,0.7)" }}>{line}</p>
+              ))}
+            </div>
+            <p className="mt-2 text-[10px]" style={{ color: "rgba(245,230,200,0.45)" }}>
+              Mon – Sun · 10:30 AM – 8:00 PM
+            </p>
+            <a
+              href={STORE.mapsUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-3 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] transition-colors hover:text-[var(--gold-light)]"
+              style={{ color: "var(--gold)" }}
+            >
+              <ExternalLink size={11} strokeWidth={2} />
+              Get Directions
+            </a>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

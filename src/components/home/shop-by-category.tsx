@@ -12,6 +12,8 @@ const CATEGORIES = [
   { label: "Rings",    href: "/collections/rings",     image: "/assets/category-ring.webp" },
   { label: "Tika",     href: "/collections/tika",      image: "/assets/category-tika.webp" },
   { label: "Necklace", href: "/collections/necklaces", image: "/assets/category-necklace.webp" },
+  { label: "Nath",     href: "/collections/nath",      image: "/assets/category-nath.webp" },
+  { label: "Hathful",  href: "/collections/hathful",   image: "/assets/category-hathful.webp" },
 ] as const;
 
 const CARD_HEIGHT = 520;

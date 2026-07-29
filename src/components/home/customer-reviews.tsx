@@ -1,5 +1,3 @@
-import Image from "next/image";
-
 const REVIEWS = [
   {
     id: 1,
@@ -7,7 +5,6 @@ const REVIEWS = [
     location: "Mumbai",
     rating: 5,
     text: "The Aarohi Temple Necklace is absolutely stunning. Every detail is so intricate and the craftsmanship is impeccable. It was perfect for my daughter's wedding.",
-    avatar: "/assets/Ellipse_10_3.webp",
     product: "Aarohi Temple Necklace",
     verified: true,
   },
@@ -17,7 +14,6 @@ const REVIEWS = [
     location: "Hyderabad",
     rating: 5,
     text: "I purchased the diamond hoops for my anniversary and my husband was speechless. The quality and shine are beyond what I expected at this price point.",
-    avatar: "/assets/Ellipse_10_4.webp",
     product: "Noor Diamond Hoops",
     verified: true,
   },
@@ -27,7 +23,6 @@ const REVIEWS = [
     location: "Bengaluru",
     rating: 5,
     text: "Sundari's pieces have the perfect balance of traditional and modern. The packaging was luxurious too. Will definitely be a repeat customer!",
-    avatar: "/assets/Ellipse_10_5.webp",
     product: "Vanya Polki Drops",
     verified: true,
   },
@@ -37,7 +32,6 @@ const REVIEWS = [
     location: "Chennai",
     rating: 5,
     text: "The gold stack ring is so elegant for daily wear. Light, durable, and the 18K purity is clear. Exactly what I was looking for.",
-    avatar: "/assets/Ellipse_10_6.webp",
     product: "Ira Gold Stack Ring",
     verified: true,
   },
@@ -47,11 +41,30 @@ const REVIEWS = [
     location: "Delhi",
     rating: 5,
     text: "Purchased the bridal set for my niece. The ceremony and reception looks were both perfection. The quality and finish gave us complete confidence.",
-    avatar: "/assets/Ellipse_10_7.webp",
     product: "Meera Pearl Choker",
     verified: true,
   },
 ] as const;
+
+// Avatars are generated initials badges (brand palette) rather than photos —
+// no real person's likeness is used, so this is safe to show a client or ship live.
+const AVATAR_PALETTE = [
+  "linear-gradient(135deg, #7a1f2b, #4a1018)",
+  "linear-gradient(135deg, #1f5c4a, #0f3327)",
+  "linear-gradient(135deg, #1f3a5c, #0f1f33)",
+  "linear-gradient(135deg, #5c1f4a, #33102b)",
+  "linear-gradient(135deg, #8a6a2e, #4a3814)",
+];
+
+function getInitials(name: string) {
+  return name
+    .split(" ")
+    .filter(Boolean)
+    .map((part) => part[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+}
 
 const REVIEW_TRACKS = [
   [...REVIEWS, ...REVIEWS],
@@ -102,19 +115,19 @@ export function CustomerReviews() {
                 aria-label={`Review from ${review.name}`}
               >
                 <div className="review-frame-content">
-                  <div className="relative size-14 shrink-0 overflow-hidden rounded-full shadow-[0_3px_10px_rgba(40,24,10,0.22)] sm:size-16">
-                    <Image
-                      src={review.avatar}
-                      alt={review.name}
-                      fill
-                      sizes="64px"
-                      className="object-cover"
-                    />
+                  <div
+                    className="relative flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-full shadow-[0_3px_10px_rgba(40,24,10,0.22)] sm:size-16"
+                    style={{ background: AVATAR_PALETTE[(review.id - 1) % AVATAR_PALETTE.length] }}
+                    aria-hidden="true"
+                  >
+                    <span className="display-font text-[15px] font-semibold text-[var(--gold-pale)] sm:text-[18px]">
+                      {getInitials(review.name)}
+                    </span>
                   </div>
 
                   <div className="min-w-0 flex-1">
                     <p className="text-[11px] font-bold leading-[1.45] text-[var(--cream)] sm:text-[12px] sm:leading-5">
-                      My experience was amazing after purchasing this product. I was eagerly waiting to buy this. Price and quality is amazing you can buy it. It&apos;s give a tough competition to gold products.
+                      {review.text}
                     </p>
                     <div className="mt-3">
                       <StarRating count={review.rating} />

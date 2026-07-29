@@ -16,7 +16,7 @@ import { CustomerReviews }    from "@/components/home/customer-reviews";
 
 export const metadata: Metadata = createMetadata({
   description:
-    "Sundari Jewellers - Shop fine gold, diamond, and bridal jewellery. Handcrafted pieces celebrating the art of Indian heritage.",
+    "Sundari Jewellers - Shop pure brass, high gold, and AD/CZ diamond bridal jewellery. Handcrafted pieces celebrating the art of Indian heritage.",
 });
 
 /* ISR - revalidate every 5 minutes */

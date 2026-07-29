@@ -13,7 +13,7 @@ const cormorant = Cormorant_Garamond({
 
 export const metadata: Metadata = createMetadata({
   description:
-    "Sundari Jewellers - Fine gold, diamond, and bridal jewellery celebrating the art of Indian heritage.",
+    "Sundari Jewellers - Pure Brass, Highgold, Heritage, AD/CZ Diamond and Bridal jewellery Celebrating the art of Indian Heritage.",
 });
 
 export const viewport: Viewport = {

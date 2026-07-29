@@ -1,72 +1,36 @@
 import Image from "next/image";
 import Link from "next/link";
-import { getHeroBanners } from "@/lib/hero-banners";
+import type { HeroBanner } from "@/lib/hero-banners";
 import { HeroCarousel } from "@/components/home/hero-carousel";
 
-export async function HeroSection() {
-  const banners = await getHeroBanners();
+const DESKTOP_BANNERS: HeroBanner[] = [
+  { image: "/assets/hero/hero-launch-sale.png", link: "/collections/sale" },
+  { image: "/assets/hero/hero-rakhi-sale.png", link: "/collections/rakhis" },
+];
+
+export function HeroSection() {
 
   return (
     <section className="relative">
       <div className="md:hidden">
-        {banners.length === 0 ? (
-          <div
-            className="relative aspect-[1370/606] min-h-[150px] w-full overflow-hidden sm:min-h-[260px]"
-            style={{ background: "var(--bg-dark)" }}
-          >
-            <Image
-              src="/assets/hero/heroimage.webp"
-              alt="Sundari Jewellers bridal collection"
-              fill
-              priority
-              sizes="100vw"
-              className="object-cover object-top"
-            />
-          </div>
-        ) : (
-          <HeroCarousel banners={banners} />
-        )}
+        <Link href="/collections/sale" className="relative block aspect-[1071/1469] w-full overflow-hidden" style={{ background: "var(--bg-dark)" }}>
+          <Image
+            src="/assets/hero/hero-launch-sale-mobile.png"
+            alt="Sundari Art Jewellery — Launch Sale Is Live"
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover object-top"
+          />
+        </Link>
       </div>
 
-      <Link
-        href="/products"
-        className="group relative hidden aspect-[1923/818] min-h-[260px] w-full overflow-hidden md:block"
-        style={{ background: "var(--bg-dark)" }}
-      >
-        <Image
-          src="/assets/hero/hero-sundari-v2.webp"
-          alt="Sundari Art Jewellery kundan necklace and earrings"
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover object-center transition-transform duration-1000 group-hover:scale-[1.015]"
+      <div className="hidden md:block">
+        <HeroCarousel
+          banners={DESKTOP_BANNERS}
+          className="group relative aspect-[1922/818] min-h-[260px] w-full overflow-hidden"
         />
-        <div
-          aria-hidden="true"
-          className="absolute inset-0"
-          style={{
-            background:
-              "linear-gradient(90deg, rgba(14,4,4,0.58) 0%, rgba(14,4,4,0.2) 42%, transparent 68%)",
-          }}
-        />
-        <div className="absolute inset-y-0 left-0 z-10 flex w-[58%] items-center px-4 pb-5 md:w-1/2 md:px-[7vw] md:pb-10">
-          <div>
-            <p className="text-[8px] font-bold uppercase tracking-[0.24em] text-[var(--gold)] md:text-[11px] md:tracking-[0.32em]">
-              Sundari Art Jewellery
-            </p>
-            <h1 className="display-font mt-2 text-[1.65rem] font-semibold leading-[0.9] text-[var(--cream)] md:mt-4 md:text-5xl lg:text-6xl">
-              Jewellery,
-              <span className="mt-1 block italic text-[var(--gold-pale)]">beautifully yours.</span>
-            </h1>
-            <p className="mt-4 hidden max-w-md text-sm leading-6 text-[var(--cream-muted)] md:block">
-              Artfully crafted pieces for celebrations, traditions, and every moment between.
-            </p>
-            <span className="mt-3 inline-flex border-b border-[var(--gold)] pb-1 text-[8px] font-bold uppercase tracking-[0.18em] text-[var(--gold-pale)] md:mt-6 md:text-[10px] md:tracking-[0.24em]">
-              Explore the collection
-            </span>
-          </div>
-        </div>
-      </Link>
+      </div>
 
       <div className="hero-banner-cutout" aria-hidden="true">
         <svg

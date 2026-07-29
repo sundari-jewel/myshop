@@ -1,15 +1,33 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import type { Route } from "next";
+import { useEffect, useState } from "react";
 import type { Product } from "@/types/commerce";
 import { formatPrice } from "@/lib/seo";
 
+function shuffle<T>(arr: T[]): T[] {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
 export function TopSelling({ products }: { products: Product[] }) {
-  if (!products.length) return null;
+  const [display, setDisplay] = useState<Product[]>(products);
+
+  useEffect(() => {
+    setDisplay(shuffle(products));
+  }, [products]);
+
+  if (!display.length) return null;
 
   // Repeat enough times so the track is always wider than the viewport
-  const repeatCount = Math.max(2, Math.ceil(12 / products.length));
-  const items = Array.from({ length: repeatCount * 2 }, () => products).flat();
+  const repeatCount = Math.max(2, Math.ceil(12 / display.length));
+  const items = Array.from({ length: repeatCount * 2 }, () => display).flat();
 
   return (
     <section className="overflow-hidden py-10 sm:py-16" style={{ background: "var(--bg-dark)" }}>

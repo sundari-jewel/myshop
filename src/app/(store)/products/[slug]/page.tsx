@@ -72,13 +72,13 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
       {/* ── Main product grid ───────────────────────── */}
       <div className="container-shell py-7 sm:py-10 lg:py-14">
-        <div className="grid gap-8 lg:grid-cols-[1fr_420px] lg:gap-12 xl:grid-cols-[1fr_460px] lg:items-start">
+        <div className="grid min-w-0 gap-8 lg:grid-cols-[1fr_420px] lg:gap-12 xl:grid-cols-[1fr_460px] lg:items-start">
 
           {/* Left – image gallery */}
           <ImageGallery images={gallery} productName={product.name} />
 
           {/* Right – product info */}
-          <div className="flex flex-col gap-4">
+          <div className="flex min-w-0 flex-col gap-4">
 
             {/* Collection tag + badge */}
             <div className="flex items-center gap-3">

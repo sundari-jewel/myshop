@@ -11,8 +11,10 @@ const SHOP_LINKS = [
   { label: "Bangles",          href: "/collections/bangles" },
   { label: "Rings",            href: "/collections/rings" },
   { label: "Tika",             href: "/collections/tika" },
+  { label: "Nath",             href: "/collections/nath" },
+  { label: "Hathful",          href: "/collections/hathful" },
   { label: "Watches",          href: "/collections/watches" },
-  { label: "Rakhi",            href: "/collections/rakhi" },
+  { label: "Rakhi",            href: "/collections/rakhis" },
   { label: "Gifting",          href: "/collections/gifting" },
 ];
 
@@ -31,6 +33,7 @@ const SUPPORT_LINKS: Array<{ label: string; href: string; external?: boolean }> 
   { label: "Shipping Policy",    href: "/shipping" },
   { label: "Returns & Exchanges",href: "/returns" },
   { label: "Contact Us",         href: "/contact" },
+  { label: "About Us",           href: "/about" },
 ];
 
 export function SiteFooter() {
@@ -124,7 +127,7 @@ export function SiteFooter() {
               className="text-xs leading-6 mb-6 max-w-[220px]"
               style={{ color: "var(--cream-muted)" }}
             >
-              Fine gold, diamond &amp; bridal jewellery celebrating the art of Indian heritage.
+              Pure Brass, Highgold, Heritage, AD/CZ Diamond and Bridal jewellery Celebrating the art of Indian Heritage.
             </p>
             {/* Social icons */}
             <div className="flex items-center gap-4">
@@ -156,7 +159,7 @@ export function SiteFooter() {
             >
               Shop
             </h4>
-            <ul className="space-y-3">
+            <ul className="grid grid-cols-2 gap-x-4 gap-y-3">
               {SHOP_LINKS.map((l) => (
                 <li key={l.label}>
                   <Link

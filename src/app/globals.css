@@ -208,6 +208,18 @@ textarea {
   background: var(--gold);
 }
 
+/* Hides the scrollbar track/thumb while keeping the element swipe/scrollable —
+   used for touch carousels (e.g. product thumbnail strip) where a visible
+   scrollbar bar looks out of place on mobile. */
+.no-scrollbar {
+  scrollbar-width: none;      /* Firefox */
+  -ms-overflow-style: none;   /* legacy Edge/IE */
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;              /* Chrome / Safari / Edge / Opera */
+}
+
 /* ---------------------------------------------------------------------
    ANNOUNCEMENT BAR
    --------------------------------------------------------------------- */
@@ -812,7 +824,7 @@ textarea {
   position: absolute;
   z-index: 30;
   right: 0;
-  bottom: -1px;
+  bottom: -80px;
   left: 0;
   width: 100%;
   height: clamp(74px, 8vw, 120px);
@@ -839,6 +851,7 @@ textarea {
 @media (max-width: 640px) {
   .hero-banner-cutout {
     height: 56px;
+    bottom: -28px;
   }
 
   .hero-banner-ornament {

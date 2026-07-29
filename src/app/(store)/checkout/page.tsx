@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import type { Route } from "next";
-import { ArrowRight, Banknote, CreditCard, Loader2, LockKeyhole, ShieldCheck, Truck } from "lucide-react";
+import { Loader2, LockKeyhole, ShieldCheck } from "lucide-react";
 import { useCart } from "@/context/cart-context";
 import { useCustomerAuth } from "@/context/customer-auth-context";
 
@@ -43,7 +43,7 @@ export default function CheckoutPage() {
   const router = useRouter();
   const shipping = subtotal >= 50000 ? 0 : 1;
 
-  const [method, setMethod]   = useState<"prepaid" | "cod" | null>(null);
+  const method = "prepaid" as const;
   const [loading, setLoading] = useState(false);
   const [error,   setError]   = useState("");
   const [form, setForm] = useState<AddressForm>({
@@ -169,37 +169,7 @@ export default function CheckoutPage() {
     }
   }
 
-  async function handleCod(e: React.FormEvent) {
-    e.preventDefault();
-    if (!customer) return;
-    setError("");
-    setLoading(true);
-    try {
-      const res = await fetch("/api/checkout", {
-        method:  "POST",
-        headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({
-          items: items.map(i => ({ productId: i.productId, slug: i.slug, qty: i.qty, size: i.size })),
-          customer: {
-            name:    form.name  || customer.name,
-            email:   form.email || customer.email,
-            phone:   form.phone || customer.phone || "",
-            address: { line1: form.line1, line2: form.line2 || undefined, city: form.city, state: form.state, pincode: form.pincode },
-          },
-          paymentMethod: "cod",
-          notes: form.notes || undefined,
-        }),
-      });
-      const data = await res.json() as { orderId?: string; error?: string };
-      if (!res.ok) { setError(data.error ?? "Checkout failed. Please try again."); return; }
-      clearCart();
-      router.push(`/order-confirmation/${data.orderId}` as Route);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  const inp = "w-full rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-1 focus:ring-[rgba(138,106,58,0.5)]";
+const inp = "w-full rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-1 focus:ring-[rgba(138,106,58,0.5)]";
   const inpStyle = { background: "var(--surface-warm)", border: "1px solid rgba(138,106,58,0.25)", color: "var(--foreground)" };
   const lbl = "mb-1.5 block text-[10px] font-semibold uppercase tracking-[0.18em]";
 
@@ -238,7 +208,7 @@ export default function CheckoutPage() {
       </div>
       <div className="flex items-center justify-center gap-2 text-[10px]" style={{ color: "var(--ink-soft)" }}>
         <ShieldCheck size={13} />
-        Secure checkout · Free returns within 30 days
+        Secure checkout · 24-hour easy returns
       </div>
     </div>
   );
@@ -304,80 +274,10 @@ export default function CheckoutPage() {
       <div className="container-shell py-7 sm:py-12">
         <h1 className="display-font mb-7 text-3xl font-semibold sm:mb-10 sm:text-4xl" style={{ color: "var(--foreground)" }}>Checkout</h1>
 
-        {/* ── Step 1: choose payment method ─────────────────── */}
-        {!method && (
-          <div className="grid gap-7 lg:grid-cols-[1fr_400px] lg:gap-10">
-            <div className="space-y-5">
-              <div>
-                <p className="display-font text-2xl font-semibold" style={{ color: "var(--foreground)" }}>How would you like to pay?</p>
-                <p className="mt-1 text-sm" style={{ color: "var(--ink-soft)" }}>Choose a payment method to continue.</p>
-              </div>
-
-              {/* Online Payment */}
-              <button
-                onClick={() => setMethod("prepaid")}
-                className="group w-full rounded-xl p-4 text-left transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_8px_32px_rgba(138,106,58,0.14)] sm:p-6"
-                style={{ background: "var(--bg-dark)", border: "1.5px solid rgba(201,169,110,0.25)" }}
-              >
-                <div className="flex items-start justify-between gap-2 sm:gap-4">
-                  <div className="flex min-w-0 items-start gap-3 sm:gap-4">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full sm:h-12 sm:w-12" style={{ background: "rgba(201,169,110,0.15)" }}>
-                      <CreditCard size={22} style={{ color: "var(--gold)" }} />
-                    </div>
-                    <div>
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className="text-base font-semibold sm:text-lg" style={{ color: "var(--gold-pale)" }}>Online Payment</span>
-                        <span className="rounded-full px-2 py-0.5 text-[8px] font-bold uppercase tracking-wider sm:text-[9px] sm:tracking-widest" style={{ background: "rgba(201,169,110,0.18)", color: "var(--gold)" }}>Recommended</span>
-                      </div>
-                      <p className="mt-1 text-sm" style={{ color: "var(--cream-muted)" }}>Secure payment via Razorpay · Instant confirmation</p>
-                      <div className="mt-3 flex flex-wrap gap-2">
-                        {["UPI", "Credit Card", "Debit Card", "Net Banking"].map(tag => (
-                          <span key={tag} className="rounded px-2 py-1 text-[10px] font-medium" style={{ background: "rgba(255,255,255,0.07)", color: "var(--cream-muted)", border: "1px solid rgba(201,169,110,0.2)" }}>
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                  <ArrowRight size={18} className="mt-1 shrink-0 transition-transform duration-200 group-hover:translate-x-1" style={{ color: "var(--gold)" }} />
-                </div>
-              </button>
-
-              {/* Cash on Delivery */}
-              <button
-                onClick={() => setMethod("cod")}
-                className="group w-full rounded-xl p-4 text-left transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_8px_32px_rgba(138,106,58,0.10)] sm:p-6"
-                style={{ background: "white", border: "1.5px solid rgba(138,106,58,0.18)" }}
-              >
-                <div className="flex items-start justify-between gap-2 sm:gap-4">
-                  <div className="flex min-w-0 items-start gap-3 sm:gap-4">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full sm:h-12 sm:w-12" style={{ background: "rgba(138,106,58,0.08)" }}>
-                      <Truck size={22} style={{ color: "var(--gold-dim)" }} />
-                    </div>
-                    <div>
-                      <span className="text-base font-semibold sm:text-lg" style={{ color: "var(--foreground)" }}>Cash on Delivery</span>
-                      <p className="mt-1 text-sm" style={{ color: "var(--ink-soft)" }}>Pay when your order arrives at your door</p>
-                      <div className="mt-3 flex items-center gap-1.5">
-                        <Banknote size={13} style={{ color: "var(--gold-dim)" }} />
-                        <span className="text-[11px]" style={{ color: "var(--ink-soft)" }}>No prepayment needed · Cash or UPI on delivery</span>
-                      </div>
-                    </div>
-                  </div>
-                  <ArrowRight size={18} className="mt-1 shrink-0 transition-transform duration-200 group-hover:translate-x-1" style={{ color: "var(--gold-dim)" }} />
-                </div>
-              </button>
-            </div>
-            <div>{orderSummary}</div>
-          </div>
-        )}
-
         {/* ── Prepaid: collect address then open Razorpay ───── */}
         {method === "prepaid" && (
           <form onSubmit={handleRazorpay} className="grid gap-7 lg:grid-cols-[1fr_400px] lg:gap-10">
             <div className="space-y-8">
-              <button type="button" onClick={() => setMethod(null)} className="text-xs" style={{ color: "var(--ink-soft)" }}>
-                ← Back
-              </button>
               {addressFormSections}
             </div>
             <div className="space-y-6">
@@ -395,29 +295,6 @@ export default function CheckoutPage() {
           </form>
         )}
 
-        {/* ── COD: collect delivery details ─────────────────── */}
-        {method === "cod" && (
-          <form onSubmit={handleCod} className="grid gap-7 lg:grid-cols-[1fr_400px] lg:gap-10">
-            <div className="space-y-8">
-              <button type="button" onClick={() => setMethod(null)} className="text-xs" style={{ color: "var(--ink-soft)" }}>
-                ← Back
-              </button>
-              {addressFormSections}
-            </div>
-            <div className="space-y-6">
-              <div className="sticky top-6 space-y-4">
-                {orderSummary}
-                {error && <p className="rounded-lg bg-red-50 px-4 py-2.5 text-sm text-red-600">{error}</p>}
-                <button type="submit" disabled={loading}
-                  className="flex w-full items-center justify-center gap-2 rounded-sm py-4 text-[11px] font-bold uppercase tracking-[0.26em] transition-opacity disabled:opacity-60"
-                  style={{ background: "var(--bg-dark)", color: "var(--gold-pale)" }}>
-                  {loading && <Loader2 size={14} className="animate-spin" />}
-                  {loading ? "Placing Order…" : "Place Order"}
-                </button>
-              </div>
-            </div>
-          </form>
-        )}
       </div>
     </div>
   );

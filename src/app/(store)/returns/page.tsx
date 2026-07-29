@@ -173,7 +173,7 @@ export default function ReturnsPage() {
             <SectionHeading number="8" title="International Orders (EU Zone F) — Returns & Cancellations" />
             <div className="mt-5 space-y-3">
               {[
-                { label: "Return Window", text: "You have 14 days to request a return, starting from the day the last item in your order is delivered. This window is automatically extended to account for weekends or holidays." },
+                { label: "Return Window", text: "You have 24 hours to request a return, starting from the time your order is delivered. Return requests made after 24 hours will not be accepted." },
                 { label: "Return Shipping Cost", text: "A flat-rate return shipping fee of ₹7,405.00 INR applies. This amount is charged only once per return request. We do not charge any additional restocking fees." },
                 { label: "Cancellations", text: "Orders can be cancelled at any time until the item is fulfilled." },
                 { label: "Final Sale Items", text: "Customers cannot request returns or cancellations for specific collections marked as final sale products." },
@@ -199,7 +199,7 @@ export default function ReturnsPage() {
             </p>
             <div className="mt-4 space-y-3">
               {[
-                { label: "Return Window", text: "You have 14 days to request a return, starting from the day the last item in your order is delivered. This window is automatically extended to account for weekends or holidays." },
+                { label: "Return Window", text: "You have 24 hours to request a return, starting from the time your order is delivered. Return requests made after 24 hours will not be accepted." },
                 { label: "Return Shipping Cost", text: "A flat-rate return shipping fee of ₹7,741.00 INR applies. This amount is charged only once per return request. We do not charge any additional restocking fees." },
                 { label: "Cancellations", text: "Orders can be cancelled at any time until the item is fulfilled." },
                 { label: "Final Sale Items", text: "Customers cannot request returns or cancellations for specific collections marked as final sale products." },
@@ -225,7 +225,7 @@ export default function ReturnsPage() {
             </p>
             <div className="mt-4 space-y-3">
               {[
-                { label: "Return Window", text: "You have 14 days to request a return, starting from the day the last item in your order is delivered. This window is automatically extended to account for weekends or holidays." },
+                { label: "Return Window", text: "You have 24 hours to request a return, starting from the time your order is delivered. Return requests made after 24 hours will not be accepted." },
                 { label: "Return Shipping Cost", text: "A flat-rate return shipping fee of ₹9,741.00 INR applies. This amount is charged only once per return request. We do not charge any additional restocking fees." },
                 { label: "Cancellations", text: "Orders can be cancelled at any time until the item is fulfilled." },
                 { label: "Final Sale Items", text: "Customers cannot request returns or cancellations for specific collections marked as final sale products." },

@@ -109,7 +109,7 @@ export function ProductCard({ product }: ProductCardProps) {
         <div>
           <p className="hidden max-w-full items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.16em] md:inline-flex" style={{ color: "var(--gold-dim)" }}>
             <Sparkles className="shrink-0" size={9} />
-            {product.material} / {product.stone}
+            {product.stone ? `${product.material} / ${product.stone}` : product.material}
           </p>
           <h3 className="line-clamp-2 text-xs font-semibold leading-snug md:mt-1.5 md:text-base" style={{ color: "var(--cream)" }}>{product.name}</h3>
           <div className="mt-1.5 md:mt-2">

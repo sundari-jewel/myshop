@@ -68,7 +68,7 @@ export function ProductAccordion({
           <dl className="grid grid-cols-2 gap-x-6 gap-y-2.5 text-sm">
             {[
               ["Material", material],
-              ["Stone", stone],
+              ...(stone ? [["Stone", stone]] : []),
               ...(weight ? [["Weight", weight]] : []),
               ...(purity ? [["Purity", purity]] : []),
               ["Finish", "Hand-polished"],
@@ -108,7 +108,7 @@ export function ProductAccordion({
             {[
               "Free insured shipping across India on all orders.",
               "Delivered within 5–7 business days; expedited available.",
-              "30-day exchange policy — no questions asked.",
+              "24-hour easy return policy — no questions asked.",
               "Each piece ships in a Sundari branded gift box.",
             ].map((tip) => (
               <li key={tip} className="flex gap-2">

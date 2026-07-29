@@ -3,9 +3,8 @@ import type { Route } from "next";
 import { getAnnouncementItems } from "@/lib/shopify-admin";
 
 const FALLBACK_ITEMS = [
-  "Minimum 10% off on all jewellery",
-  "Minimum 10% off on womens",
-  "Minimum 10% off on mens",
+  "Launch Sale",
+  "Free Shipping on Jewellery on Sale Days",
 ];
 
 export async function AnnouncementBar() {

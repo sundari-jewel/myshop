@@ -9,11 +9,11 @@ import type { HeroBanner } from "@/lib/hero-banners";
 
 type HeroCarouselProps = {
   banners: HeroBanner[];
+  className?: string;
 };
 
-export function HeroCarousel({ banners }: HeroCarouselProps) {
+export function HeroCarousel({ banners, className }: HeroCarouselProps) {
   const [active, setActive] = useState(0);
-  const [paused, setPaused] = useState(false);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const count = banners.length;
@@ -23,23 +23,21 @@ export function HeroCarousel({ banners }: HeroCarouselProps) {
   }
 
   useEffect(() => {
-    if (count <= 1 || paused) return;
+    if (count <= 1) return;
     timerRef.current = setInterval(() => {
       setActive((prev) => (prev + 1) % count);
     }, 5000);
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [count, paused]);
+  }, [count]);
 
   if (count === 0) return null;
 
   return (
     <div
-      className="group relative aspect-[1370/606] min-h-[150px] w-full overflow-hidden sm:min-h-[260px]"
+      className={className ?? "group relative aspect-[1370/606] min-h-[150px] w-full overflow-hidden sm:min-h-[260px]"}
       style={{ background: "var(--bg-dark)" }}
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
     >
       {banners.map((banner, i) => (
         <div

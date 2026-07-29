@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { ProductGrid } from "@/components/commerce/product-grid";
 import { collections } from "@/data/collections";
 import { getShopifyCollection } from "@/lib/shopify-collections";
-import { getProductsByGenderGid, getProductsByTaxonomyCategory, getProductsOnSale, getTopSellingProducts, GENDER_GIDS, TAXONOMY_CATEGORY_IDS } from "@/lib/shopify-admin";
+import { getProductsByGenderGid, getProductsOnSale, getTopSellingProducts, GENDER_GIDS } from "@/lib/shopify-admin";
 import { fetchAllShopifyProducts } from "@/lib/shopify-collections";
 import { createMetadata } from "@/lib/seo";
 
@@ -32,15 +32,6 @@ export async function generateMetadata({ params }: CollectionPageProps): Promise
     });
   }
 
-  const categoryConfig = CATEGORY_SLUGS[slug];
-  if (categoryConfig) {
-    return createMetadata({
-      title: categoryConfig.title,
-      description: categoryConfig.description,
-      path: `/collections/${slug}`,
-    });
-  }
-
   const genderConfig = GENDER_SLUGS[slug];
   if (genderConfig) {
     return createMetadata({
@@ -50,7 +41,8 @@ export async function generateMetadata({ params }: CollectionPageProps): Promise
     });
   }
 
-  const shopify = await getShopifyCollection(slug);
+  const handle = HANDLE_ALIASES[slug] ?? slug;
+  const shopify = await getShopifyCollection(handle);
   if (shopify) {
     return createMetadata({
       title: shopify.collection.title,
@@ -66,13 +58,9 @@ export async function generateMetadata({ params }: CollectionPageProps): Promise
   });
 }
 
-// Maps collection slugs to Shopify taxonomy category IDs
-const CATEGORY_SLUGS: Record<string, { categoryId: string; title: string; description: string }> = {
-  necklaces: { categoryId: TAXONOMY_CATEGORY_IDS.necklaces, title: "Necklaces", description: "Discover our exquisite necklace collection." },
-  earrings:  { categoryId: TAXONOMY_CATEGORY_IDS.earrings,  title: "Earrings",  description: "Elegant earrings for every occasion." },
-  bangles:   { categoryId: TAXONOMY_CATEGORY_IDS.bangles,   title: "Bangles",   description: "Timeless bangles and bracelets." },
-  rings:     { categoryId: TAXONOMY_CATEGORY_IDS.rings,     title: "Rings",     description: "Beautiful rings for every moment." },
-  tika:      { categoryId: TAXONOMY_CATEGORY_IDS.tika,      title: "Tika",      description: "Traditional maang tikka and head jewellery." },
+// Slugs where our URL doesn't match the Shopify collection handle — map to the real handle
+const HANDLE_ALIASES: Record<string, string> = {
+  necklaces: "necklace",
 };
 
 const GENDER_SLUGS: Record<string, { genderGid: string | null; title: string; description: string; image: string }> = {
@@ -128,14 +116,7 @@ export default async function CollectionPage({ params, searchParams }: Collectio
     return <CollectionLayout products={shuffled} title="Gifts They'll Love" subtitle="Handpicked for every occasion — thoughtful jewellery for the people who matter." />;
   }
 
-  // 1. Jewellery category pages: fetch from Shopify Admin API by taxonomy category_id
-  const categoryConfig = CATEGORY_SLUGS[slug];
-  if (categoryConfig) {
-    const products = await getProductsByTaxonomyCategory(categoryConfig.categoryId, slug);
-    return <CollectionLayout products={products} />;
-  }
-
-  // 3. Gender-based pages: fetch from Shopify Admin API by target-gender metafield GID
+  // 1. Gender-based pages: fetch from Shopify Admin API by target-gender metafield GID
   const genderConfig = GENDER_SLUGS[slug];
   if (genderConfig) {
     const products = genderConfig.genderGid
@@ -144,8 +125,9 @@ export default async function CollectionPage({ params, searchParams }: Collectio
     return <CollectionLayout products={products} />;
   }
 
-  // 4. Any other Shopify collection by handle
-  const shopify = await getShopifyCollection(slug);
+  // 2. All other collections — resolve handle alias if needed, then fetch from Shopify
+  const handle = HANDLE_ALIASES[slug] ?? slug;
+  const shopify = await getShopifyCollection(handle);
   if (!shopify) notFound();
 
   return <CollectionLayout products={shopify.products} />;

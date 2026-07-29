@@ -66,7 +66,7 @@ export function WatchesAndRakhi() {
               className="display-font mb-2 font-semibold italic leading-tight text-[var(--cream)]"
               style={{ fontSize: "clamp(2rem, 4vw, 2.8rem)" }}
             >
-              Fine Watches
+              Anti-Tarnish Watches
             </h2>
             <p
               className="mb-5 text-xs tracking-wide"
@@ -90,7 +90,7 @@ export function WatchesAndRakhi() {
 
         {/* Rakhi panel */}
         <Link
-          href={"/collections/rakhi" as Route}
+          href={"/collections/rakhis" as Route}
           className="focus-ring group relative block min-h-[260px] overflow-hidden sm:min-h-[420px]"
         >
           <Image
@@ -116,7 +116,7 @@ export function WatchesAndRakhi() {
               className="mb-2 text-[0.6rem] font-bold uppercase tracking-[0.28em]"
               style={{ color: "rgba(201,169,110,0.55)" }}
             >
-              Raksha Bandhan · Festival Edit
+              Raksha Bandhan · Festival Edition
             </p>
             <h2
               className="display-font mb-2 font-semibold italic leading-tight text-[var(--cream)]"

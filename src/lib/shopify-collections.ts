@@ -1,5 +1,6 @@
 import { shopifyFetch } from "@/lib/shopify";
 import type { Product } from "@/types/commerce";
+import { deriveMaterialTag } from "@/lib/material-tag";
 
 type MoneyV2 = { amount: string };
 
@@ -33,6 +34,7 @@ const PRODUCT_FIELDS = `
   id
   title
   handle
+  description
   priceRange { minVariantPrice { amount } }
   compareAtPriceRange { minVariantPrice { amount } }
   featuredImage { url }
@@ -88,7 +90,7 @@ function mapNode(node: ShopifyProductNode, collectionHandle: string): Product {
   const material =
     metafields.find((m) => m.key === "material")?.value ??
     node.tags.find((t) => t.startsWith("material:"))?.replace("material:", "") ??
-    "Gold";
+    deriveMaterialTag(node.description);
   const stone =
     metafields.find((m) => m.key === "stone")?.value ??
     node.tags.find((t) => t.startsWith("stone:"))?.replace("stone:", "") ??

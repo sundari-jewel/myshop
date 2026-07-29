@@ -12,7 +12,7 @@ export function ImageGallery({ images, productName }: ImageGalleryProps) {
   const [active, setActive] = useState(0);
 
   return (
-    <div className="flex flex-col gap-3 lg:flex-row-reverse lg:items-start">
+    <div className="flex min-w-0 flex-col gap-3 lg:flex-row-reverse lg:items-start">
       {/* Main image */}
       <div
         className="relative flex-1 min-w-0 overflow-hidden"
@@ -35,7 +35,7 @@ export function ImageGallery({ images, productName }: ImageGalleryProps) {
 
       {/* Thumbnails */}
       {images.length > 1 && (
-        <div className="flex max-w-full gap-2 overflow-x-auto pb-1 lg:w-[88px] lg:shrink-0 lg:flex-col lg:overflow-visible lg:pb-0">
+        <div className="no-scrollbar flex w-full min-w-0 gap-2 overflow-x-auto pb-1 lg:w-[88px] lg:shrink-0 lg:flex-col lg:overflow-visible lg:pb-0">
           {images.map((src, i) => (
             <button
               key={src}

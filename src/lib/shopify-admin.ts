@@ -1,5 +1,7 @@
 // Server-only — never import this in client components
 
+import { deriveMaterialTag } from "@/lib/material-tag";
+
 // Shopify taxonomy category IDs for jewellery types
 export const TAXONOMY_CATEGORY_IDS = {
   necklaces: "aa-6-8",
@@ -70,6 +72,7 @@ type AdminProductNode = {
   title: string;
   handle: string;
   status: string;
+  description: string;
   featuredImage: { url: string } | null;
   priceRangeV2: {
     minVariantPrice: { amount: string };
@@ -99,6 +102,7 @@ const PRODUCTS_QUERY = `
         title
         handle
         status
+        description
         featuredImage { url }
         priceRangeV2 {
           minVariantPrice { amount }
@@ -168,7 +172,7 @@ export async function fetchAllAdminProducts(): Promise<AdminProduct[]> {
         originalPrice: compareAt > price ? compareAt : undefined,
         tags: node.tags,
         targetGenderGid,
-        material: "Gold",
+        material: deriveMaterialTag(node.description),
       });
     }
 
@@ -209,6 +213,7 @@ const CATEGORY_PRODUCTS_QUERY = `
         title
         handle
         status
+        description
         featuredImage { url }
         priceRangeV2 {
           minVariantPrice { amount }
@@ -257,7 +262,7 @@ export async function getProductsByTaxonomyCategory(
         originalPrice: compareAt > price ? compareAt : undefined,
         tags: node.tags,
         targetGenderGid: null,
-        material: "Gold",
+        material: deriveMaterialTag(node.description),
       });
     }
 
@@ -301,7 +306,7 @@ export async function getTopSellingProducts(): Promise<Product[]> {
           originalPrice: compareAt > price ? compareAt : undefined,
           tags: node.tags,
           targetGenderGid: null,
-          material: "Gold",
+          material: deriveMaterialTag(node.description),
         },
         "top-selling",
       );
