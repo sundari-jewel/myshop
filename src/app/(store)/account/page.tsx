@@ -64,6 +64,13 @@ export default function AccountPage() {
   const [confirmSignOut, setConfirmSignOut] = useState(false);
 
   useEffect(() => {
+    if (!ready) return;
+    if (!customer) {
+      router.replace("/signin?next=/account" as Route);
+    }
+  }, [ready, customer, router]);
+
+  useEffect(() => {
     if (!customer) return;
     fetch("/api/orders/my")
       .then((r) => r.json())
@@ -71,12 +78,7 @@ export default function AccountPage() {
       .finally(() => setOrdersLoading(false));
   }, [customer]);
 
-  if (!ready) return null;
-
-  if (!customer) {
-    router.replace("/signin?next=/account" as Route);
-    return null;
-  }
+  if (!ready || !customer) return null;
 
   async function handleSignOut() {
     await signOut();
