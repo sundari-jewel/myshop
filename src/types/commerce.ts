@@ -24,4 +24,5 @@ export type Product = {
   badge?: string;
   description?: string;
   sizes?: string[];
+  tags?: string[];
 };

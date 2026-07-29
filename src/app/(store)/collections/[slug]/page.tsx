@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { ProductGrid } from "@/components/commerce/product-grid";
 import { collections } from "@/data/collections";
 import { getShopifyCollection } from "@/lib/shopify-collections";
-import { getProductsByGenderGid, getProductsOnSale, getTopSellingProducts, GENDER_GIDS } from "@/lib/shopify-admin";
+import { getProductsByGenderGid, getTopSellingProducts, GENDER_GIDS } from "@/lib/shopify-admin";
 import { fetchAllShopifyProducts } from "@/lib/shopify-collections";
 import { createMetadata } from "@/lib/seo";
 
@@ -94,16 +94,13 @@ export default async function CollectionPage({ params, searchParams }: Collectio
     );
   }
 
-  // 0a. Sale page — products with a compare-at price set in Shopify
+  // 0a. Sale page — all jewellery
   if (slug === "sale") {
-    const products = await getProductsOnSale(category);
-    const title = category
-      ? `${category.charAt(0).toUpperCase() + category.slice(1)} on Sale`
-      : "Grand Sale for All Sundaris";
+    const products = await fetchAllShopifyProducts();
     return (
       <CollectionLayout
         products={products}
-        title={title}
+        title="Mega Launch Sale"
         subtitle="Exquisite pieces from our finest collections — now at extraordinary savings."
       />
     );
@@ -130,7 +127,13 @@ export default async function CollectionPage({ params, searchParams }: Collectio
   const shopify = await getShopifyCollection(handle);
   if (!shopify) notFound();
 
-  return <CollectionLayout products={shopify.products} />;
+  // Rakhi products can be miscategorised into bracelet/bangle collections in Shopify — exclude them here
+  const NON_RAKHI_SLUGS = ["bracelet", "bracelets", "bangles"];
+  const products = NON_RAKHI_SLUGS.includes(slug)
+    ? shopify.products.filter((p) => !p.tags?.some((t) => t.toLowerCase().includes("rakhi")))
+    : shopify.products;
+
+  return <CollectionLayout products={products} />;
 }
 
 function CollectionLayout({

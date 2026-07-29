@@ -87,10 +87,16 @@ function mapNode(node: ShopifyProductNode, collectionHandle: string): Product {
   const metafields = (node.metafields ?? []).filter(
     (m): m is { key: string; value: string | null } => m !== null,
   );
+  const isRakhi =
+    node.title.toLowerCase().includes("rakhi") ||
+    node.handle.toLowerCase().includes("rakhi") ||
+    node.tags.some((t) => t.toLowerCase().includes("rakhi")) ||
+    collectionHandle === "rakhis" ||
+    collectionHandle === "rakhi";
   const material =
     metafields.find((m) => m.key === "material")?.value ??
     node.tags.find((t) => t.startsWith("material:"))?.replace("material:", "") ??
-    deriveMaterialTag(node.description);
+    (isRakhi ? "Handcrafted" : deriveMaterialTag(node.description));
   const stone =
     metafields.find((m) => m.key === "stone")?.value ??
     node.tags.find((t) => t.startsWith("stone:"))?.replace("stone:", "") ??
@@ -119,6 +125,7 @@ function mapNode(node: ShopifyProductNode, collectionHandle: string): Product {
     stone,
     badge,
     ...(node.description ? { description: node.description } : {}),
+    tags: node.tags,
   };
 }
 
