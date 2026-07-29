@@ -9,11 +9,10 @@ import { createMetadata } from "@/lib/seo";
 
 type CollectionPageProps = {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ category?: string }>;
 };
 
 export const dynamicParams = true;
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 export async function generateStaticParams() {
   return collections.map((collection) => ({ slug: collection.slug }));
@@ -78,9 +77,8 @@ const GENDER_SLUGS: Record<string, { genderGid: string | null; title: string; de
   },
 };
 
-export default async function CollectionPage({ params, searchParams }: CollectionPageProps) {
+export default async function CollectionPage({ params }: CollectionPageProps) {
   const { slug } = await params;
-  const { category } = await searchParams;
 
   // 0b. Top selling page
   if (slug === "top-selling") {

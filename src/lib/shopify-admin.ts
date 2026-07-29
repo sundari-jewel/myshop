@@ -49,7 +49,7 @@ export const GENDER_GIDS = {
   male: null as string | null,
 } as const;
 
-async function adminFetch<T>(query: string, variables?: Record<string, unknown>, cache: RequestCache = "no-store"): Promise<T> {
+async function adminFetch<T>(query: string, variables?: Record<string, unknown>, revalidate: number | false = false): Promise<T> {
   const res = await fetch(ADMIN_API_URL, {
     method: "POST",
     headers: {
@@ -57,7 +57,9 @@ async function adminFetch<T>(query: string, variables?: Record<string, unknown>,
       "X-Shopify-Access-Token": ADMIN_TOKEN,
     },
     body: JSON.stringify(variables ? { query, variables } : { query }),
-    cache,
+    ...(revalidate === false
+      ? { cache: "no-store" }
+      : { next: { revalidate } }),
   });
 
   if (!res.ok) throw new Error(`Shopify Admin fetch failed: ${res.status} ${res.statusText}`);
@@ -137,7 +139,7 @@ export async function fetchAllAdminProducts(): Promise<AdminProduct[]> {
   let after: string | undefined;
 
   for (;;) {
-    const data = await adminFetch<AdminProductsData>(PRODUCTS_QUERY, { first: 50, after: after ?? null });
+    const data = await adminFetch<AdminProductsData>(PRODUCTS_QUERY, { first: 50, after: after ?? null }, 300);
     const { nodes, pageInfo } = data.products;
 
     for (const node of nodes) {
@@ -244,7 +246,7 @@ export async function getProductsByTaxonomyCategory(
       first: 50,
       after: after ?? null,
       query,
-    });
+    }, 300);
     const { nodes, pageInfo } = data.products;
 
     for (const node of nodes) {
@@ -277,10 +279,9 @@ export async function getProductsByGenderGid(
   genderGid: string,
   collectionHandle: string,
 ): Promise<Product[]> {
-  const all = await fetchAllAdminProducts();
-  return all
-    .filter((p) => p.targetGenderGid === genderGid)
-    .map((p) => mapAdminProductToProduct(p, collectionHandle));
+  const gender = genderGid === GENDER_GIDS.female ? "female" : "male";
+  const { getProductsByGender } = await import("@/lib/shopify-collections");
+  return getProductsByGender(gender, collectionHandle);
 }
 
 export async function getTopSellingProducts(): Promise<Product[]> {
@@ -288,7 +289,7 @@ export async function getTopSellingProducts(): Promise<Product[]> {
     first: 20,
     after: null,
     query: "tag:top-selling AND status:active",
-  });
+  }, 300);
   return data.products.nodes
     .filter((n) => n.status === "ACTIVE")
     .map((node) => {
