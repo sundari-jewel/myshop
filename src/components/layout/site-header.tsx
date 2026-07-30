@@ -106,8 +106,11 @@ export function SiteHeader() {
           }}
         />
 
-        {/* Brand name — centered at the top of the header */}
-        <div className="pointer-events-none absolute inset-x-0 top-14 hidden justify-center lg:flex">
+        {/* Brand name — desktop, centered at the top of the header */}
+        <div className="pointer-events-none absolute inset-x-0 top-10 hidden flex-col items-center gap-1 justify-center lg:flex">
+          <p className="text-center text-[13px] font-medium tracking-[0.06em]" style={{ color: "var(--gold-dim)" }}>
+            ॐ ह्रीं श्रीं अर्हंम श्री शंखेश्वर पार्श्वनाथाय नमः
+          </p>
           <span
             className="font-cormorant text-center text-[52px] font-bold italic leading-none tracking-[0.14em]"
             style={{ color: "var(--gold)" }}
@@ -129,7 +132,7 @@ export function SiteHeader() {
         </Link>
 
         <div className="relative mx-auto flex min-h-[106px] w-[min(980px,calc(100%-24px))] flex-col justify-end pb-4 pt-4 lg:min-h-[226px] lg:w-[min(980px,calc(100%-40px))] lg:pb-9 lg:pt-10">
-          <div className="relative flex items-end">
+          <div className="relative flex items-center">
 
             {/* Mobile logo */}
             <Link href="/" className="focus-ring shrink-0 lg:hidden" aria-label="Sundari Jewellers">
@@ -142,6 +145,19 @@ export function SiteHeader() {
                 className="h-auto w-[72px] rounded-t-full shadow-[0_8px_20px_rgba(0,0,0,0.35)] sm:w-[88px]"
               />
             </Link>
+
+            {/* Mobile brand name — centered between logo and buttons */}
+            <div className="flex flex-1 flex-col items-center gap-0.5 lg:hidden">
+              <p className="text-center text-[8px] font-medium leading-tight" style={{ color: "var(--gold-dim)" }}>
+                ॐ ह्रीं श्रीं अर्हंम श्री शंखेश्वर पार्श्वनाथाय नमः
+              </p>
+              <span
+                className="font-cormorant text-center text-[22px] font-bold italic leading-none tracking-[0.08em]"
+                style={{ color: "var(--gold)" }}
+              >
+                Sundari Art Jewellery
+              </span>
+            </div>
 
             {/* Desktop left: Account / Sign In */}
             <div className="hidden items-end pb-1 lg:flex">
@@ -188,7 +204,7 @@ export function SiteHeader() {
               </div>
             )}
 
-            <div className="absolute right-0 top-1/2 flex -translate-y-1/2 items-center gap-1 lg:hidden">
+            <div className="flex items-center gap-1 lg:hidden">
               {customer && (
                 <button
                   aria-label="Open cart"
