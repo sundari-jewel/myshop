@@ -14,13 +14,14 @@ import type { Product } from "@/types/commerce";
 import { ProductGrid } from "./product-grid";
 
 type SortMode = "featured" | "price-low" | "price-high" | "name";
-type PriceBand = "all" | "under-50" | "50-100" | "100-plus";
+type PriceBand = "all" | "under-500" | "500-1500" | "1500-3000" | "above-3000";
 
 const priceBands: Array<{ label: string; value: PriceBand; helper: string }> = [
-  { label: "All prices", value: "all", helper: "Every atelier piece" },
-  { label: "Under 50k", value: "under-50", helper: "Lightweight daily edits" },
-  { label: "50k - 1L", value: "50-100", helper: "Statement-ready pieces" },
-  { label: "Above 1L", value: "100-plus", helper: "Heirloom investments" },
+  { label: "All prices",       value: "all",         helper: "Every piece in the collection" },
+  { label: "Under ₹500",       value: "under-500",   helper: "Budget-friendly picks" },
+  { label: "₹500 – ₹1,500",   value: "500-1500",    helper: "Everyday wear" },
+  { label: "₹1,500 – ₹3,000", value: "1500-3000",   helper: "Statement pieces" },
+  { label: "Above ₹3,000",    value: "above-3000",  helper: "Bridal & occasion" },
 ];
 
 const sortOptions: Array<{ label: string; value: SortMode }> = [
@@ -58,9 +59,10 @@ export function ProductExplorer({ products }: { products: Product[] }) {
           .some((value) => value.toLowerCase().includes(normalizedQuery));
       const matchesPrice =
         priceFilter === "all" ||
-        (priceFilter === "under-50" && product.price < 50000) ||
-        (priceFilter === "50-100" && product.price >= 50000 && product.price <= 100000) ||
-        (priceFilter === "100-plus" && product.price > 100000);
+        (priceFilter === "under-500"   && product.price < 500) ||
+        (priceFilter === "500-1500"    && product.price >= 500  && product.price <= 1500) ||
+        (priceFilter === "1500-3000"   && product.price > 1500  && product.price <= 3000) ||
+        (priceFilter === "above-3000"  && product.price > 3000);
 
       return matchesMaterial && matchesStone && matchesQuery && matchesPrice;
     });

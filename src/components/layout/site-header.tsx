@@ -107,7 +107,7 @@ export function SiteHeader() {
         />
 
         {/* Brand name — desktop, centered at the top of the header */}
-        <div className="pointer-events-none absolute inset-x-0 top-10 hidden flex-col items-center gap-1 justify-center lg:flex">
+        <div className="pointer-events-none absolute inset-x-0 top-10 hidden flex-col items-center gap-3 justify-center lg:flex">
           <p className="text-center text-[13px] font-medium tracking-[0.06em]" style={{ color: "var(--gold-dim)" }}>
             ॐ ह्रीं श्रीं अर्हंम श्री शंखेश्वर पार्श्वनाथाय नमः
           </p>
@@ -115,7 +115,7 @@ export function SiteHeader() {
             className="font-cormorant text-center text-[52px] font-bold italic leading-none tracking-[0.14em]"
             style={{ color: "var(--gold)" }}
           >
-            Sundari Art Jewellery
+            <span style={{ fontSize: "68px" }}>S</span>undari Art Jewellery
           </span>
         </div>
 
@@ -147,7 +147,7 @@ export function SiteHeader() {
             </Link>
 
             {/* Mobile brand name — centered between logo and buttons */}
-            <div className="flex flex-1 flex-col items-center gap-0.5 lg:hidden">
+            <div className="flex flex-1 flex-col items-center gap-1.5 lg:hidden">
               <p className="text-center text-[8px] font-medium leading-tight" style={{ color: "var(--gold-dim)" }}>
                 ॐ ह्रीं श्रीं अर्हंम श्री शंखेश्वर पार्श्वनाथाय नमः
               </p>
@@ -155,7 +155,7 @@ export function SiteHeader() {
                 className="font-cormorant text-center text-[22px] font-bold italic leading-none tracking-[0.08em]"
                 style={{ color: "var(--gold)" }}
               >
-                Sundari Art Jewellery
+                <span style={{ fontSize: "30px" }}>S</span>undari Art Jewellery
               </span>
             </div>
 
