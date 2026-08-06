@@ -7,19 +7,20 @@ import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 
 const CATEGORIES = [
-  { label: "Earing",   href: "/collections/earrings",  image: "/assets/category-earring.webp" },
-  { label: "Bangles",  href: "/collections/bangles",   image: "/assets/category-bangles.webp" },
-  { label: "Rings",    href: "/collections/rings",     image: "/assets/category-ring.webp" },
-  { label: "Tika",     href: "/collections/tika",      image: "/assets/category-tika.webp" },
-  { label: "Necklace", href: "/collections/necklaces", image: "/assets/category-necklace.webp" },
-  { label: "Nath",     href: "/collections/nath",      image: "/assets/category-nath.webp" },
-  { label: "Hathful",  href: "/collections/hathful",   image: "/assets/category-hathful.webp" },
+  { label: "Earing",    href: "/collections/earrings",  image: "/assets/category-earring.webp" },
+  { label: "Bangles",   href: "/collections/bangles",   image: "/assets/category-bangles.webp" },
+  { label: "Rings",     href: "/collections/rings",     image: "/assets/category-ring.webp" },
+  { label: "Tika",      href: "/collections/tika",      image: "/assets/category-tika.webp" },
+  { label: "Necklace",  href: "/collections/necklaces", image: "/assets/category-necklace.webp" },
+  { label: "Nath",      href: "/collections/nath",      image: "/assets/category-nath.webp" },
+  { label: "Hathful",   href: "/collections/hathful",   image: "/assets/category-hathful.webp" },
+  { label: "Bracelets", href: "/collections/bangles",   image: "/assets/category-bracelet.png" },
 ] as const;
 
-const CARD_HEIGHT = 520;
-const W_EXPANDED  = 540;
-const W_ADJACENT  = 190;
-const W_FAR       = 120;
+const CARD_HEIGHT = 480;
+const W_EXPANDED  = 360;  // minimum; flexGrow fills the rest to edge-to-edge
+const W_ADJACENT  = 148;
+const W_FAR       = 92;
 
 const SPRING = { type: "spring", stiffness: 320, damping: 32 } as const;
 
@@ -85,7 +86,7 @@ export function ShopByCategory() {
             setHoveredIndex(null);
           }}
         >
-          <div className="flex items-stretch justify-center gap-2 px-4">
+          <div className="flex items-stretch gap-1.5 px-3">
             {CATEGORIES.map((cat, index) => {
               const distance  = index - expandedIndex;
               const isCenter  = distance === 0;
@@ -96,8 +97,8 @@ export function ShopByCategory() {
                   key={cat.label}
                   animate={motProps}
                   transition={SPRING}
-                  className="relative flex-shrink-0 cursor-pointer overflow-hidden rounded-xl shadow-[0_4px_18px_rgba(33,20,12,0.22)]"
-                  style={{ height: CARD_HEIGHT }}
+                  className="relative cursor-pointer overflow-hidden rounded-xl shadow-[0_4px_18px_rgba(33,20,12,0.22)]"
+                  style={{ height: CARD_HEIGHT, flexGrow: isCenter ? 1 : 0, flexShrink: 0 }}
                   onMouseEnter={() => {
                     isPaused.current = true;
                     setHoveredIndex(index);
