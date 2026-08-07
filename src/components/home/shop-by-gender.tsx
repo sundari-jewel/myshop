@@ -2,72 +2,46 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Route } from "next";
 
-const SQUARE_IMAGES = [
-  { src: "/assets/squareImage1.webp", alt: "Sundari jewellery style detail 1" },
-  { src: "/assets/squareImage2.webp", alt: "Sundari jewellery style detail 2" },
-  { src: "/assets/squareImage3.webp", alt: "Sundari jewellery style detail 3" },
-  { src: "/assets/squareImage4.webp", alt: "Sundari jewellery style detail 4" },
-] as const;
-
 export function ShopByGender() {
   return (
     <section className="py-10 sm:py-20" style={{ background: "var(--bg-dark)" }}>
       <div className="mb-7 flex items-center justify-center gap-5 sm:mb-14 sm:gap-7">
         <span className="hidden h-px w-24 bg-gradient-to-r from-transparent via-[var(--gold)] to-transparent sm:block" />
         <span className="display-font text-center text-[1.75rem] font-semibold italic leading-none tracking-[0.05em] text-[var(--gold)] drop-shadow-[0_2px_1px_rgba(70,40,0,0.32)] sm:text-[2.45rem] sm:tracking-[0.08em]">
-          Shop by Gender
+          Shop Anti-Tarnish Jewellery
         </span>
         <span className="hidden h-px w-24 bg-gradient-to-r from-transparent via-[var(--gold)] to-transparent sm:block" />
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2">
         <Link
-          href={"/collections/womens-edit" as Route}
+          href={"/collections/anti-tarnish-womens" as Route}
           className="focus-ring group relative block overflow-hidden"
         >
           <Image
-            src="/assets/CrafterForHerLeft.webp"
-            alt="Crafted for her"
-            width={686}
-            height={850}
+            src="/assets/AntiTarnishForHer.png"
+            alt="Anti Tarnish jewellery for her"
+            width={1180}
+            height={1333}
             sizes="(min-width: 640px) 50vw, 100vw"
             className="h-auto w-full transition-transform duration-700 group-hover:scale-[1.02]"
           />
         </Link>
 
         <Link
-          href={"/collections/mens-edit" as Route}
+          href={"/collections/anti-tarnish-mens" as Route}
           className="focus-ring group relative block overflow-hidden"
         >
           <Image
-            src="/assets/CraftedForHimRight.webp"
-            alt="Crafted for him"
-            width={686}
-            height={850}
+            src="/assets/AntiTarnishForHim.png"
+            alt="Anti Tarnish jewellery for him"
+            width={1180}
+            height={1333}
             sizes="(min-width: 640px) 50vw, 100vw"
             className="h-auto w-full transition-transform duration-700 group-hover:scale-[1.02]"
           />
         </Link>
       </div>
-
-      {/* Square image cards hidden temporarily
-      <div className="mx-auto mt-4 grid w-[min(1240px,calc(100%-32px))] grid-cols-1 gap-4 sm:mt-5 sm:grid-cols-2 sm:gap-5">
-        {SQUARE_IMAGES.map((image) => (
-          <div
-            key={image.src}
-            className="relative aspect-[697/557] overflow-hidden rounded-[8px]"
-          >
-            <Image
-              src={image.src}
-              alt={image.alt}
-              fill
-              sizes="(min-width: 720px) 50vw, 100vw"
-              className="object-contain transition-transform duration-700 hover:scale-[1.02]"
-            />
-          </div>
-        ))}
-      </div>
-      */}
     </section>
   );
 }

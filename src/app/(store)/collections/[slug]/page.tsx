@@ -2,9 +2,8 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ProductGrid } from "@/components/commerce/product-grid";
 import { collections } from "@/data/collections";
-import { getShopifyCollection } from "@/lib/shopify-collections";
-import { getProductsByGenderGid, getTopSellingProducts, GENDER_GIDS } from "@/lib/shopify-admin";
-import { fetchAllShopifyProducts } from "@/lib/shopify-collections";
+import { getShopifyCollection, fetchAllShopifyProducts } from "@/lib/shopify-collections";
+import { getProductsByGenderGid, getTopSellingProducts, getAntiTarnishProducts, getAntiTarnishProductsByGender, GENDER_GIDS } from "@/lib/shopify-admin";
 import { createMetadata } from "@/lib/seo";
 
 type CollectionPageProps = {
@@ -79,6 +78,40 @@ const GENDER_SLUGS: Record<string, { genderGid: string | null; title: string; de
 
 export default async function CollectionPage({ params }: CollectionPageProps) {
   const { slug } = await params;
+
+  // 0c. Anti-tarnish gender pages
+  if (slug === "anti-tarnish-womens") {
+    const products = await getAntiTarnishProductsByGender("female");
+    return (
+      <CollectionLayout
+        products={products}
+        title="Anti-Tarnish Jewellery for Her"
+        subtitle="Timeless shine, every day — crafted for her, made to last."
+      />
+    );
+  }
+
+  if (slug === "anti-tarnish-mens") {
+    const products = await getAntiTarnishProductsByGender("male");
+    return (
+      <CollectionLayout
+        products={products}
+        title="Anti-Tarnish Jewellery for Him"
+        subtitle="Built for strength, made to last — jewellery that keeps its edge."
+      />
+    );
+  }
+
+  if (slug === "anti-tarnish-jewellery") {
+    const products = await getAntiTarnishProducts();
+    return (
+      <CollectionLayout
+        products={products}
+        title="Anti-tarnish Jewellery"
+        subtitle="Jewellery that keeps its shine — crafted to stay brilliant every day."
+      />
+    );
+  }
 
   // 0b. Top selling page
   if (slug === "top-selling") {

@@ -84,8 +84,7 @@ export function ProductActions({ productId, slug, productName, image, material, 
       {sizes && sizes.length > 0 && (
         <div>
           <div className="mb-2.5 flex items-center justify-between">
-            <span className="text-xs font-semibold uppercase tracking-[0.18em]" style={{ color: "var(--cream)" }}>Ring Size</span>
-            <button type="button" className="text-[11px] underline underline-offset-2" style={{ color: "var(--gold-dim)" }}>Size guide</button>
+            <span className="text-xs font-semibold uppercase tracking-[0.18em]" style={{ color: "var(--cream)" }}>Bangle Size</span>
           </div>
           <div className="flex flex-wrap gap-2">
             {sizes.map(s => (

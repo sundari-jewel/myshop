@@ -284,6 +284,62 @@ export async function getProductsByGenderGid(
   return getProductsByGender(gender, collectionHandle);
 }
 
+async function fetchAntiTarnishNodes(): Promise<AdminProductNode[]> {
+  const data = await adminFetch<AdminProductsData>(CATEGORY_PRODUCTS_QUERY, {
+    first: 50,
+    after: null,
+    query: `tag:"Anti Tarnish Jewellery" AND status:active`,
+  }, 300);
+  return data.products.nodes.filter((n) => n.status === "ACTIVE");
+}
+
+function nodeToProduct(node: AdminProductNode, collection: string): Product {
+  const price = Math.round(parseFloat(node.priceRangeV2.minVariantPrice.amount));
+  const compareAt = node.compareAtPriceRange
+    ? Math.round(parseFloat(node.compareAtPriceRange.minVariantCompareAtPrice.amount))
+    : 0;
+  return mapAdminProductToProduct(
+    {
+      id: node.id.split("/").pop() ?? node.id,
+      title: node.title,
+      handle: node.handle,
+      image: node.featuredImage?.url ?? "",
+      price,
+      originalPrice: compareAt > price ? compareAt : undefined,
+      tags: node.tags,
+      targetGenderGid: null,
+      material: deriveMaterialTag(node.description),
+    },
+    collection,
+  );
+}
+
+function getTargetGenderGid(node: AdminProductNode): string | null {
+  const field = node.metafields.nodes.find((m) => m.key === "target-gender");
+  if (!field?.value) return null;
+  try {
+    const parsed = JSON.parse(field.value);
+    return Array.isArray(parsed) ? (parsed[0] ?? null) : field.value;
+  } catch {
+    return field.value;
+  }
+}
+
+export async function getAntiTarnishProducts(): Promise<Product[]> {
+  const nodes = await fetchAntiTarnishNodes();
+  return nodes.map((n) => nodeToProduct(n, "anti-tarnish-jewellery"));
+}
+
+export async function getAntiTarnishProductsByGender(gender: "female" | "male"): Promise<Product[]> {
+  const genderGid = gender === "female" ? GENDER_GIDS.female : GENDER_GIDS.male;
+  if (!genderGid) return [];
+  const nodes = await fetchAntiTarnishNodes();
+  const collection = gender === "female" ? "anti-tarnish-womens" : "anti-tarnish-mens";
+  return nodes
+    .filter((n) => getTargetGenderGid(n) === genderGid)
+    .map((n) => nodeToProduct(n, collection));
+}
+
 export async function getTopSellingProducts(): Promise<Product[]> {
   const data = await adminFetch<AdminProductsData>(CATEGORY_PRODUCTS_QUERY, {
     first: 20,

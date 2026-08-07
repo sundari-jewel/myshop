@@ -77,6 +77,20 @@ export type ShopifyCollectionMeta = {
   image: string | null;
 };
 
+const BANGLE_SIZES = ["2/4", "2/6", "2/8"] as const;
+
+function isBangle(node: ShopifyProductNode, collectionHandle: string): boolean {
+  const name = node.title.toLowerCase();
+  const handle = collectionHandle.toLowerCase();
+  const tags = node.tags.map((t) => t.toLowerCase());
+  return (
+    handle.includes("bangle") ||
+    name.includes("bangle") ||
+    tags.includes("bangle") ||
+    tags.includes("bangles")
+  );
+}
+
 function mapNode(node: ShopifyProductNode, collectionHandle: string): Product {
   const price = Math.round(parseFloat(node.priceRange.minVariantPrice.amount));
   const compareAt = Math.round(
@@ -126,6 +140,7 @@ function mapNode(node: ShopifyProductNode, collectionHandle: string): Product {
     badge,
     ...(node.description ? { description: node.description } : {}),
     tags: node.tags,
+    ...(isBangle(node, collectionHandle) ? { sizes: [...BANGLE_SIZES] } : {}),
   };
 }
 
@@ -311,3 +326,4 @@ export async function getProductsByGender(
     return [];
   }
 }
+

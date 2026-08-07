@@ -20,15 +20,16 @@ const NAV_LINKS: Array<{ href: string; label: string; highlight?: boolean }> = [
 ];
 
 const CATEGORY_LINKS = [
-  { label: "Bangles",   href: "/collections/bangles" },
-  { label: "Necklace",  href: "/collections/necklaces" },
-  { label: "Earrings",  href: "/collections/earrings" },
-  { label: "Hathful",   href: "/collections/hathful" },
-  { label: "Bracelet",  href: "/collections/bracelet" },
-  { label: "Watches",   href: "/collections/watches" },
-  { label: "Rakhis",    href: "/collections/rakhis" },
-  { label: "Tika",      href: "/collections/tika" },
-  { label: "Rings",     href: "/collections/rings" },
+  { label: "Bangles",          href: "/collections/bangles" },
+  { label: "Necklace",         href: "/collections/necklaces" },
+  { label: "Earrings",         href: "/collections/earrings" },
+  { label: "Hathful",          href: "/collections/hathful" },
+  { label: "Bracelet",         href: "/collections/bracelet" },
+  { label: "Watches",          href: "/collections/watches" },
+  { label: "Rakhis",           href: "/collections/rakhis" },
+  { label: "Tika",             href: "/collections/tika" },
+  { label: "Rings",            href: "/collections/rings" },
+  { label: "Anti-tarnish",     href: "/collections/anti-tarnish-jewellery" },
 ];
 
 export function SiteHeader() {

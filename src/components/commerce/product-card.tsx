@@ -135,6 +135,7 @@ export function ProductCard({ product }: ProductCardProps) {
           image={product.image}
           material={product.material}
           price={product.price}
+          requiresSize={Boolean(product.sizes?.length)}
         />
       </div>
     </article>

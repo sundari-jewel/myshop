@@ -29,7 +29,10 @@ export function AddToCartButton({ productId, slug, productName, image, material,
       router.push(`/signin?next=${encodeURIComponent(pathname)}`);
       return;
     }
-    if (requiresSize && !selectedSize) return;
+    if (requiresSize && !selectedSize) {
+      router.push(`/products/${slug}`);
+      return;
+    }
 
     addItem({ productId, slug, name: productName, image, material, price, qty: 1, size: selectedSize });
     setAdded(true);
@@ -44,7 +47,7 @@ export function AddToCartButton({ productId, slug, productName, image, material,
       aria-label={`Add ${productName} to cart`}
     >
       {added ? <Check className="shrink-0" size={13} /> : <ShoppingBag className="shrink-0" size={13} />}
-      {added ? "Added to Cart" : "Add to Cart"}
+      {added ? "Added to Cart" : requiresSize && !selectedSize ? "Select Size" : "Add to Cart"}
     </button>
   );
 }
