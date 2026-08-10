@@ -133,6 +133,7 @@ export const products: Product[] = [
     weight: "22.3g",
     purity: "916 BIS Hallmark",
     badge: "Bestseller",
+    sizes: ["2-2", "2-4", "2-6", "2-8"],
     description:
       "The Tara Kada is our most-loved piece for a reason — the slight taper from back to front makes it lighter on the wrist than its weight suggests, while the hand-engraved border adds depth without fussiness. It slides on over most wrists without a clasp, and complements both ethnic and contemporary dressing.",
   },

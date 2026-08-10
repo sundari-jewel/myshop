@@ -13,16 +13,16 @@ export function ShopByGender() {
         <span className="hidden h-px w-24 bg-gradient-to-r from-transparent via-[var(--gold)] to-transparent sm:block" />
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2">
+      <div className="grid grid-cols-1 items-start sm:grid-cols-2">
         <Link
           href={"/collections/anti-tarnish-womens" as Route}
-          className="focus-ring group relative block overflow-hidden"
+          className="focus-ring group block overflow-hidden"
         >
           <Image
             src="/assets/AntiTarnishForHer.png"
             alt="Anti Tarnish jewellery for her"
-            width={1180}
-            height={1333}
+            width={1179}
+            height={1334}
             sizes="(min-width: 640px) 50vw, 100vw"
             className="h-auto w-full transition-transform duration-700 group-hover:scale-[1.02]"
           />
@@ -30,7 +30,7 @@ export function ShopByGender() {
 
         <Link
           href={"/collections/anti-tarnish-mens" as Route}
-          className="focus-ring group relative block overflow-hidden"
+          className="focus-ring group block overflow-hidden"
         >
           <Image
             src="/assets/AntiTarnishForHim.png"

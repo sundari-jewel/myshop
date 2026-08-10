@@ -77,7 +77,7 @@ export type ShopifyCollectionMeta = {
   image: string | null;
 };
 
-const BANGLE_SIZES = ["2/4", "2/6", "2/8"] as const;
+const BANGLE_SIZES = ["2-2", "2-4", "2-6", "2-8"] as const;
 
 function isBangle(node: ShopifyProductNode, collectionHandle: string): boolean {
   const name = node.title.toLowerCase();
@@ -107,10 +107,11 @@ function mapNode(node: ShopifyProductNode, collectionHandle: string): Product {
     node.tags.some((t) => t.toLowerCase().includes("rakhi")) ||
     collectionHandle === "rakhis" ||
     collectionHandle === "rakhi";
-  const material =
+  const rawMaterial =
     metafields.find((m) => m.key === "material")?.value ??
     node.tags.find((t) => t.startsWith("material:"))?.replace("material:", "") ??
     (isRakhi ? "Handcrafted" : deriveMaterialTag(node.description));
+  const material = rawMaterial?.toLowerCase() === "copper" ? "High Gold" : rawMaterial;
   const stone =
     metafields.find((m) => m.key === "stone")?.value ??
     node.tags.find((t) => t.startsWith("stone:"))?.replace("stone:", "") ??

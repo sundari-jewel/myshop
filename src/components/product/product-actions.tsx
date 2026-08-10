@@ -93,7 +93,7 @@ export function ProductActions({ productId, slug, productName, image, material, 
                 style={{
                   border:      selectedSize === s ? "1.5px solid var(--gold)" : "1.5px solid rgba(138,106,58,0.3)",
                   background:  selectedSize === s ? "var(--gold)" : "transparent",
-                  color:       selectedSize === s ? "var(--bg-dark)" : "var(--foreground)",
+                  color:       selectedSize === s ? "var(--bg-dark)" : "var(--cream)",
                 }}>
                 {s}
               </button>
