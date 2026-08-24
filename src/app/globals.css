@@ -466,11 +466,13 @@ textarea {
 }
 
 .reel-card-root {
+  display: block;
   position: relative;
   width: 190px;
   height: 338px;
   flex-shrink: 0;
   cursor: pointer;
+  text-decoration: none;
 }
 
 .reel-stats {

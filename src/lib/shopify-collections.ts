@@ -305,6 +305,20 @@ export async function getRelatedShopifyProducts(excludeHandle: string, limit = 4
   }
 }
 
+export async function getProductsByTag(tag: string, limit = 100): Promise<Product[]> {
+  try {
+    // tag can be a single tag ("haldi") or a pre-built query ("tag:haldi OR tag:bridal")
+    const query = tag.includes(" OR ") ? tag : `tag:${tag}`;
+    const data = await shopifyFetch<ProductsData>(PRODUCTS_BY_GENDER_QUERY, {
+      query,
+      first: limit,
+    });
+    return data.products.nodes.map((n) => mapNode(n, "shopify"));
+  } catch {
+    return [];
+  }
+}
+
 // Gender values Shopify stores via the product details gender selector
 const GENDER_QUERY_MAP: Record<string, string> = {
   female: "tag:female OR tag:women OR tag:Women OR metafield.shopify.gender:female OR metafield.shopify.gender:Female OR metafield.descriptors.gender:female",

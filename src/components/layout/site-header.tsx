@@ -30,6 +30,7 @@ const CATEGORY_LINKS = [
   { label: "Tika",             href: "/collections/tika" },
   { label: "Rings",            href: "/collections/rings" },
   { label: "Anti-tarnish",     href: "/collections/anti-tarnish-jewellery" },
+  { label: "Accessories",      href: "/collections/accessories" },
 ];
 
 export function SiteHeader() {

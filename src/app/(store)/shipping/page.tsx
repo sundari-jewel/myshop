@@ -56,8 +56,8 @@ export default function ShippingPage() {
                 },
                 {
                   title: "International Shipping",
-                  price: "₹2,999",
-                  note: "DDU basis",
+                  price: "₹5,000–₹9,000",
+                  note: "DDU basis · varies by destination",
                   detail: "Estimated delivery: 7–12 business days",
                 },
               ].map((opt) => (
@@ -155,8 +155,24 @@ export default function ShippingPage() {
           <section>
             <SectionHeading title="International Delivery" />
             <div className="mt-5 space-y-4 text-sm leading-7 text-[rgba(245,230,200,0.65)]">
-              <p>We offer standard international shipping on all eligible products.</p>
-              <p>A flat international shipping charge of <strong className="text-[var(--cream)]">₹2,999 per order</strong> applies. Estimated delivery time is <strong className="text-[var(--cream)]">7–12 business days</strong> from the date of order.</p>
+              <p>We offer standard international shipping on all eligible products. Estimated delivery time is <strong className="text-[var(--cream)]">7–12 business days</strong> from the date of order.</p>
+              <p>Shipping charges vary by destination and are calculated at checkout:</p>
+            </div>
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              {[
+                { region: "USA", charge: "₹5,000 – ₹9,000", note: "Varies by order weight & dimensions" },
+                { region: "Europe", charge: "₹5,000 – ₹7,000", note: "Varies by order weight & dimensions" },
+              ].map((r) => (
+                <div
+                  key={r.region}
+                  className="rounded-sm border p-4"
+                  style={{ borderColor: "rgba(201,169,110,0.18)", background: "rgba(201,169,110,0.04)" }}
+                >
+                  <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[var(--gold-dim)]">{r.region}</p>
+                  <p className="mt-1 text-lg font-bold text-[var(--cream)]">{r.charge}</p>
+                  <p className="mt-1 text-xs text-[rgba(245,230,200,0.5)]">{r.note}</p>
+                </div>
+              ))}
             </div>
             <div
               className="mt-6 rounded-sm border p-5"

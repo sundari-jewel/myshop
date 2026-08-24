@@ -14,7 +14,8 @@ const CATEGORIES = [
   { label: "Necklace",  href: "/collections/necklaces", image: "/assets/category-necklace.webp" },
   { label: "Nath",      href: "/collections/nath",      image: "/assets/category-nath.webp" },
   { label: "Hathful",   href: "/collections/hathful",   image: "/assets/category-hathful.webp" },
-  { label: "Bracelets", href: "/collections/bangles", image: "/assets/category-bracelet.png" },
+  { label: "Bracelets",    href: "/collections/bracelet",     image: "/assets/category-bracelet-hero.png" },
+  { label: "Accessories",  href: "/collections/accessories",  image: "/assets/catalog-asset-03.webp" },
 ] as const;
 
 const CARD_HEIGHT = 480;

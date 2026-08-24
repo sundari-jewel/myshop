@@ -77,7 +77,7 @@ export default function ReturnsPage() {
             <ul className="mt-5 space-y-3">
               {[
                 "Once we receive your return request, our team will review it.",
-                "The review process may take 1–2 working days.",
+                "The review process may take up to 24 hours.",
                 "If the request is found to be genuine and valid, it will be approved.",
                 "After approval, you will receive a confirmation message/email regarding the return request.",
               ].map((item) => (

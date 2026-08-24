@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
 
 const TRUST_ITEMS = [
   { icon: Truck,       label: "Free Shipping",  sub: "Across India" },
-  { icon: RefreshCw,   label: "30-Day Exchange", sub: "Hassle-free" },
+  { icon: RefreshCw,   label: "24-Hour Exchange", sub: "Hassle-free" },
   { icon: Award,       label: "Handcrafted",     sub: "By master karigar" },
 ];
 

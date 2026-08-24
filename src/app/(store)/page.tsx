@@ -9,8 +9,8 @@ import { ShopByGender }       from "@/components/home/shop-by-gender";
 // import { FeatureBanners }     from "@/components/home/feature-banners";
 import { WeddingShop }        from "@/components/home/wedding-shop";
 import { WatchesAndRakhi }    from "@/components/home/watches-and-rakhi";
-import { TopSelling }         from "@/components/home/top-selling";
 import { getTopSellingProducts } from "@/lib/shopify-admin";
+import { TopSelling } from "@/components/home/top-selling";
 import { CustomerReels }      from "@/components/home/customer-reels";
 import { CustomerReviews }    from "@/components/home/customer-reviews";
 

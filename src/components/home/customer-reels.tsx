@@ -34,7 +34,13 @@ const INSTAGRAM_SVG = (
 
 function ReelCard({ src, alt }: { src: string; alt: string }) {
   return (
-    <div className="reel-card-root">
+    <a
+      href="https://www.instagram.com/sundariartjewellery/"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={alt}
+      className="reel-card-root"
+    >
       {/* Card frame — hover effects via CSS class */}
       <div
         className="reel-card-inner"
@@ -81,7 +87,7 @@ function ReelCard({ src, alt }: { src: string; alt: string }) {
           </span>
         </div>
       </div>
-    </div>
+    </a>
   );
 }
 

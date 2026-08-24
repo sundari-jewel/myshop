@@ -1,13 +1,16 @@
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import { notFound } from "next/navigation";
 import { ProductGrid } from "@/components/commerce/product-grid";
 import { collections } from "@/data/collections";
-import { getShopifyCollection, fetchAllShopifyProducts } from "@/lib/shopify-collections";
+import { getShopifyCollection, fetchAllShopifyProducts, getProductsByTag } from "@/lib/shopify-collections";
 import { getProductsByGenderGid, getTopSellingProducts, getAntiTarnishProducts, getAntiTarnishProductsByGender, GENDER_GIDS } from "@/lib/shopify-admin";
 import { createMetadata } from "@/lib/seo";
+import { NecklaceSubcategories } from "./necklace-subcategories";
 
 type CollectionPageProps = {
   params: Promise<{ slug: string }>;
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 };
 
 export const dynamicParams = true;
@@ -76,8 +79,9 @@ const GENDER_SLUGS: Record<string, { genderGid: string | null; title: string; de
   },
 };
 
-export default async function CollectionPage({ params }: CollectionPageProps) {
+export default async function CollectionPage({ params, searchParams }: CollectionPageProps) {
   const { slug } = await params;
+  const sp = searchParams ? await searchParams : {};
 
   // 0c. Anti-tarnish gender pages
   if (slug === "anti-tarnish-womens") {
@@ -153,6 +157,59 @@ export default async function CollectionPage({ params }: CollectionPageProps) {
     return <CollectionLayout products={products} />;
   }
 
+  // 1c. Bridal / wedding — fetch by event tag directly from Shopify
+  if (slug === "bridal") {
+    const EVENT_TITLES: Record<string, string> = {
+      haldi:     "Haldi Collection",
+      bridal:    "Bridal Collection",
+      mehendi:   "Mehendi Collection",
+      sangeet:   "Sangeet Collection",
+      reception: "Reception Collection",
+    };
+
+    const event    = typeof sp.event === "string" ? sp.event : undefined;
+    const products = event && EVENT_TITLES[event]
+      ? await getProductsByTag(event)
+      : await getProductsByTag("haldi OR tag:bridal OR tag:mehendi OR tag:sangeet OR tag:reception", 200);
+
+    return (
+      <CollectionLayout
+        products={products}
+        title={event && EVENT_TITLES[event] ? EVENT_TITLES[event] : "Shop for Wedding"}
+        subtitle={event ? undefined : "Jewellery for every wedding ceremony — from Haldi to Reception."}
+      />
+    );
+  }
+
+  // 1b. Necklaces — with subcategory browse section and optional tag filtering
+  if (slug === "necklaces") {
+    const shopify = await getShopifyCollection("necklace");
+    if (!shopify) notFound();
+
+    const SUBCATEGORY_TAGS: Record<string, string> = {
+      "long-necklace":  "long necklace",
+      "hasli-necklace": "hasli necklace",
+      "choker-set":     "choker set",
+      "anti-tarnish":   "anti tarnish",
+    };
+
+    const subcategory = typeof sp.subcategory === "string" ? sp.subcategory : undefined;
+    const tagFilter   = subcategory ? SUBCATEGORY_TAGS[subcategory] : undefined;
+
+    const products = tagFilter
+      ? shopify.products.filter((p) =>
+          p.tags?.some((t) => t.toLowerCase().includes(tagFilter.toLowerCase()))
+        )
+      : shopify.products;
+
+    return (
+      <CollectionLayout
+        products={products}
+        subcategorySection={<NecklaceSubcategories activeSubcategory={subcategory} />}
+      />
+    );
+  }
+
   // 2. All other collections — resolve handle alias if needed, then fetch from Shopify
   const handle = HANDLE_ALIASES[slug] ?? slug;
   const shopify = await getShopifyCollection(handle);
@@ -171,10 +228,12 @@ function CollectionLayout({
   products,
   title,
   subtitle,
+  subcategorySection,
 }: {
   products: import("@/types/commerce").Product[];
   title?: string;
   subtitle?: string;
+  subcategorySection?: ReactNode;
 }) {
   return (
     <div style={{ background: "var(--bg-dark)", minHeight: "60vh" }}>
@@ -185,7 +244,17 @@ function CollectionLayout({
           <div className="mx-auto mt-6 h-px w-24" style={{ background: "linear-gradient(to right, transparent, var(--gold), transparent)" }} />
         </div>
       )}
-      <section className="container-shell py-7 sm:py-10">
+      {subcategorySection}
+      {subcategorySection && (
+        <div className="container-shell pb-1 pt-6 text-center">
+          <h2 className="display-font text-2xl italic text-[var(--gold)] sm:text-3xl">Our Products</h2>
+          <div
+            className="mx-auto mt-3 h-px w-20"
+            style={{ background: "linear-gradient(to right, transparent, var(--gold), transparent)" }}
+          />
+        </div>
+      )}
+      <section id="necklace-products" className="container-shell py-7 sm:py-10">
         {products.length > 0 ? (
           <ProductGrid products={products} />
         ) : (
@@ -195,3 +264,4 @@ function CollectionLayout({
     </div>
   );
 }
+

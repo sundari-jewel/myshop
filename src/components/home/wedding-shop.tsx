@@ -3,31 +3,11 @@ import Link from "next/link";
 import type { Route } from "next";
 
 const WEDDING_COLLECTIONS = [
-  {
-    src: "/assets/shopforwedding1.webp",
-    alt: "Haldi Collection",
-    href: "/collections/bridal",
-  },
-  {
-    src: "/assets/shopforwedding2.webp",
-    alt: "Wedding Bridal Collection",
-    href: "/collections/bridal",
-  },
-  {
-    src: "/assets/shopforwedding3.webp",
-    alt: "Sangeet Collection",
-    href: "/collections/bridal",
-  },
-  {
-    src: "/assets/shopforwedding4.webp",
-    alt: "Reception Collection",
-    href: "/collections/bridal",
-  },
-  {
-    src: "/assets/shopforwedding5.webp",
-    alt: "Mehendi Collection",
-    href: "/collections/bridal",
-  },
+  { src: "/assets/shopforwedding1.webp", alt: "Mehendi Collection",       href: "/collections/bridal?event=mehendi" },
+  { src: "/assets/shopforwedding2.webp", alt: "Reception Collection",     href: "/collections/bridal?event=reception" },
+  { src: "/assets/shopforwedding3.webp", alt: "Sangeet Collection",       href: "/collections/bridal?event=sangeet" },
+  { src: "/assets/shopforwedding4.webp", alt: "Wedding Bridal Collection",href: "/collections/bridal?event=bridal" },
+  { src: "/assets/shopforwedding5.webp", alt: "Haldi Collection",         href: "/collections/bridal?event=haldi" },
 ] as const;
 
 export function WeddingShop() {
