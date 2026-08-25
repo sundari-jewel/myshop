@@ -79,7 +79,7 @@ export function ArchivalCollection() {
           {slots.map((slot, i) => (
             <Link
               key={i}
-              href={slot.cat.href}
+              href={slot.cat.href as any}
               className="sale-cat-card"
               onMouseEnter={() => { hoveredRef.current = i; }}
               onMouseLeave={() => { hoveredRef.current = null; }}
