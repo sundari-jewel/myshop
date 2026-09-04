@@ -56,7 +56,7 @@ export default function AboutPage() {
               Celebrating the Art<br className="hidden sm:block" /> of Indian Heritage
             </h1>
             <p className="mt-5 max-w-xl text-sm leading-7 text-[rgba(245,230,200,0.55)]">
-              Sundari Art Jewellery was born from a deep love for traditional Indian craft. Every piece we make is a tribute to the artisans, the rituals, and the women who carry these traditions forward.
+              Sundari Art Jewellery was born from a deep love for traditional Indian craft — a passion our family has carried <strong className="text-[var(--cream)]">since 1980</strong>. Every piece we make is a tribute to the artisans, the rituals, and the women who carry these traditions forward.
             </p>
           </div>
         </div>
@@ -71,7 +71,7 @@ export default function AboutPage() {
               <SectionHeading title="Who We Are" />
               <div className="mt-5 space-y-4 text-sm leading-7 text-[rgba(245,230,200,0.65)]">
                 <p>
-                  We are <strong className="text-[var(--cream)]">Shree Vallabh Mangalam Art Jewels</strong>, based in the temple city of <strong className="text-[var(--cream)]">Ujjain, Madhya Pradesh</strong>. Our store at 72 Lakherwadi has been a trusted name for jewellery that blends classical Indian aesthetics with wearable, modern sensibility.
+                  We are <strong className="text-[var(--cream)]">Shree Vallabh Mangalam Art Jewels</strong>, rooted in <strong className="text-[var(--cream)]">Ujjain, Madhya Pradesh</strong> — the sacred city of <strong className="text-[var(--cream)]">Mahakal</strong>, where devotion and artistry have coexisted for millennia. Our store at Mangalam, 72 Lakherwadi has been a trusted name for jewellery that blends classical Indian aesthetics with wearable, modern sensibility.
                 </p>
                 <p>
                   Under the <strong className="text-[var(--cream)]">Sundari Art Jewellery</strong> brand, we bring that same craft and care to a wider audience — through a curated online collection built for women who appreciate beauty in detail.

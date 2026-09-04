@@ -9,7 +9,7 @@ const WATCHES_CELLS = [
   "#1e0707",
 ] as const;
 
-const RAKHI_CELLS = [
+const EARRINGS_CELLS = [
   "#2a0e0e",
   "#321205",
   "#280c0c",
@@ -24,7 +24,7 @@ export function WatchesAndRakhi() {
       <div className="mb-7 flex items-center justify-center gap-5 sm:mb-14 sm:gap-7">
         <span className="hidden h-px w-24 bg-gradient-to-r from-transparent via-[var(--gold)] to-transparent sm:block" />
         <span className="display-font text-center text-[1.75rem] font-semibold italic leading-none tracking-[0.05em] text-[var(--gold)] drop-shadow-[0_2px_1px_rgba(70,40,0,0.32)] sm:text-[2.45rem] sm:tracking-[0.08em]">
-          Watches &amp; Rakhi
+          Watches &amp; Kashmiri Earrings
         </span>
         <span className="hidden h-px w-24 bg-gradient-to-r from-transparent via-[var(--gold)] to-transparent sm:block" />
       </div>
@@ -88,14 +88,14 @@ export function WatchesAndRakhi() {
           aria-hidden="true"
         />
 
-        {/* Rakhi panel */}
+        {/* Kashmiri Earrings panel */}
         <Link
-          href={"/collections/rakhis" as Route}
+          href={"/collections/kashmiri-earrings" as Route}
           className="focus-ring group relative block min-h-[260px] overflow-hidden sm:min-h-[420px]"
         >
           <Image
-            src="/assets/rakhi-collection.webp"
-            alt="Rakhi Collection"
+            src="/assets/kashmiri-earrings.png"
+            alt="Kashmiri Earrings Collection"
             fill
             sizes="(min-width: 640px) 50vw, 100vw"
             className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
@@ -116,21 +116,21 @@ export function WatchesAndRakhi() {
               className="mb-2 text-[0.6rem] font-bold uppercase tracking-[0.28em]"
               style={{ color: "rgba(201,169,110,0.55)" }}
             >
-              Raksha Bandhan · Festival Edition
+              Heritage Craft · Kashmir
             </p>
             <h2
               className="display-font mb-2 font-semibold italic leading-tight text-[var(--cream)]"
               style={{ fontSize: "clamp(2rem, 4vw, 2.8rem)" }}
             >
-              Rakhi Collection
+              Kashmiri Earrings
             </h2>
             <p
               className="mb-5 text-xs tracking-wide"
               style={{ color: "rgba(245,230,200,0.45)" }}
             >
-              Gift in gold. Celebrate the bond that lasts forever.
+              Handcrafted jhumkas adorned with enamel, pearls &amp; saffron hues.
             </p>
-            <span className="btn-ghost-gold">Shop Rakhi →</span>
+            <span className="btn-ghost-gold">Shop Earrings →</span>
           </div>
         </Link>
 

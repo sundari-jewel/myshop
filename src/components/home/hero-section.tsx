@@ -5,7 +5,6 @@ import { HeroCarousel } from "@/components/home/hero-carousel";
 
 const DESKTOP_BANNERS: HeroBanner[] = [
   { image: "/assets/hero/hero-launch-sale.png", link: "/collections/sale" },
-  { image: "/assets/hero/hero-rakhi-sale.png", link: "/collections/rakhis" },
 ];
 
 export function HeroSection() {

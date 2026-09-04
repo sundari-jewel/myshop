@@ -48,7 +48,7 @@ export default function ContactPage() {
                 Shree Vallabh Mangalam<br />Art Jewels
               </p>
               <p className="mt-1 text-xs leading-6 text-[rgba(245,230,200,0.5)]">
-                72 Lakherwadi<br />Ujjain, Madhya Pradesh
+                Mangalam, 72 Lakherwadi<br />Ujjain, Madhya Pradesh
               </p>
             </div>
 
