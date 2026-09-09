@@ -1,5 +1,5 @@
 "use client";
-
+// browse-by-category: bangles
 import Image from "next/image";
 import Link from "next/link";
 import type { Route } from "next";
