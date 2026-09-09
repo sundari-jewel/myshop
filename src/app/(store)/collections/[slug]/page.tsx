@@ -7,6 +7,7 @@ import { getShopifyCollection, fetchAllShopifyProducts, getProductsByTag } from 
 import { getProductsByGenderGid, getTopSellingProducts, getAntiTarnishProducts, getAntiTarnishProductsByGender, GENDER_GIDS } from "@/lib/shopify-admin";
 import { createMetadata } from "@/lib/seo";
 import { NecklaceSubcategories } from "./necklace-subcategories";
+import { BangleSubcategories } from "./bangle-subcategories";
 
 type CollectionPageProps = {
   params: Promise<{ slug: string }>;
@@ -210,13 +211,46 @@ export default async function CollectionPage({ params, searchParams }: Collectio
     );
   }
 
+  // 1d. Bangles — with subcategory browse section and optional tag filtering
+  if (slug === "bangles") {
+    const shopify = await getShopifyCollection("bangles");
+    if (!shopify) notFound();
+
+    const TAG_MAP: Record<string, string> = {
+      "cnc-bangle": "CNC Bangle",
+      "ad-bangle":       "Ad Bangle",
+      "high-gold-bangle": "High Gold Bangle",
+      "heritage-bangle":    "Heritage Bangle",
+      "moissanite-bangle":  "Moissanite Bangle",
+      "dail-use-bangle":    "dail-use bangle",
+      "bridal-bangle":      "Bridal Bangle",
+    };
+
+    const tag = typeof sp.tag === "string" ? sp.tag : undefined;
+    const activeKey = tag ? Object.keys(TAG_MAP).find((k) => TAG_MAP[k] === tag) : undefined;
+    const tagFilter = activeKey ? TAG_MAP[activeKey] : undefined;
+
+    const products = tagFilter
+      ? shopify.products
+          .filter((p) => !p.tags?.some((t) => t.toLowerCase().includes("rakhi")))
+          .filter((p) => p.tags?.some((t) => t.toLowerCase() === tagFilter.toLowerCase()))
+      : shopify.products.filter((p) => !p.tags?.some((t) => t.toLowerCase().includes("rakhi")));
+
+    return (
+      <CollectionLayout
+        products={products}
+        subcategorySection={<BangleSubcategories activeTag={activeKey} />}
+      />
+    );
+  }
+
   // 2. All other collections — resolve handle alias if needed, then fetch from Shopify
   const handle = HANDLE_ALIASES[slug] ?? slug;
   const shopify = await getShopifyCollection(handle);
   if (!shopify) notFound();
 
   // Rakhi products can be miscategorised into bracelet/bangle collections in Shopify — exclude them here
-  const NON_RAKHI_SLUGS = ["bracelet", "bracelets", "bangles"];
+  const NON_RAKHI_SLUGS = ["bracelet", "bracelets"];
   const products = NON_RAKHI_SLUGS.includes(slug)
     ? shopify.products.filter((p) => !p.tags?.some((t) => t.toLowerCase().includes("rakhi")))
     : shopify.products;
