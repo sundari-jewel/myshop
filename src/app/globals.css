@@ -69,6 +69,11 @@ video {
   height: auto;
 }
 
+/* Next.js fill images must not inherit height:auto — they rely on height:100% to fill their positioned parent */
+img[data-nimg="fill"] {
+  height: 100%;
+}
+
 button,
 a,
 input,
