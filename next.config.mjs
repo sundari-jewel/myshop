@@ -5,6 +5,8 @@ const nextConfig = {
     remotePatterns: [
       { protocol: "https", hostname: "res.cloudinary.com" },
       { protocol: "https", hostname: "cdn.shopify.com" },
+      { protocol: "https", hostname: "*.myshopify.com" },
+      { protocol: "https", hostname: "*.shopifycdn.com" },
     ],
   },
   typedRoutes: true,
