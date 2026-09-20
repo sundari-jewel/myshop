@@ -227,13 +227,14 @@ export default async function CollectionPage({ params, searchParams }: Collectio
     };
 
     const tag = typeof sp.tag === "string" ? sp.tag : undefined;
-    const activeKey = tag ? Object.keys(TAG_MAP).find((k) => TAG_MAP[k] === tag) : undefined;
+    const normalize = (s: string) => s.toLowerCase().replace(/-/g, " ");
+    const activeKey = tag ? Object.keys(TAG_MAP).find((k) => normalize(TAG_MAP[k]) === normalize(tag)) : undefined;
     const tagFilter = activeKey ? TAG_MAP[activeKey] : undefined;
 
     const products = tagFilter
       ? shopify.products
           .filter((p) => !p.tags?.some((t) => t.toLowerCase().includes("rakhi")))
-          .filter((p) => p.tags?.some((t) => t.toLowerCase() === tagFilter.toLowerCase()))
+          .filter((p) => p.tags?.some((t) => normalize(t) === normalize(tagFilter)))
       : shopify.products.filter((p) => !p.tags?.some((t) => t.toLowerCase().includes("rakhi")));
 
     return (
