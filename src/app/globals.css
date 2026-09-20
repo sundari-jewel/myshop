@@ -425,7 +425,7 @@ textarea {
    TOP SELLING CAROUSEL
    --------------------------------------------------------------------- */
 .top-selling-track {
-  animation: top-selling-scroll 32s linear infinite;
+  animation: top-selling-scroll 55s linear infinite;
 }
 .top-selling-track:hover {
   animation-play-state: paused;
