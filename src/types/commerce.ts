@@ -7,6 +7,14 @@ export type Collection = {
   image: string;
 };
 
+export type ColorVariant = {
+  color: string;
+  image?: string;
+  images?: string[];
+  variantId: string;
+  price: number;
+};
+
 export type Product = {
   id: string;
   name: string;
@@ -25,4 +33,5 @@ export type Product = {
   description?: string;
   sizes?: string[];
   tags?: string[];
+  colorVariants?: ColorVariant[];
 };

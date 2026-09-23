@@ -1,15 +1,21 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type ImageGalleryProps = {
   images: string[];
   productName: string;
+  heroImage?: string;
 };
 
-export function ImageGallery({ images, productName }: ImageGalleryProps) {
-  const [active, setActive] = useState(0);
+export function ImageGallery({ images, productName, heroImage }: ImageGalleryProps) {
+  // Local override lets thumbnail clicks win over the color-driven heroImage.
+  // When heroImage changes (user picks a new color), reset the override.
+  const [override, setOverride] = useState<string | null>(null);
+  useEffect(() => { setOverride(null); }, [heroImage]);
+
+  const displaySrc = override ?? heroImage ?? images[0];
 
   return (
     <div className="flex min-w-0 flex-col gap-3 lg:flex-row-reverse lg:items-start">
@@ -23,8 +29,8 @@ export function ImageGallery({ images, productName }: ImageGalleryProps) {
         }}
       >
         <Image
-          key={active}
-          src={images[active]}
+          key={displaySrc}
+          src={displaySrc}
           alt={productName}
           fill
           priority
@@ -41,17 +47,17 @@ export function ImageGallery({ images, productName }: ImageGalleryProps) {
               key={src}
               type="button"
               aria-label={`View image ${i + 1}`}
-              onClick={() => setActive(i)}
+              onClick={() => setOverride(src)}
               className="relative shrink-0 overflow-hidden transition-all duration-200"
               style={{
                 width: "clamp(64px, 20vw, 80px)",
                 height: "clamp(64px, 20vw, 80px)",
                 borderRadius: "4px",
                 background: "rgba(201,169,110,0.07)",
-                border: active === i
+                border: displaySrc === src
                   ? "2px solid var(--gold)"
                   : "2px solid transparent",
-                opacity: active === i ? 1 : 0.6,
+                opacity: displaySrc === src ? 1 : 0.6,
               }}
             >
               <Image

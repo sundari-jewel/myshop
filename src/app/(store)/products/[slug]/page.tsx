@@ -5,9 +5,7 @@ import type { Route } from "next";
 import { notFound } from "next/navigation";
 import { RefreshCw, Truck, Award } from "lucide-react";
 
-import { ImageGallery } from "@/components/product/image-gallery";
-import { ProductActions } from "@/components/product/product-actions";
-import { ProductAccordion } from "@/components/product/product-accordion";
+import { ProductView } from "@/components/product/product-view";
 import { getShopifyProduct, getRelatedShopifyProducts } from "@/lib/shopify-collections";
 import { createMetadata, formatPrice } from "@/lib/seo";
 
@@ -72,123 +70,23 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
       {/* ── Main product grid ───────────────────────── */}
       <div className="container-shell py-7 sm:py-10 lg:py-14">
-        <div className="grid min-w-0 gap-8 lg:grid-cols-[1fr_420px] lg:gap-12 xl:grid-cols-[1fr_460px] lg:items-start">
-
-          {/* Left – image gallery */}
-          <ImageGallery images={gallery} productName={product.name} />
-
-          {/* Right – product info */}
-          <div className="flex min-w-0 flex-col gap-4">
-
-            {/* Collection tag + badge */}
-            <div className="flex items-center gap-3">
-              <span
-                className="text-[10px] font-bold uppercase tracking-[0.28em]"
-                style={{ color: "var(--gold-dim)" }}
-              >
-                {collectionName}
-              </span>
-              {product.badge && (
-                <span
-                  className="rounded-sm px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.18em]"
-                  style={{
-                    background: "var(--bg-dark)",
-                    color: "var(--gold)",
-                  }}
-                >
-                  {product.badge}
-                </span>
-              )}
-            </div>
-
-            {/* Name */}
-            <h1
-              className="display-font text-3xl font-semibold leading-[1.1] tracking-[0.02em] sm:text-5xl"
-              style={{ color: "var(--cream)" }}
-            >
-              {product.name}
-            </h1>
-
-            {/* Price */}
-            <div className="flex items-baseline gap-3">
-              <span
-                className="display-font text-3xl font-semibold"
-                style={{ color: "var(--cream)" }}
-              >
-                {formatPrice(product.price)}
-              </span>
-              {product.originalPrice && (
-                <span
-                  className="text-base line-through"
-                  style={{ color: "var(--cream-muted)" }}
-                >
-                  {formatPrice(product.originalPrice)}
-                </span>
-              )}
-              {product.originalPrice && (
-                <span
-                  className="rounded-sm px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.14em]"
-                  style={{ background: "#e8f5e9", color: "#2e7d32" }}
-                >
-                  {Math.round((1 - product.price / product.originalPrice) * 100)}% off
-                </span>
-              )}
-            </div>
-
-            {/* Material / stone chips */}
-            <div className="flex flex-wrap gap-2">
-              {[product.material, product.stone, ...(product.purity ? [product.purity] : [])].filter(Boolean).map(
-                (tag) => (
-                  <span
-                    key={tag}
-                    className="rounded-sm px-3 py-1 text-[10px] font-medium uppercase tracking-[0.14em]"
-                    style={{
-                      background: "rgba(201,169,110,0.08)",
-                      color: "rgba(245,230,200,0.7)",
-                      border: "1px solid rgba(201,169,110,0.2)",
-                    }}
-                  >
-                    {tag}
-                  </span>
-                )
-              )}
-            </div>
-
-            {/* Weight */}
-            {product.weight && (
-              <p className="text-[13px]" style={{ color: "rgba(245,230,200,0.55)" }}>
-                Net weight:{" "}
-                <span className="font-semibold" style={{ color: "var(--cream)" }}>
-                  {product.weight}
-                </span>
-              </p>
-            )}
-
-            <div style={{ height: 1, background: "rgba(138,106,58,0.2)" }} />
-
-            {/* Interactive actions */}
-            <ProductActions
-              productId={product.id}
-              slug={product.slug}
-              productName={product.name}
-              image={product.images?.[0] ?? product.image}
-              material={product.material}
-              price={product.price}
-              sizes={product.sizes}
-            />
-
-            <div style={{ height: 1, background: "rgba(138,106,58,0.2)" }} />
-
-            {/* Accordion: description / specs / care */}
-            <ProductAccordion
-              description={product.description ?? `${product.name} — ${product.material} with ${product.stone}.`}
-              material={product.material}
-              stone={product.stone}
-              weight={product.weight}
-              purity={product.purity}
-            />
-          </div>
-        </div>
+        <ProductView
+          productId={product.id}
+          slug={product.slug}
+          productName={product.name}
+          collectionName={collectionName}
+          badge={product.badge}
+          images={gallery}
+          material={product.material}
+          stone={product.stone}
+          weight={product.weight}
+          purity={product.purity}
+          price={product.price}
+          originalPrice={product.originalPrice}
+          sizes={product.sizes}
+          colorVariants={product.colorVariants}
+          description={product.description ?? `${product.name} — ${product.material} with ${product.stone}.`}
+        />
       </div>
 
       {/* ── Trust bar ───────────────────────────────── */}

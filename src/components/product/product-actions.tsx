@@ -6,6 +6,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { useCart } from "@/context/cart-context";
 import { useCustomerAuth } from "@/context/customer-auth-context";
 import { useWishlist } from "@/context/wishlist-context";
+import type { ColorVariant } from "@/types/commerce";
 
 const STORE = {
   name: "Sundari Art Jewellery",
@@ -21,21 +22,31 @@ type ProductActionsProps = {
   material: string;
   price: number;
   sizes?: string[];
+  colorVariants?: ColorVariant[];
+  onColorChange?: (variant: ColorVariant) => void;
 };
 
-export function ProductActions({ productId, slug, productName, image, material, price, sizes }: ProductActionsProps) {
+export function ProductActions({ productId, slug, productName, image, material, price, sizes, colorVariants, onColorChange }: ProductActionsProps) {
   const { addItem } = useCart();
   const { customer } = useCustomerAuth();
   const wishlist = useWishlist();
   const router = useRouter();
   const pathname = usePathname();
 
-  const [selectedSize, setSelectedSize] = useState<string | null>(null);
-  const [qty,          setQty]          = useState(1);
-  const [added,        setAdded]        = useState(false);
-  const [sizeError,    setSizeError]    = useState(false);
-  const [pickupOpen,   setPickupOpen]   = useState(false);
+  const [selectedSize,  setSelectedSize]  = useState<string | null>(null);
+  const [selectedColor, setSelectedColor] = useState<ColorVariant | null>(null);
+  const [qty,           setQty]           = useState(1);
+  const [added,         setAdded]         = useState(false);
+  const [sizeError,     setSizeError]     = useState(false);
+  const [colorError,    setColorError]    = useState(false);
+  const [pickupOpen,    setPickupOpen]    = useState(false);
   const pickupRef = useRef<HTMLDivElement>(null);
+
+  function handleColorSelect(variant: ColorVariant) {
+    setSelectedColor(variant);
+    setColorError(false);
+    onColorChange?.(variant);
+  }
 
   useEffect(() => {
     if (!pickupOpen) return;
@@ -56,10 +67,18 @@ export function ProductActions({ productId, slug, productName, image, material, 
 
   function handleAddToCart() {
     if (!customer) { requireAuth(); return; }
+    if (colorVariants?.length && !selectedColor) { setColorError(true); return; }
     if (sizes?.length && !selectedSize) { setSizeError(true); return; }
+    setColorError(false);
     setSizeError(false);
+    const itemImage = selectedColor?.image ?? image;
+    const itemPrice = selectedColor?.price ?? price;
     for (let i = 0; i < qty; i++) {
-      addItem({ productId, slug, name: productName, image, material, price, qty: 1, size: selectedSize ?? undefined });
+      addItem({
+        productId, slug, name: productName, image: itemImage, material,
+        price: itemPrice, qty: 1, size: selectedSize ?? undefined,
+        color: selectedColor?.color, variantId: selectedColor?.variantId,
+      });
     }
     setAdded(true);
     setTimeout(() => setAdded(false), 2500);
@@ -67,9 +86,17 @@ export function ProductActions({ productId, slug, productName, image, material, 
 
   function handleBuyNow() {
     if (!customer) { requireAuth(); return; }
+    if (colorVariants?.length && !selectedColor) { setColorError(true); return; }
     if (sizes?.length && !selectedSize) { setSizeError(true); return; }
+    setColorError(false);
     setSizeError(false);
-    addItem({ productId, slug, name: productName, image, material, price, qty, size: selectedSize ?? undefined });
+    const itemImage = selectedColor?.image ?? image;
+    const itemPrice = selectedColor?.price ?? price;
+    addItem({
+      productId, slug, name: productName, image: itemImage, material,
+      price: itemPrice, qty, size: selectedSize ?? undefined,
+      color: selectedColor?.color, variantId: selectedColor?.variantId,
+    });
     router.push("/checkout");
   }
 
@@ -80,6 +107,36 @@ export function ProductActions({ productId, slug, productName, image, material, 
 
   return (
     <div className="flex flex-col gap-5">
+      {/* Color selector */}
+      {colorVariants && colorVariants.length > 0 && (
+        <div>
+          <div className="mb-2.5 flex items-center gap-2">
+            <span className="text-xs font-semibold uppercase tracking-[0.18em]" style={{ color: "var(--cream)" }}>Colour</span>
+            {selectedColor && (
+              <span className="text-xs" style={{ color: "var(--gold)" }}>{selectedColor.color}</span>
+            )}
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {colorVariants.map(v => (
+              <button
+                key={v.variantId}
+                type="button"
+                onClick={() => handleColorSelect(v)}
+                className="h-9 rounded-sm px-3 text-sm font-medium transition-all duration-150"
+                style={{
+                  border:     selectedColor?.variantId === v.variantId ? "1.5px solid var(--gold)" : "1.5px solid rgba(138,106,58,0.3)",
+                  background: selectedColor?.variantId === v.variantId ? "var(--gold)" : "transparent",
+                  color:      selectedColor?.variantId === v.variantId ? "var(--bg-dark)" : "var(--cream)",
+                }}
+              >
+                {v.color}
+              </button>
+            ))}
+          </div>
+          {colorError && <p className="mt-1.5 text-[11px]" style={{ color: "var(--ruby)" }}>Please select a colour</p>}
+        </div>
+      )}
+
       {/* Size selector */}
       {sizes && sizes.length > 0 && (
         <div>

@@ -1,8 +1,15 @@
 import { shopifyFetch } from "@/lib/shopify";
-import type { Product } from "@/types/commerce";
+import type { Product, ColorVariant } from "@/types/commerce";
 import { deriveMaterialTag } from "@/lib/material-tag";
 
 type MoneyV2 = { amount: string };
+
+type ShopifyVariantNode = {
+  id: string;
+  selectedOptions: Array<{ name: string; value: string }>;
+  image: { url: string } | null;
+  price: MoneyV2;
+};
 
 type ShopifyProductNode = {
   id: string;
@@ -15,6 +22,7 @@ type ShopifyProductNode = {
   tags: string[];
   metafields: Array<{ key: string; value: string | null } | null>;
   description?: string;
+  variants?: { nodes: ShopifyVariantNode[] };
 };
 
 type CollectionData = {
@@ -126,6 +134,38 @@ function mapNode(node: ShopifyProductNode, collectionHandle: string): Product {
 
   const images = node.images?.nodes.map((img) => img.url).filter(Boolean);
 
+  const colorVariants: ColorVariant[] | undefined = (() => {
+    if (!node.variants?.nodes.length) return undefined;
+
+    // Group variants by color so we can pick the best representative
+    // (a color may span multiple size sub-variants; only one may carry the image).
+    const byColor = new Map<string, ShopifyVariantNode[]>();
+    for (const v of node.variants.nodes) {
+      const colorOpt = v.selectedOptions.find((o) => o.name.toLowerCase() === "color");
+      if (!colorOpt) continue;
+      const arr = byColor.get(colorOpt.value) ?? [];
+      arr.push(v);
+      byColor.set(colorOpt.value, arr);
+    }
+
+    const variants: ColorVariant[] = [];
+    for (const [color, vs] of byColor) {
+      const withImage = vs.find((v) => v.image?.url) ?? vs[0];
+      const allImages = Array.from(
+        new Set(vs.map((v) => v.image?.url).filter((u): u is string => !!u)),
+      );
+      const cv: ColorVariant = {
+        color,
+        variantId: withImage.id.split("/").pop() ?? withImage.id,
+        price: Math.round(parseFloat(withImage.price.amount)),
+      };
+      if (withImage.image?.url) cv.image = withImage.image.url;
+      if (allImages.length) cv.images = allImages;
+      variants.push(cv);
+    }
+    return variants.length > 1 ? variants : undefined;
+  })();
+
   return {
     id: node.id.split("/").pop() ?? node.id,
     name: node.title,
@@ -142,6 +182,7 @@ function mapNode(node: ShopifyProductNode, collectionHandle: string): Product {
     ...(node.description ? { description: node.description } : {}),
     tags: node.tags,
     ...(isBangle(node, collectionHandle) ? { sizes: [...BANGLE_SIZES] } : {}),
+    ...(colorVariants ? { colorVariants } : {}),
   };
 }
 
@@ -228,6 +269,14 @@ const SINGLE_PRODUCT_QUERY = `
       ]) {
         key
         value
+      }
+      variants(first: 50) {
+        nodes {
+          id
+          selectedOptions { name value }
+          image { url }
+          price { amount }
+        }
       }
     }
   }

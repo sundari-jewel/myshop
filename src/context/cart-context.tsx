@@ -14,6 +14,8 @@ export interface CartItem {
   price: number;
   qty: number;
   size?: string;
+  color?: string;
+  variantId?: string;
 }
 
 interface CartState {
@@ -29,8 +31,11 @@ type CartAction =
   | { type: "LOAD";   items: CartItem[] }
   | { type: "SET_OPEN"; open: boolean };
 
-function key(productId: string, size?: string) {
-  return size ? `${productId}::${size}` : productId;
+function key(productId: string, size?: string, color?: string) {
+  const parts = [productId];
+  if (size) parts.push(size);
+  if (color) parts.push(color);
+  return parts.join("::");
 }
 
 function reducer(state: CartState, action: CartAction): CartState {
@@ -39,8 +44,8 @@ function reducer(state: CartState, action: CartAction): CartState {
       return { ...state, items: action.items };
 
     case "ADD": {
-      const k    = key(action.payload.productId, action.payload.size);
-      const idx  = state.items.findIndex(i => key(i.productId, i.size) === k);
+      const k    = key(action.payload.productId, action.payload.size, action.payload.color);
+      const idx  = state.items.findIndex(i => key(i.productId, i.size, i.color) === k);
       const items = idx >= 0
         ? state.items.map((item, i) => i === idx ? { ...item, qty: item.qty + action.payload.qty } : item)
         : [...state.items, action.payload];
@@ -49,15 +54,15 @@ function reducer(state: CartState, action: CartAction): CartState {
 
     case "REMOVE": {
       const k = key(action.productId, action.size);
-      return { ...state, items: state.items.filter(i => key(i.productId, i.size) !== k) };
+      return { ...state, items: state.items.filter(i => key(i.productId, i.size, i.color) !== k) };
     }
 
     case "UPDATE": {
       const k = key(action.productId, action.size);
       if (action.qty <= 0) {
-        return { ...state, items: state.items.filter(i => key(i.productId, i.size) !== k) };
+        return { ...state, items: state.items.filter(i => key(i.productId, i.size, i.color) !== k) };
       }
-      return { ...state, items: state.items.map(i => key(i.productId, i.size) === k ? { ...i, qty: action.qty } : i) };
+      return { ...state, items: state.items.map(i => key(i.productId, i.size, i.color) === k ? { ...i, qty: action.qty } : i) };
     }
 
     case "CLEAR":
