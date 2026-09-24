@@ -5,7 +5,7 @@ import { ImageGallery } from "./image-gallery";
 import { ProductActions } from "./product-actions";
 import { ProductAccordion } from "./product-accordion";
 import { formatPrice } from "@/lib/seo";
-import type { ColorVariant } from "@/types/commerce";
+import type { ColorVariant, ProductVariant } from "@/types/commerce";
 
 type ProductViewProps = {
   productId: string;
@@ -22,6 +22,7 @@ type ProductViewProps = {
   originalPrice?: number;
   sizes?: string[];
   colorVariants?: ColorVariant[];
+  variants?: ProductVariant[];
   description: string;
 };
 
@@ -40,6 +41,7 @@ export function ProductView({
   originalPrice,
   sizes,
   colorVariants,
+  variants,
   description,
 }: ProductViewProps) {
   const [selectedVariant, setSelectedVariant] = useState<ColorVariant | null>(null);
@@ -156,6 +158,7 @@ export function ProductView({
           price={currentPrice}
           sizes={sizes}
           colorVariants={colorVariants}
+          variants={variants}
           onColorChange={setSelectedVariant}
         />
 

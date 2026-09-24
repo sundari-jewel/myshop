@@ -46,7 +46,6 @@ const CUSTOMERS = [
 const ORDER_STATUSES: Array<"pending" | "confirmed" | "processing" | "shipped" | "delivered" | "cancelled"> =
   ["pending", "confirmed", "processing", "shipped", "delivered", "delivered", "delivered", "cancelled", "shipped", "pending"];
 
-const PAYMENT_METHODS: Array<"cod" | "prepaid"> = ["prepaid", "cod", "prepaid", "prepaid", "prepaid", "cod", "prepaid", "cod", "prepaid", "cod"];
 const PAYMENT_STATUSES: Array<"pending" | "paid" | "failed" | "refunded"> =
   ["paid", "pending", "paid", "paid", "paid", "pending", "paid", "pending", "failed", "refunded"];
 
@@ -108,7 +107,7 @@ async function seedOrders(insertedIds: Record<string, string>) {
       size:      p.sizes?.[0],
     }));
     const subtotal       = items.reduce((s, it) => s + it.price * it.qty, 0);
-    const shippingCharge = subtotal > 100000 ? 0 : 299;
+    const shippingCharge = 0;
     const total          = subtotal + shippingCharge;
     const daysBack       = i * 3 + 1;
 
@@ -120,7 +119,7 @@ async function seedOrders(insertedIds: Record<string, string>) {
       shippingCharge,
       total,
       status:         ORDER_STATUSES[i % ORDER_STATUSES.length],
-      paymentMethod:  PAYMENT_METHODS[i % PAYMENT_METHODS.length],
+      paymentMethod:  "prepaid" as const,
       paymentStatus:  PAYMENT_STATUSES[i % PAYMENT_STATUSES.length],
       createdAt:      daysAgo(daysBack),
       updatedAt:      daysAgo(daysBack),

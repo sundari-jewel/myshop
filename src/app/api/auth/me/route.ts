@@ -4,5 +4,10 @@ import { getSession } from "@/lib/session";
 export async function GET() {
   const session = await getSession();
   if (!session) return NextResponse.json(null);
-  return NextResponse.json(session);
+  return NextResponse.json({
+    id:    session.id,
+    name:  session.name,
+    email: session.email,
+    phone: session.phone,
+  });
 }

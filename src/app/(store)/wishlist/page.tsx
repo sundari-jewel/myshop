@@ -29,12 +29,12 @@ export default function WishlistPage() {
       .finally(() => setLoading(false));
   }, [items]);
 
-  if (!ready) return null;
+  useEffect(() => {
+    if (!ready) return;
+    if (!customer) router.replace("/signin?next=/wishlist" as Route);
+  }, [ready, customer, router]);
 
-  if (!customer) {
-    router.replace("/signin?next=/wishlist" as Route);
-    return null;
-  }
+  if (!ready || !customer) return null;
 
   return (
     <div style={{ background: "var(--bg-dark)", minHeight: "60vh" }}>

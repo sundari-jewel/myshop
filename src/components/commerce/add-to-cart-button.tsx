@@ -1,53 +1,28 @@
 "use client";
 
-import { ShoppingBag, Check } from "lucide-react";
-import { useState } from "react";
-import { useRouter, usePathname } from "next/navigation";
-import { useCart } from "@/context/cart-context";
-import { useCustomerAuth } from "@/context/customer-auth-context";
+import { ShoppingBag } from "lucide-react";
+import Link from "next/link";
+import type { Route } from "next";
 
 interface Props {
-  productId: string;
-  slug: string;
+  slug:        string;
   productName: string;
-  image: string;
-  material: string;
-  price: number;
-  selectedSize?: string;
-  requiresSize?: boolean;
 }
 
-export function AddToCartButton({ productId, slug, productName, image, material, price, selectedSize, requiresSize }: Props) {
-  const { addItem } = useCart();
-  const { customer } = useCustomerAuth();
-  const router = useRouter();
-  const pathname = usePathname();
-  const [added, setAdded] = useState(false);
-
-  function handleAdd() {
-    if (!customer) {
-      router.push(`/signin?next=${encodeURIComponent(pathname)}`);
-      return;
-    }
-    if (requiresSize && !selectedSize) {
-      router.push(`/products/${slug}`);
-      return;
-    }
-
-    addItem({ productId, slug, name: productName, image, material, price, qty: 1, size: selectedSize });
-    setAdded(true);
-    setTimeout(() => setAdded(false), 2000);
-  }
-
+// Quick-add on product cards intentionally routes to the product page so the shopper
+// can select size / colour and we can capture the exact Shopify variantId. Adding to
+// cart directly from the listing would produce orphan line items on Shopify (no
+// variant, no inventory tracking, no weight for Delhivery).
+export function AddToCartButton({ slug, productName }: Props) {
   return (
-    <button
-      onClick={handleAdd}
+    <Link
+      href={`/products/${slug}` as Route}
       className="focus-ring inline-flex h-10 w-full items-center justify-center gap-1 rounded-sm px-1.5 text-[8px] font-bold uppercase tracking-[0.08em] transition-all duration-200 md:h-12 md:gap-2 md:px-2 md:text-[11px] md:tracking-[0.22em]"
-      style={{ background: added ? "var(--ruby)" : "var(--bg-dark)", color: "var(--gold-pale)" }}
-      aria-label={`Add ${productName} to cart`}
+      style={{ background: "var(--bg-dark)", color: "var(--gold-pale)" }}
+      aria-label={`Shop ${productName}`}
     >
-      {added ? <Check className="shrink-0" size={13} /> : <ShoppingBag className="shrink-0" size={13} />}
-      {added ? "Added to Cart" : requiresSize && !selectedSize ? "Select Size" : "Add to Cart"}
-    </button>
+      <ShoppingBag className="shrink-0" size={13} />
+      Shop Now
+    </Link>
   );
 }

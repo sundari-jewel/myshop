@@ -41,7 +41,7 @@ export default function CheckoutPage() {
   const { items, subtotal, clearCart } = useCart();
   const { customer, ready } = useCustomerAuth();
   const router = useRouter();
-  const shipping = subtotal >= 50000 ? 0 : 1;
+  const shipping = 0;
 
   const method = "prepaid" as const;
   const [loading, setLoading] = useState(false);
@@ -93,18 +93,25 @@ export default function CheckoutPage() {
 
     try {
       const loaded = await loadRazorpayScript();
-      if (!loaded) { setError("Could not load payment gateway. Please try again."); return; }
+      if (!loaded) {
+        setError("Could not load payment gateway. Please try again.");
+        setLoading(false);
+        return;
+      }
+
+      const cartItems = items.map(i => ({ productId: i.productId, slug: i.slug, qty: i.qty, size: i.size, color: i.color, variantId: i.variantId }));
 
       const createRes = await fetch("/api/payment/razorpay/create-order", {
         method:  "POST",
         headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({ amount: subtotal + shipping }),
+        body:    JSON.stringify({ items: cartItems }),
       });
       const createData = await createRes.json() as {
         orderId?: string; amount?: number; currency?: string; keyId?: string; error?: string;
       };
       if (!createRes.ok || !createData.orderId) {
         setError(createData.error ?? "Could not initiate payment. Please try again.");
+        setLoading(false);
         return;
       }
 
@@ -114,8 +121,6 @@ export default function CheckoutPage() {
         phone:   form.phone || customer.phone || "",
         address: { line1: form.line1, line2: form.line2 || undefined, city: form.city, state: form.state, pincode: form.pincode },
       };
-
-      const cartItems = items.map(i => ({ productId: i.productId, slug: i.slug, qty: i.qty, size: i.size }));
 
       const rzp = new window.Razorpay({
         key:         createData.keyId,
@@ -149,7 +154,15 @@ export default function CheckoutPage() {
             });
             const verifyData = await verifyRes.json() as { orderId?: string; error?: string };
             if (!verifyRes.ok || !verifyData.orderId) {
-              setError(verifyData.error ?? "Payment verified but order creation failed. Please contact support.");
+              const friendly =
+                verifyData.error === "underpayment"
+                  ? "Payment amount does not match your order total. Please contact support to reconcile."
+                  : verifyData.error === "invalid_signature"
+                  ? "Payment could not be verified. If you were charged, please contact support."
+                  : verifyData.error?.startsWith("product_unavailable")
+                  ? "One of the items in your cart is no longer available. Please refresh and try again."
+                  : "Payment verified but order creation failed. Please contact support.";
+              setError(friendly);
               setLoading(false);
               return;
             }
@@ -188,7 +201,11 @@ const inp = "w-full rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-1 foc
             </div>
             <div className="min-w-0 flex-1">
               <p className="break-words text-sm font-medium leading-snug" style={{ color: "var(--foreground)" }}>{item.name}</p>
-              {item.size && <p className="text-[11px]" style={{ color: "var(--ink-soft)" }}>Size {item.size}</p>}
+              {(item.color || item.size) && (
+                <p className="text-[11px]" style={{ color: "var(--ink-soft)" }}>
+                  {[item.color, item.size ? `Size ${item.size}` : null].filter(Boolean).join(" · ")}
+                </p>
+              )}
             </div>
             <p className="shrink-0 text-sm font-semibold" style={{ color: "var(--foreground)" }}>{formatPrice(item.price * item.qty)}</p>
           </li>
@@ -199,7 +216,7 @@ const inp = "w-full rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-1 foc
           <span>Subtotal</span><span>{formatPrice(subtotal)}</span>
         </div>
         <div className="flex justify-between" style={{ color: "var(--ink-soft)" }}>
-          <span>Shipping</span><span>{shipping === 0 ? "Free" : formatPrice(shipping)}</span>
+          <span>Shipping</span><span>Free</span>
         </div>
         <div className="flex justify-between border-t pt-2 font-bold" style={{ borderColor: "rgba(138,106,58,0.15)", color: "var(--foreground)" }}>
           <span>Total</span>

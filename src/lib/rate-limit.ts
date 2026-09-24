@@ -20,14 +20,27 @@ const RateLimitModel =
   mongoose.models.RateLimit ||
   mongoose.model<IRateLimit>("RateLimit", RateLimitSchema);
 
-const WINDOW_MS  = 60 * 60 * 1000; // 1 hour
-const MAX_TRYONS = 10; // per IP per hour
+export type RateLimitConfig = {
+  scope:      string;
+  identifier: string;
+  max:        number;
+  windowMs:   number;
+};
 
-export async function checkRateLimit(ip: string): Promise<{ allowed: boolean; remaining: number }> {
+// Generic sliding-window (fixed-bucket) rate limiter backed by MongoDB.
+// The counter document auto-expires after 1 hour via TTL index, so long windows
+// beyond that will still work but the bookkeeping doc will be recycled.
+export async function checkRateLimit(
+  configOrIp: RateLimitConfig | string,
+): Promise<{ allowed: boolean; remaining: number }> {
+  const config: RateLimitConfig = typeof configOrIp === "string"
+    ? { scope: "tryon", identifier: configOrIp, max: 10, windowMs: 60 * 60 * 1000 }
+    : configOrIp;
+
   await connectDB();
 
   const now       = new Date();
-  const windowKey = `tryon:${ip}`;
+  const windowKey = `${config.scope}:${config.identifier}`;
 
   const doc = await RateLimitModel.findOneAndUpdate(
     { key: windowKey },
@@ -39,14 +52,14 @@ export async function checkRateLimit(ip: string): Promise<{ allowed: boolean; re
   );
 
   // Reset if outside window
-  if (now.getTime() - doc.windowStart.getTime() > WINDOW_MS) {
+  if (now.getTime() - doc.windowStart.getTime() > config.windowMs) {
     await RateLimitModel.updateOne(
       { key: windowKey },
       { $set: { count: 1, windowStart: now } }
     );
-    return { allowed: true, remaining: MAX_TRYONS - 1 };
+    return { allowed: true, remaining: config.max - 1 };
   }
 
-  const remaining = Math.max(0, MAX_TRYONS - doc.count);
-  return { allowed: doc.count <= MAX_TRYONS, remaining };
+  const remaining = Math.max(0, config.max - doc.count);
+  return { allowed: doc.count <= config.max, remaining };
 }

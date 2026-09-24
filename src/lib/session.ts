@@ -2,6 +2,13 @@ import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import type { NextResponse } from "next/server";
 
+if (!process.env.JWT_SECRET && process.env.NODE_ENV === "production") {
+  throw new Error("[session] JWT_SECRET is not set. Refusing to boot in production with a fallback secret.");
+}
+if (!process.env.JWT_SECRET && process.env.NODE_ENV !== "production") {
+  console.warn("[session] JWT_SECRET is not set — using insecure dev-secret. Set it in .env.local before going to production.");
+}
+
 const SECRET = new TextEncoder().encode(process.env.JWT_SECRET ?? "fallback-dev-secret");
 export const SESSION_COOKIE = "sj_session";
 const MAX_AGE = 60 * 60 * 24 * 30; // 30 days

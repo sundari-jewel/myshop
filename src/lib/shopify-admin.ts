@@ -45,8 +45,7 @@ export async function getAnnouncementItems(): Promise<string[]> {
 // GIDs for the shopify--target-gender metaobjects
 export const GENDER_GIDS = {
   female: "gid://shopify/Metaobject/251505311879",
-  // male GID will be added once male products are uploaded to Shopify
-  male: null as string | null,
+  male:   "gid://shopify/Metaobject/288475807879",
 } as const;
 
 async function adminFetch<T>(query: string, variables?: Record<string, unknown>, revalidate: number | false = false): Promise<T> {
@@ -285,12 +284,21 @@ export async function getProductsByGenderGid(
 }
 
 async function fetchAntiTarnishNodes(): Promise<AdminProductNode[]> {
-  const data = await adminFetch<AdminProductsData>(CATEGORY_PRODUCTS_QUERY, {
-    first: 50,
-    after: null,
-    query: `tag:"Anti Tarnish Jewellery" AND status:active`,
-  }, 300);
-  return data.products.nodes.filter((n) => n.status === "ACTIVE");
+  const all: AdminProductNode[] = [];
+  let after: string | undefined;
+  for (;;) {
+    const data = await adminFetch<AdminProductsData>(CATEGORY_PRODUCTS_QUERY, {
+      first: 50,
+      after: after ?? null,
+      query: `tag:"Anti Tarnish Jewellery" AND status:active`,
+    }, 300);
+    for (const n of data.products.nodes) {
+      if (n.status === "ACTIVE") all.push(n);
+    }
+    if (!data.products.pageInfo.hasNextPage) break;
+    after = data.products.pageInfo.endCursor;
+  }
+  return all;
 }
 
 function nodeToProduct(node: AdminProductNode, collection: string): Product {
@@ -408,7 +416,7 @@ type DraftOrderCreateData = {
 };
 
 export type DraftOrderInput = {
-  items: { name: string; price: number; qty: number; size?: string }[];
+  items: { name: string; price: number; qty: number; size?: string; color?: string; variantId?: string }[];
   customer: {
     name: string;
     email: string;
@@ -416,7 +424,6 @@ export type DraftOrderInput = {
     address: { line1: string; line2?: string; city: string; state: string; pincode: string };
   };
   orderId: string;
-  paymentMethod: "cod" | "prepaid";
   shippingCharge: number;
 };
 
@@ -424,13 +431,36 @@ export async function createShopifyDraftOrder(input: DraftOrderInput): Promise<{
   const [firstName, ...rest] = input.customer.name.trim().split(" ");
   const lastName = rest.join(" ") || ".";
 
-  const lineItems = input.items.map((item) => ({
-    title: item.size ? `${item.name} (Size: ${item.size})` : item.name,
-    originalUnitPrice: item.price.toFixed(2),
-    quantity: item.qty,
-    taxable: false,
-    requiresShipping: true,
-  }));
+  // Prefer variantId so Shopify links to real products (inventory, weight, analytics all flow through).
+  // Fall back to a custom line item only if no variant is known.
+  // Attach size + color as customAttributes so they always show on packing slips / Delhivery labels,
+  // even when the variant doesn't carry those options natively (e.g. BANGLE_SIZES fallback).
+  const lineItems = input.items.map((item) => {
+    const attrs: { key: string; value: string }[] = [];
+    if (item.size)  attrs.push({ key: "Size",  value: item.size });
+    if (item.color) attrs.push({ key: "Color", value: item.color });
+    const customAttributes = attrs.length > 0 ? attrs : undefined;
+
+    const titleSuffix = [
+      item.size  ? `Size: ${item.size}`   : null,
+      item.color ? `Colour: ${item.color}` : null,
+    ].filter(Boolean).join(", ");
+
+    return item.variantId
+      ? {
+          variantId: item.variantId.startsWith("gid://") ? item.variantId : `gid://shopify/ProductVariant/${item.variantId}`,
+          quantity:  item.qty,
+          ...(customAttributes ? { customAttributes } : {}),
+        }
+      : {
+          title:             titleSuffix ? `${item.name} (${titleSuffix})` : item.name,
+          originalUnitPrice: item.price.toFixed(2),
+          quantity:          item.qty,
+          taxable:           false,
+          requiresShipping:  true,
+          ...(customAttributes ? { customAttributes } : {}),
+        };
+  });
 
   const draftInput: Record<string, unknown> = {
     lineItems,
@@ -446,8 +476,8 @@ export async function createShopifyDraftOrder(input: DraftOrderInput): Promise<{
       phone: input.customer.phone,
     },
     email: input.customer.email,
-    note: `Internal Order ID: ${input.orderId} | Payment: ${input.paymentMethod.toUpperCase()} | Phone: ${input.customer.phone}`,
-    tags: [input.paymentMethod === "cod" ? "COD" : "Prepaid", "website-order"],
+    note: `Internal Order ID: ${input.orderId} | Payment: PREPAID | Phone: ${input.customer.phone}`,
+    tags: ["Prepaid", "website-order"],
   };
 
   if (input.shippingCharge > 0) {

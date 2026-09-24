@@ -9,7 +9,7 @@ export type OrderStatus =
   | "cancelled";
 
 export type PaymentStatus = "pending" | "paid" | "failed" | "refunded";
-export type PaymentMethod = "cod" | "prepaid";
+export type PaymentMethod = "prepaid";
 
 export interface IOrderItem {
   productId: string;
@@ -20,6 +20,8 @@ export interface IOrderItem {
   price: number;
   qty: number;
   size?: string;
+  color?: string;
+  variantId?: string;
 }
 
 export interface IOrder extends Document {
@@ -45,6 +47,11 @@ export interface IOrder extends Document {
   paymentStatus: PaymentStatus;
   razorpayPaymentId?: string;
   razorpayOrderId?: string;
+  paidAmount?: number;
+  amountDiscrepancy?: number;
+  shopifyOrderName?: string;
+  shopifySyncStatus?: "pending" | "synced" | "failed";
+  shopifySyncError?: string;
   trackingNumber?: string;
   trackingUrl?: string;
   notes?: string;
@@ -62,6 +69,8 @@ const OrderItemSchema = new Schema<IOrderItem>(
     price:     { type: Number, required: true },
     qty:       { type: Number, required: true, min: 1 },
     size:      { type: String },
+    color:     { type: String },
+    variantId: { type: String },
   },
   { _id: false }
 );
@@ -93,16 +102,22 @@ const OrderSchema = new Schema<IOrder>(
     },
     paymentMethod: {
       type: String,
-      enum: ["cod", "prepaid"],
+      enum: ["prepaid"],
       required: true,
+      default: "prepaid",
     },
     paymentStatus: {
       type: String,
       enum: ["pending", "paid", "failed", "refunded"],
       default: "pending",
     },
-    razorpayPaymentId: { type: String },
-    razorpayOrderId:   { type: String },
+    razorpayPaymentId: { type: String, unique: true, sparse: true, index: true },
+    razorpayOrderId:   { type: String, unique: true, sparse: true, index: true },
+    paidAmount:        { type: Number },
+    amountDiscrepancy: { type: Number, index: true },
+    shopifyOrderName:  { type: String },
+    shopifySyncStatus: { type: String, enum: ["pending", "synced", "failed"], default: "pending", index: true },
+    shopifySyncError:  { type: String },
     trackingNumber:    { type: String },
     trackingUrl:       { type: String },
     notes: { type: String },

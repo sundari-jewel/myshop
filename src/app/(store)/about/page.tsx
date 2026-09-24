@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Route } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { createMetadata } from "@/lib/seo";
@@ -178,7 +178,7 @@ export default function AboutPage() {
                 Shop Now
               </Link>
               <Link
-                href="/contact"
+                href={"/contact" as Route}
                 className="rounded-sm px-6 py-3 text-xs font-bold uppercase tracking-[0.2em] transition-colors"
                 style={{ border: "1px solid rgba(201,169,110,0.4)", color: "var(--gold)" }}
               >

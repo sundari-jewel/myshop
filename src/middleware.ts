@@ -24,9 +24,19 @@ export async function middleware(req: NextRequest) {
     }
   }
 
+  // Protect /api/shopify/token — this is a Shopify OAuth callback that exposes an Admin API token.
+  // Only signed-in admins should be able to reach it.
+  if (pathname.startsWith("/api/shopify/token")) {
+    const token = req.cookies.get(COOKIE_NAME)?.value;
+    const valid = token ? await verifyAdminToken(token) : false;
+    if (!valid) {
+      return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+    }
+  }
+
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/api/admin/:path*"],
+  matcher: ["/admin/:path*", "/api/admin/:path*", "/api/shopify/:path*"],
 };

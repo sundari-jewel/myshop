@@ -1,5 +1,5 @@
 import { shopifyFetch } from "@/lib/shopify";
-import type { Product, ColorVariant } from "@/types/commerce";
+import type { Product, ColorVariant, ProductVariant } from "@/types/commerce";
 import { deriveMaterialTag } from "@/lib/material-tag";
 
 type MoneyV2 = { amount: string };
@@ -166,6 +166,29 @@ function mapNode(node: ShopifyProductNode, collectionHandle: string): Product {
     return variants.length > 1 ? variants : undefined;
   })();
 
+  // Build the full variants list so add-to-cart can resolve the exact Shopify variantId
+  const variants: ProductVariant[] | undefined = node.variants?.nodes.length
+    ? node.variants.nodes.map((v) => {
+        const sizeOpt  = v.selectedOptions.find((o) => o.name.toLowerCase() === "size");
+        const colorOpt = v.selectedOptions.find((o) => o.name.toLowerCase() === "color");
+        return {
+          variantId: v.id.split("/").pop() ?? v.id,
+          size:      sizeOpt?.value,
+          color:     colorOpt?.value,
+          price:     Math.round(parseFloat(v.price.amount)),
+        };
+      })
+    : undefined;
+
+  // Read size variants from Shopify if defined; fall back to BANGLE_SIZES for bangles
+  const shopifySizes = (() => {
+    if (!variants) return undefined;
+    const sizes = Array.from(new Set(variants.map((v) => v.size).filter((s): s is string => !!s)));
+    return sizes.length > 0 ? sizes : undefined;
+  })();
+
+  const sizes = shopifySizes ?? (isBangle(node, collectionHandle) ? [...BANGLE_SIZES] : undefined);
+
   return {
     id: node.id.split("/").pop() ?? node.id,
     name: node.title,
@@ -181,8 +204,9 @@ function mapNode(node: ShopifyProductNode, collectionHandle: string): Product {
     badge,
     ...(node.description ? { description: node.description } : {}),
     tags: node.tags,
-    ...(isBangle(node, collectionHandle) ? { sizes: [...BANGLE_SIZES] } : {}),
+    ...(sizes ? { sizes } : {}),
     ...(colorVariants ? { colorVariants } : {}),
+    ...(variants ? { variants } : {}),
   };
 }
 
@@ -335,8 +359,8 @@ export async function getShopifyProductsByIds(ids: string[]): Promise<Product[]>
 }
 
 const RELATED_PRODUCTS_QUERY = `
-  query RelatedProducts($first: Int!, $excludeHandle: String!) {
-    products(first: $first, sortKey: BEST_SELLING, query: NOT handle:$excludeHandle) {
+  query RelatedProducts($first: Int!, $query: String!) {
+    products(first: $first, sortKey: BEST_SELLING, query: $query) {
       nodes { ${PRODUCT_FIELDS} }
     }
   }
@@ -344,11 +368,15 @@ const RELATED_PRODUCTS_QUERY = `
 
 export async function getRelatedShopifyProducts(excludeHandle: string, limit = 4): Promise<Product[]> {
   try {
+    // Fetch one extra so we can filter out the current product client-side
     const data = await shopifyFetch<ProductsData>(RELATED_PRODUCTS_QUERY, {
-      first: limit,
-      excludeHandle,
+      first: limit + 1,
+      query: `-handle:${excludeHandle}`,
     });
-    return data.products.nodes.map((n) => mapNode(n, "shopify"));
+    return data.products.nodes
+      .filter((n) => n.handle !== excludeHandle)
+      .slice(0, limit)
+      .map((n) => mapNode(n, "shopify"));
   } catch {
     return [];
   }

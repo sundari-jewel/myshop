@@ -24,6 +24,7 @@ const ERROR_MESSAGES: Record<string, string> = {
   password_too_short:  "Use at least 6 characters for your password.",
   email_taken:         "An account already exists for this email.",
   invalid_credentials: "Invalid email or password.",
+  rate_limit_exceeded: "Too many attempts. Please wait a few minutes and try again.",
   internal_error:      "Something went wrong. Please try again.",
 };
 

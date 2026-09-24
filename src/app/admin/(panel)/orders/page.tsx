@@ -40,14 +40,21 @@ interface Order {
       pincode: string;
     };
   };
-  items:          { name: string; qty: number; price: number }[];
+  items:          { name: string; qty: number; price: number; size?: string; color?: string }[];
   subtotal:       number;
   shippingCharge: number;
   total:          number;
-  status:         string;
-  paymentMethod:  string;
-  paymentStatus:  string;
-  createdAt:      string;
+  status:             string;
+  paymentMethod:      string;
+  paymentStatus:      string;
+  paidAmount?:        number;
+  amountDiscrepancy?: number;
+  trackingNumber?:    string;
+  trackingUrl?:       string;
+  shopifyOrderName?:  string;
+  shopifySyncStatus?: "pending" | "synced" | "failed";
+  shopifySyncError?:  string;
+  createdAt:          string;
 }
 
 function formatPrice(n: number) {
@@ -90,7 +97,7 @@ export default function AdminOrdersPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page]);
 
-  async function updateOrder(id: string, patch: { status?: string; paymentStatus?: PaymentStatus }) {
+  async function updateOrder(id: string, patch: { status?: string; paymentStatus?: PaymentStatus; trackingNumber?: string; trackingUrl?: string }) {
     await fetch(`/api/admin/orders/${id}`, {
       method:  "PATCH",
       headers: { "Content-Type": "application/json" },
@@ -145,6 +152,17 @@ export default function AdminOrdersPage() {
                   <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-semibold capitalize ${STATUS_COLORS[order.status] ?? ""}`}>
                     {order.status}
                   </span>
+                  {order.shopifySyncStatus === "failed" && (
+                    <span className="rounded-full bg-red-500/15 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-red-400" title={order.shopifySyncError ?? "Shopify sync failed"}>
+                      Not in Shopify
+                    </span>
+                  )}
+                  {order.amountDiscrepancy !== undefined && (
+                    <span className="rounded-full bg-amber-500/15 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-amber-400"
+                      title={`Paid ${formatPrice(order.paidAmount ?? 0)} vs expected ${formatPrice(order.total)} (delta ${order.amountDiscrepancy > 0 ? "+" : ""}${formatPrice(order.amountDiscrepancy)})`}>
+                      Price mismatch
+                    </span>
+                  )}
                   <span className="hidden text-xs text-[var(--cream-muted)] sm:inline">
                     {new Date(order.createdAt).toLocaleDateString("en-IN")}
                   </span>
@@ -184,11 +202,18 @@ export default function AdminOrdersPage() {
                       {/* Items + price breakdown */}
                       <div>
                         <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--gold-dim)]">Items</p>
-                        {order.items.map((item, i) => (
-                          <p key={i} className="text-sm text-[var(--cream)]">
-                            {item.name} × {item.qty} — {formatPrice(item.price * item.qty)}
-                          </p>
-                        ))}
+                        {order.items.map((item, i) => {
+                          const variantParts = [item.color, item.size ? `Size ${item.size}` : null].filter(Boolean);
+                          return (
+                            <p key={i} className="text-sm text-[var(--cream)]">
+                              {item.name}
+                              {variantParts.length > 0 && (
+                                <span className="text-[var(--cream-muted)]"> ({variantParts.join(", ")})</span>
+                              )}
+                              {" "}× {item.qty} — {formatPrice(item.price * item.qty)}
+                            </p>
+                          );
+                        })}
                         <div className="mt-3 space-y-0.5 border-t pt-2" style={{ borderColor: "rgba(138,106,58,0.15)" }}>
                           <p className="text-xs text-[var(--cream-muted)]">Subtotal: {formatPrice(order.subtotal)}</p>
                           <p className="text-xs text-[var(--cream-muted)]">Shipping: {formatPrice(order.shippingCharge)}</p>
@@ -241,6 +266,9 @@ export default function AdminOrdersPage() {
                         </span>
                       </div>
                     </div>
+
+                    {/* Tracking */}
+                    <TrackingRow order={order} onSave={(trackingNumber, trackingUrl) => updateOrder(order._id, { trackingNumber, trackingUrl })} />
                   </div>
                 )}
               </div>
@@ -273,6 +301,45 @@ export default function AdminOrdersPage() {
           )}
         </>
       )}
+    </div>
+  );
+}
+
+function TrackingRow({ order, onSave }: { order: Order; onSave: (num: string, url: string) => void }) {
+  const [num, setNum] = useState(order.trackingNumber ?? "");
+  const [url, setUrl] = useState(order.trackingUrl ?? "");
+  const [saving, setSaving] = useState(false);
+
+  async function save() {
+    setSaving(true);
+    await onSave(num, url);
+    setSaving(false);
+  }
+
+  const inp = "admin-input text-xs";
+
+  return (
+    <div className="mt-4 space-y-2" style={{ borderTop: "1px solid rgba(138,106,58,0.1)", paddingTop: "1.25rem" }}>
+      <p className="text-[10px] uppercase tracking-[0.2em] text-[var(--gold-dim)]">Tracking</p>
+      <div className="flex flex-wrap items-end gap-3">
+        <div className="flex flex-col gap-1">
+          <label className="text-[9px] uppercase tracking-widest text-[var(--cream-muted)]">Tracking Number</label>
+          <input className={inp} value={num} onChange={e => setNum(e.target.value)} placeholder="e.g. 12345678901234" style={{ width: 220 }} />
+        </div>
+        <div className="flex flex-col gap-1">
+          <label className="text-[9px] uppercase tracking-widest text-[var(--cream-muted)]">Tracking URL</label>
+          <input className={inp} value={url} onChange={e => setUrl(e.target.value)} placeholder="https://track.delhivery.com/..." style={{ width: 280 }} />
+        </div>
+        <button
+          type="button"
+          onClick={save}
+          disabled={saving}
+          className="rounded-lg px-4 py-2 text-xs font-semibold uppercase tracking-wider disabled:opacity-50"
+          style={{ background: "rgba(138,106,58,0.2)", color: "var(--gold)" }}
+        >
+          {saving ? "Saving…" : "Save"}
+        </button>
+      </div>
     </div>
   );
 }

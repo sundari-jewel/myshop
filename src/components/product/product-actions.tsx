@@ -6,7 +6,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { useCart } from "@/context/cart-context";
 import { useCustomerAuth } from "@/context/customer-auth-context";
 import { useWishlist } from "@/context/wishlist-context";
-import type { ColorVariant } from "@/types/commerce";
+import type { ColorVariant, ProductVariant } from "@/types/commerce";
 
 const STORE = {
   name: "Sundari Art Jewellery",
@@ -23,10 +23,11 @@ type ProductActionsProps = {
   price: number;
   sizes?: string[];
   colorVariants?: ColorVariant[];
+  variants?: ProductVariant[];
   onColorChange?: (variant: ColorVariant) => void;
 };
 
-export function ProductActions({ productId, slug, productName, image, material, price, sizes, colorVariants, onColorChange }: ProductActionsProps) {
+export function ProductActions({ productId, slug, productName, image, material, price, sizes, colorVariants, variants, onColorChange }: ProductActionsProps) {
   const { addItem } = useCart();
   const { customer } = useCustomerAuth();
   const wishlist = useWishlist();
@@ -46,6 +47,18 @@ export function ProductActions({ productId, slug, productName, image, material, 
     setSelectedColor(variant);
     setColorError(false);
     onColorChange?.(variant);
+  }
+
+  // Resolve the exact Shopify variantId for the current (size, color) selection.
+  // Falls back to the color-representative variantId when we don't have a full variant list,
+  // then to the single default variant if the product has only one.
+  function resolveVariantId(size: string | null, color: ColorVariant | null): string | undefined {
+    if (variants?.length) {
+      const exact = variants.find((v) => (v.size ?? undefined) === (size ?? undefined) && (v.color ?? undefined) === (color?.color ?? undefined));
+      if (exact) return exact.variantId;
+      if (variants.length === 1) return variants[0].variantId;
+    }
+    return color?.variantId;
   }
 
   useEffect(() => {
@@ -73,11 +86,12 @@ export function ProductActions({ productId, slug, productName, image, material, 
     setSizeError(false);
     const itemImage = selectedColor?.image ?? image;
     const itemPrice = selectedColor?.price ?? price;
+    const variantId = resolveVariantId(selectedSize, selectedColor);
     for (let i = 0; i < qty; i++) {
       addItem({
         productId, slug, name: productName, image: itemImage, material,
         price: itemPrice, qty: 1, size: selectedSize ?? undefined,
-        color: selectedColor?.color, variantId: selectedColor?.variantId,
+        color: selectedColor?.color, variantId,
       });
     }
     setAdded(true);
@@ -92,10 +106,11 @@ export function ProductActions({ productId, slug, productName, image, material, 
     setSizeError(false);
     const itemImage = selectedColor?.image ?? image;
     const itemPrice = selectedColor?.price ?? price;
+    const variantId = resolveVariantId(selectedSize, selectedColor);
     addItem({
       productId, slug, name: productName, image: itemImage, material,
       price: itemPrice, qty, size: selectedSize ?? undefined,
-      color: selectedColor?.color, variantId: selectedColor?.variantId,
+      color: selectedColor?.color, variantId,
     });
     router.push("/checkout");
   }

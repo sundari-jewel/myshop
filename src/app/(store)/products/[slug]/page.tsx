@@ -85,6 +85,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
           originalPrice={product.originalPrice}
           sizes={product.sizes}
           colorVariants={product.colorVariants}
+          variants={product.variants}
           description={product.description ?? `${product.name} — ${product.material} with ${product.stone}.`}
         />
       </div>

@@ -19,7 +19,16 @@ export async function POST(req: NextRequest) {
       .update(bodyText)
       .digest("hex");
 
-    if (sig !== expected) {
+    const sigBuf      = Buffer.from(sig);
+    const expectedBuf = Buffer.from(expected);
+    const signatureValid =
+      sigBuf.length === expectedBuf.length &&
+      (() => {
+        try { return crypto.timingSafeEqual(sigBuf, expectedBuf); }
+        catch { return false; }
+      })();
+
+    if (!signatureValid) {
       // Silent ignore — job stays in current state, fallback poll will catch it
       return NextResponse.json({ ok: true });
     }

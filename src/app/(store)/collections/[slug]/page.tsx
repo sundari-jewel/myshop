@@ -103,6 +103,7 @@ export default async function CollectionPage({ params, searchParams }: Collectio
         products={products}
         title="Anti-Tarnish Jewellery for Him"
         subtitle="Built for strength, made to last — jewellery that keeps its edge."
+        emptyMessage="Our anti-tarnish collection for him is coming soon. Check back shortly."
       />
     );
   }
@@ -155,7 +156,10 @@ export default async function CollectionPage({ params, searchParams }: Collectio
     const products = genderConfig.genderGid
       ? await getProductsByGenderGid(genderConfig.genderGid, slug)
       : [];
-    return <CollectionLayout products={products} />;
+    const emptyMessage = genderConfig.genderGid
+      ? undefined
+      : `${genderConfig.title} is coming soon. Check back shortly.`;
+    return <CollectionLayout products={products} title={genderConfig.title} subtitle={genderConfig.description} emptyMessage={emptyMessage} />;
   }
 
   // 1c. Bridal / wedding — fetch by event tag directly from Shopify
@@ -264,11 +268,13 @@ function CollectionLayout({
   title,
   subtitle,
   subcategorySection,
+  emptyMessage,
 }: {
   products: import("@/types/commerce").Product[];
   title?: string;
   subtitle?: string;
   subcategorySection?: ReactNode;
+  emptyMessage?: string;
 }) {
   return (
     <div style={{ background: "var(--bg-dark)", minHeight: "60vh" }}>
@@ -293,7 +299,9 @@ function CollectionLayout({
         {products.length > 0 ? (
           <ProductGrid products={products} />
         ) : (
-          <p className="py-20 text-center text-sm text-[rgba(245,230,200,0.55)]">No products found in this collection.</p>
+          <p className="py-20 text-center text-sm text-[rgba(245,230,200,0.55)]">
+            {emptyMessage ?? "No products found in this collection."}
+          </p>
         )}
       </section>
     </div>

@@ -15,6 +15,13 @@ export type ColorVariant = {
   price: number;
 };
 
+export type ProductVariant = {
+  variantId: string;
+  size?: string;
+  color?: string;
+  price: number;
+};
+
 export type Product = {
   id: string;
   name: string;
@@ -34,4 +41,5 @@ export type Product = {
   sizes?: string[];
   tags?: string[];
   colorVariants?: ColorVariant[];
+  variants?: ProductVariant[];
 };

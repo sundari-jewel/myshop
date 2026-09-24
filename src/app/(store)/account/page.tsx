@@ -21,6 +21,7 @@ type OrderItem = {
   price: number;
   qty: number;
   size?: string;
+  color?: string;
 };
 
 type Order = {
@@ -207,7 +208,7 @@ export default function AccountPage() {
                         className="rounded-sm px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.16em]"
                         style={{ background: "rgba(201,169,110,0.08)", color: "rgba(245,230,200,0.6)" }}
                       >
-                        {order.paymentMethod === "cod" ? "Cash on delivery" : "Prepaid"}
+                        Prepaid
                       </span>
                     </div>
                   </div>
@@ -230,7 +231,10 @@ export default function AccountPage() {
                             {item.name}
                           </Link>
                           <p className="text-[11px] text-[rgba(245,230,200,0.45)]">
-                            {item.material}{item.size ? ` · Size ${item.size}` : ""} · Qty {item.qty}
+                            {item.material}
+                            {item.color ? ` · ${item.color}` : ""}
+                            {item.size ? ` · Size ${item.size}` : ""}
+                            {" · "}Qty {item.qty}
                           </p>
                         </div>
                         <p className="shrink-0 text-sm font-semibold text-[var(--cream)]">{formatPrice(item.price * item.qty)}</p>

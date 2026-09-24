@@ -129,13 +129,8 @@ export function ProductCard({ product }: ProductCardProps) {
           </div>
         </div>
         <AddToCartButton
-          productId={product.id}
           slug={product.slug}
           productName={product.name}
-          image={product.image}
-          material={product.material}
-          price={product.price}
-          requiresSize={Boolean(product.sizes?.length)}
         />
       </div>
     </article>

@@ -19,12 +19,11 @@ export function CartDrawer() {
   const [pendingRemoval, setPendingRemoval] = useState<{
     productId: string;
     size?: string;
+    color?: string;
     name: string;
   } | null>(null);
 
   if (!open) return null;
-
-  const shipping = subtotal >= 50000 ? 0 : 1;
 
   return (
     <div className="fixed inset-0 z-50" role="dialog" aria-modal="true">
@@ -98,10 +97,14 @@ export function CartDrawer() {
                       <div className="min-w-0">
                         <p className="text-[10px] font-medium uppercase tracking-[0.16em]" style={{ color: "var(--gold-dim)" }}>{item.material}</p>
                         <p className="mt-0.5 text-sm font-semibold leading-snug" style={{ color: "var(--cream)" }}>{item.name}</p>
-                        {item.size && <p className="mt-0.5 text-[11px]" style={{ color: "var(--cream-muted)" }}>Size: {item.size}</p>}
+                        {(item.color || item.size) && (
+                          <p className="mt-0.5 text-[11px]" style={{ color: "var(--cream-muted)" }}>
+                            {[item.color, item.size ? `Size ${item.size}` : null].filter(Boolean).join(" · ")}
+                          </p>
+                        )}
                       </div>
                       <button
-                        onClick={() => setPendingRemoval({ productId: item.productId, size: item.size, name: item.name })}
+                        onClick={() => setPendingRemoval({ productId: item.productId, size: item.size, color: item.color, name: item.name })}
                         className="mt-0.5 shrink-0 transition-colors hover:text-[var(--gold)]"
                         style={{ color: "var(--cream-muted)" }}
                         aria-label={`Remove ${item.name} from cart`}
@@ -115,13 +118,13 @@ export function CartDrawer() {
                       <div className="flex items-center gap-2 rounded-sm" style={{ border: "1px solid rgba(201,169,110,0.28)" }}>
                         <button className="px-2.5 py-1 text-sm transition-colors hover:text-[var(--gold)]" style={{ color: "var(--cream-muted)" }}
                           onClick={() => item.qty === 1
-                            ? setPendingRemoval({ productId: item.productId, size: item.size, name: item.name })
-                            : updateQty(item.productId, item.size, item.qty - 1)}>
+                            ? setPendingRemoval({ productId: item.productId, size: item.size, color: item.color, name: item.name })
+                            : updateQty(item.productId, item.size, item.color, item.qty - 1)}>
                           <Minus size={11} />
                         </button>
                         <span className="min-w-[1.5rem] text-center text-sm font-semibold" style={{ color: "var(--cream)" }}>{item.qty}</span>
                         <button className="px-2.5 py-1 text-sm transition-colors hover:text-[var(--gold)]" style={{ color: "var(--cream-muted)" }}
-                          onClick={() => updateQty(item.productId, item.size, item.qty + 1)}>
+                          onClick={() => updateQty(item.productId, item.size, item.color, item.qty + 1)}>
                           <Plus size={11} />
                         </button>
                       </div>
@@ -145,10 +148,10 @@ export function CartDrawer() {
               </div>
               <div className="flex justify-between" style={{ color: "var(--cream-muted)" }}>
                 <span>Shipping</span>
-                <span>{shipping === 0 ? "Free" : formatPrice(shipping)}</span>
+                <span>Free</span>
               </div>
               <div className="flex justify-between border-t pt-2 font-semibold" style={{ borderColor: "rgba(201,169,110,0.2)", color: "var(--cream)" }}>
-                <span>Total</span><span className="display-font text-lg">{formatPrice(subtotal + shipping)}</span>
+                <span>Total</span><span className="display-font text-lg">{formatPrice(subtotal)}</span>
               </div>
             </div>
 
@@ -178,7 +181,7 @@ export function CartDrawer() {
         onCancel={() => setPendingRemoval(null)}
         onConfirm={() => {
           if (!pendingRemoval) return;
-          removeItem(pendingRemoval.productId, pendingRemoval.size);
+          removeItem(pendingRemoval.productId, pendingRemoval.size, pendingRemoval.color);
           setPendingRemoval(null);
         }}
       />

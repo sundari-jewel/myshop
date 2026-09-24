@@ -25,8 +25,8 @@ interface CartState {
 
 type CartAction =
   | { type: "ADD";    payload: CartItem }
-  | { type: "REMOVE"; productId: string; size?: string }
-  | { type: "UPDATE"; productId: string; size?: string; qty: number }
+  | { type: "REMOVE"; productId: string; size?: string; color?: string }
+  | { type: "UPDATE"; productId: string; size?: string; color?: string; qty: number }
   | { type: "CLEAR" }
   | { type: "LOAD";   items: CartItem[] }
   | { type: "SET_OPEN"; open: boolean };
@@ -53,12 +53,12 @@ function reducer(state: CartState, action: CartAction): CartState {
     }
 
     case "REMOVE": {
-      const k = key(action.productId, action.size);
+      const k = key(action.productId, action.size, action.color);
       return { ...state, items: state.items.filter(i => key(i.productId, i.size, i.color) !== k) };
     }
 
     case "UPDATE": {
-      const k = key(action.productId, action.size);
+      const k = key(action.productId, action.size, action.color);
       if (action.qty <= 0) {
         return { ...state, items: state.items.filter(i => key(i.productId, i.size, i.color) !== k) };
       }
@@ -82,8 +82,8 @@ interface CartContextValue {
   subtotal: number;
   open: boolean;
   addItem: (item: CartItem) => void;
-  removeItem: (productId: string, size?: string) => void;
-  updateQty: (productId: string, size?: string, qty?: number) => void;
+  removeItem: (productId: string, size?: string, color?: string) => void;
+  updateQty: (productId: string, size?: string, color?: string, qty?: number) => void;
   clearCart: () => void;
   setOpen: (open: boolean) => void;
 }
@@ -105,8 +105,8 @@ function readCart(keyName: string) {
 function mergeItems(primary: CartItem[], secondary: CartItem[]) {
   const merged = [...primary];
   for (const item of secondary) {
-    const itemKey = key(item.productId, item.size);
-    const index = merged.findIndex((current) => key(current.productId, current.size) === itemKey);
+    const itemKey = key(item.productId, item.size, item.color);
+    const index = merged.findIndex((current) => key(current.productId, current.size, current.color) === itemKey);
     if (index >= 0) {
       merged[index] = { ...merged[index], qty: merged[index].qty + item.qty };
     } else {
@@ -150,9 +150,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
     localStorage.setItem(activeStorageKey, JSON.stringify(state.items));
   }, [activeStorageKey, ready, state.items]);
 
-  const addItem    = useCallback((item: CartItem)                          => dispatch({ type: "ADD", payload: item }), []);
-  const removeItem = useCallback((productId: string, size?: string)        => dispatch({ type: "REMOVE", productId, size }), []);
-  const updateQty  = useCallback((productId: string, size?: string, qty = 1) => dispatch({ type: "UPDATE", productId, size, qty }), []);
+  const addItem    = useCallback((item: CartItem)                                       => dispatch({ type: "ADD", payload: item }), []);
+  const removeItem = useCallback((productId: string, size?: string, color?: string)    => dispatch({ type: "REMOVE", productId, size, color }), []);
+  const updateQty  = useCallback((productId: string, size?: string, color?: string, qty = 1) => dispatch({ type: "UPDATE", productId, size, color, qty }), []);
   const clearCart  = useCallback(()                                         => dispatch({ type: "CLEAR" }), []);
   const setOpen    = useCallback((open: boolean)                            => dispatch({ type: "SET_OPEN", open }), []);
 
