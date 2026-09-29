@@ -7,6 +7,7 @@ import { getSession } from "@/lib/session";
 import { createShopifyDraftOrder, completeDraftOrder } from "@/lib/shopify-admin";
 import { nextOrderId } from "@/lib/order-id";
 import { resolveOrderItems, type CartInput } from "@/lib/resolve-order-items";
+import { calculateShipping, SHIPPING_TIERS, type ShippingTier } from "@/lib/shipping";
 
 const razorpay = new Razorpay({
   key_id:     process.env.RAZORPAY_KEY_ID!,
@@ -30,10 +31,23 @@ export async function POST(req: NextRequest) {
         name:  string;
         email: string;
         phone: string;
-        address: { line1: string; line2?: string; city: string; state: string; pincode: string };
+        address?: { line1: string; line2?: string; city: string; state: string; pincode: string };
       };
+      fulfillmentType?: "delivery" | "pickup";
+      shippingTier?:    ShippingTier;
+      pickupReceiver?: { name?: string; phone?: string };
       notes?: string;
     };
+
+    const fulfillmentType = body.fulfillmentType === "pickup" ? "pickup" : "delivery";
+    const shippingTier    = body.shippingTier === "express" ? "express" : "standard";
+
+    if (fulfillmentType === "delivery") {
+      const addr = body.customer.address;
+      if (!addr || !addr.line1 || !addr.city || !addr.state || !addr.pincode) {
+        return NextResponse.json({ error: "missing_address" }, { status: 400 });
+      }
+    }
 
     // Verify Razorpay signature
     const expected = crypto
@@ -56,7 +70,7 @@ export async function POST(req: NextRequest) {
     const resolved = await resolveOrderItems(body.items);
     if (!resolved.ok) return NextResponse.json({ error: resolved.error }, { status: 400 });
 
-    const shippingCharge = 0;
+    const shippingCharge = calculateShipping({ fulfillmentType, tier: shippingTier, subtotal: resolved.data.subtotal });
     const total          = resolved.data.subtotal + shippingCharge;
 
     // Fetch the amount actually captured by Razorpay
@@ -84,10 +98,24 @@ export async function POST(req: NextRequest) {
     const amountDiscrepancy = Math.abs(delta) > AMOUNT_TOLERANCE ? delta : undefined;
     const orderId           = await nextOrderId();
 
+    const customerForOrder = fulfillmentType === "pickup"
+      ? { name: body.customer.name, email: body.customer.email, phone: body.customer.phone }
+      : body.customer;
+
+    const pickupReceiver = fulfillmentType === "pickup"
+      ? {
+          name:  body.pickupReceiver?.name?.trim()  || undefined,
+          phone: body.pickupReceiver?.phone?.trim() || undefined,
+        }
+      : undefined;
+
     const order = await Order.create({
       orderId,
       items:             resolved.data.items,
-      customer:          body.customer,
+      customer:          customerForOrder,
+      fulfillmentType,
+      pickupReceiver:    pickupReceiver && (pickupReceiver.name || pickupReceiver.phone) ? pickupReceiver : undefined,
+      shippingTier:      fulfillmentType === "delivery" ? shippingTier : undefined,
       subtotal:          resolved.data.subtotal,
       shippingCharge,
       total,
@@ -108,10 +136,13 @@ export async function POST(req: NextRequest) {
     // Push to Shopify → Delhivery (only reached when payment is at-or-above server total)
     try {
       const draft = await createShopifyDraftOrder({
-        items:         resolved.data.items.map((i) => ({ name: i.name, price: i.price, qty: i.qty, size: i.size, color: i.color, variantId: i.variantId })),
-        customer:      body.customer,
-        orderId:       order.orderId,
+        items:            resolved.data.items.map((i) => ({ name: i.name, price: i.price, qty: i.qty, size: i.size, color: i.color, variantId: i.variantId })),
+        customer:         body.customer,
+        orderId:          order.orderId,
         shippingCharge,
+        shippingLabel:    fulfillmentType === "delivery" ? SHIPPING_TIERS[shippingTier].label : undefined,
+        fulfillmentType,
+        pickupReceiver:   pickupReceiver && (pickupReceiver.name || pickupReceiver.phone) ? pickupReceiver : undefined,
       });
       if (draft) {
         const shopifyOrderName = await completeDraftOrder(draft.id);

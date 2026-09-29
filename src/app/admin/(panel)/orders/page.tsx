@@ -3,20 +3,29 @@
 import { useEffect, useState } from "react";
 import { Loader2, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 
-const STATUSES        = ["", "pending", "confirmed", "processing", "shipped", "delivered", "cancelled"] as const;
+const STATUSES        = ["", "pending", "confirmed", "processing", "shipped", "delivered", "ready_for_pickup", "picked_up", "cancelled"] as const;
 const PAYMENT_STATUSES = ["pending", "paid", "failed", "refunded"] as const;
+
+const DELIVERY_STATUSES = ["pending", "confirmed", "processing", "shipped", "delivered", "cancelled"] as const;
+const PICKUP_STATUSES   = ["pending", "confirmed", "ready_for_pickup", "picked_up", "cancelled"] as const;
 
 type Status        = typeof STATUSES[number];
 type PaymentStatus = typeof PAYMENT_STATUSES[number];
 
 const STATUS_COLORS: Record<string, string> = {
-  pending:    "text-yellow-400 bg-yellow-400/10",
-  confirmed:  "text-blue-400 bg-blue-400/10",
-  processing: "text-purple-400 bg-purple-400/10",
-  shipped:    "text-indigo-400 bg-indigo-400/10",
-  delivered:  "text-emerald-400 bg-emerald-400/10",
-  cancelled:  "text-red-400 bg-red-400/10",
+  pending:          "text-yellow-400 bg-yellow-400/10",
+  confirmed:        "text-blue-400 bg-blue-400/10",
+  processing:       "text-purple-400 bg-purple-400/10",
+  shipped:          "text-indigo-400 bg-indigo-400/10",
+  delivered:        "text-emerald-400 bg-emerald-400/10",
+  ready_for_pickup: "text-amber-400 bg-amber-400/10",
+  picked_up:        "text-emerald-400 bg-emerald-400/10",
+  cancelled:        "text-red-400 bg-red-400/10",
 };
+
+function labelStatus(s: string) {
+  return s.replace(/_/g, " ");
+}
 
 const PAYMENT_COLORS: Record<string, string> = {
   pending:  "text-yellow-400",
@@ -32,7 +41,7 @@ interface Order {
     name:    string;
     email:   string;
     phone:   string;
-    address: {
+    address?: {
       line1:   string;
       line2?:  string;
       city:    string;
@@ -40,6 +49,9 @@ interface Order {
       pincode: string;
     };
   };
+  fulfillmentType?: "delivery" | "pickup";
+  pickupReceiver?:  { name?: string; phone?: string };
+  shippingTier?:    "standard" | "express";
   items:          { name: string; qty: number; price: number; size?: string; color?: string }[];
   subtotal:       number;
   shippingCharge: number;
@@ -121,7 +133,7 @@ export default function AdminOrdersPage() {
             className="admin-input appearance-none pr-8 capitalize"
             style={{ width: "160px" }}
           >
-            {STATUSES.map(s => <option key={s} value={s}>{s || "All Status"}</option>)}
+            {STATUSES.map(s => <option key={s} value={s}>{s ? labelStatus(s) : "All Status"}</option>)}
           </select>
           <ChevronDown size={13} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[var(--gold-dim)]" />
         </div>
@@ -149,8 +161,13 @@ export default function AdminOrdersPage() {
                   <code className="shrink-0 text-xs font-semibold text-[var(--gold)]">{order.orderId}</code>
                   <span className="min-w-0 truncate text-sm text-[var(--cream)] sm:flex-1">{order.customer.name}</span>
                   <span className="text-sm font-medium text-[var(--cream)]">{formatPrice(order.total)}</span>
+                  <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${order.fulfillmentType === "pickup" ? "bg-amber-400/15 text-amber-300" : "bg-blue-400/15 text-blue-300"}`}>
+                    {order.fulfillmentType === "pickup"
+                      ? "Pickup"
+                      : `Delivery${order.shippingTier === "express" ? " · Express" : order.shippingTier === "standard" ? " · Std" : ""}`}
+                  </span>
                   <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-semibold capitalize ${STATUS_COLORS[order.status] ?? ""}`}>
-                    {order.status}
+                    {labelStatus(order.status)}
                   </span>
                   {order.shopifySyncStatus === "failed" && (
                     <span className="rounded-full bg-red-500/15 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-red-400" title={order.shopifySyncError ?? "Shopify sync failed"}>
@@ -187,16 +204,32 @@ export default function AdminOrdersPage() {
                         <p className="text-xs text-[var(--cream-muted)]">{order.customer.phone}</p>
                       </div>
 
-                      {/* Shipping address */}
+                      {/* Shipping address / Pickup info */}
                       <div>
-                        <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--gold-dim)]">Ship To</p>
-                        <p className="text-sm text-[var(--cream)]">{order.customer.address.line1}</p>
-                        {order.customer.address.line2 && (
-                          <p className="text-sm text-[var(--cream)]">{order.customer.address.line2}</p>
-                        )}
-                        <p className="text-xs text-[var(--cream-muted)]">
-                          {order.customer.address.city}, {order.customer.address.state} — {order.customer.address.pincode}
-                        </p>
+                        {order.fulfillmentType === "pickup" ? (
+                          <>
+                            <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--gold-dim)]">In-Store Pickup</p>
+                            <p className="text-sm text-[var(--cream)]">Customer will collect at the store.</p>
+                            {(order.pickupReceiver?.name || order.pickupReceiver?.phone) && (
+                              <div className="mt-2">
+                                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--gold-dim)]">Receiver</p>
+                                {order.pickupReceiver?.name  && <p className="text-sm text-[var(--cream)]">{order.pickupReceiver.name}</p>}
+                                {order.pickupReceiver?.phone && <p className="text-xs text-[var(--cream-muted)]">{order.pickupReceiver.phone}</p>}
+                              </div>
+                            )}
+                          </>
+                        ) : order.customer.address ? (
+                          <>
+                            <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--gold-dim)]">Ship To</p>
+                            <p className="text-sm text-[var(--cream)]">{order.customer.address.line1}</p>
+                            {order.customer.address.line2 && (
+                              <p className="text-sm text-[var(--cream)]">{order.customer.address.line2}</p>
+                            )}
+                            <p className="text-xs text-[var(--cream-muted)]">
+                              {order.customer.address.city}, {order.customer.address.state} — {order.customer.address.pincode}
+                            </p>
+                          </>
+                        ) : null}
                       </div>
 
                       {/* Items + price breakdown */}
@@ -216,7 +249,9 @@ export default function AdminOrdersPage() {
                         })}
                         <div className="mt-3 space-y-0.5 border-t pt-2" style={{ borderColor: "rgba(138,106,58,0.15)" }}>
                           <p className="text-xs text-[var(--cream-muted)]">Subtotal: {formatPrice(order.subtotal)}</p>
-                          <p className="text-xs text-[var(--cream-muted)]">Shipping: {formatPrice(order.shippingCharge)}</p>
+                          <p className="text-xs text-[var(--cream-muted)]">
+                            Shipping{order.shippingTier ? ` (${order.shippingTier})` : ""}: {order.shippingCharge === 0 ? "Free" : formatPrice(order.shippingCharge)}
+                          </p>
                           <p className="text-sm font-semibold text-[var(--cream)]">Total: {formatPrice(order.total)}</p>
                         </div>
                       </div>
@@ -235,10 +270,10 @@ export default function AdminOrdersPage() {
                             value={order.status}
                             onChange={e => updateOrder(order._id, { status: e.target.value })}
                             className="admin-input appearance-none pr-8 capitalize"
-                            style={{ width: "160px" }}
+                            style={{ width: "180px" }}
                           >
-                            {STATUSES.filter(s => s !== "").map(s => (
-                              <option key={s} value={s}>{s}</option>
+                            {(order.fulfillmentType === "pickup" ? PICKUP_STATUSES : DELIVERY_STATUSES).map(s => (
+                              <option key={s} value={s}>{labelStatus(s)}</option>
                             ))}
                           </select>
                           <ChevronDown size={12} className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--gold-dim)]" />
@@ -267,8 +302,10 @@ export default function AdminOrdersPage() {
                       </div>
                     </div>
 
-                    {/* Tracking */}
-                    <TrackingRow order={order} onSave={(trackingNumber, trackingUrl) => updateOrder(order._id, { trackingNumber, trackingUrl })} />
+                    {/* Tracking (delivery only) */}
+                    {order.fulfillmentType !== "pickup" && (
+                      <TrackingRow order={order} onSave={(trackingNumber, trackingUrl) => updateOrder(order._id, { trackingNumber, trackingUrl })} />
+                    )}
                   </div>
                 )}
               </div>

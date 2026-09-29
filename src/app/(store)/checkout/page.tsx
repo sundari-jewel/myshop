@@ -5,9 +5,11 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import type { Route } from "next";
-import { Loader2, LockKeyhole, ShieldCheck } from "lucide-react";
+import { Loader2, LockKeyhole, ShieldCheck, Truck, Store } from "lucide-react";
 import { useCart } from "@/context/cart-context";
 import { useCustomerAuth } from "@/context/customer-auth-context";
+import { STORE_INFO } from "@/lib/store-info";
+import { SHIPPING_TIERS, FREE_SHIPPING_THRESHOLD, calculateShipping, type ShippingTier } from "@/lib/shipping";
 
 declare global {
   interface Window {
@@ -19,10 +21,14 @@ function formatPrice(n: number) {
   return new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(n);
 }
 
+type FulfillmentType = "delivery" | "pickup";
+
 interface AddressForm {
   name: string; email: string; phone: string;
   line1: string; line2: string; city: string; state: string; pincode: string;
   notes: string;
+  receiverName:  string;
+  receiverPhone: string;
 }
 
 function loadRazorpayScript(): Promise<boolean> {
@@ -41,15 +47,17 @@ export default function CheckoutPage() {
   const { items, subtotal, clearCart } = useCart();
   const { customer, ready } = useCustomerAuth();
   const router = useRouter();
-  const shipping = 0;
 
-  const method = "prepaid" as const;
+  const [fulfillment, setFulfillment] = useState<FulfillmentType>("delivery");
+  const [shippingTier, setShippingTier] = useState<ShippingTier>("standard");
+  const shipping = calculateShipping({ fulfillmentType: fulfillment, tier: shippingTier, subtotal });
   const [loading, setLoading] = useState(false);
   const [error,   setError]   = useState("");
   const [form, setForm] = useState<AddressForm>({
     name: "", email: "", phone: "",
     line1: "", line2: "", city: "", state: "", pincode: "",
     notes: "",
+    receiverName: "", receiverPhone: "",
   });
 
   function setField(key: keyof AddressForm, val: string) {
@@ -104,7 +112,7 @@ export default function CheckoutPage() {
       const createRes = await fetch("/api/payment/razorpay/create-order", {
         method:  "POST",
         headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({ items: cartItems }),
+        body:    JSON.stringify({ items: cartItems, fulfillmentType: fulfillment, shippingTier }),
       });
       const createData = await createRes.json() as {
         orderId?: string; amount?: number; currency?: string; keyId?: string; error?: string;
@@ -115,12 +123,22 @@ export default function CheckoutPage() {
         return;
       }
 
-      const customerInfo = {
-        name:    form.name  || customer.name,
-        email:   form.email || customer.email,
-        phone:   form.phone || customer.phone || "",
-        address: { line1: form.line1, line2: form.line2 || undefined, city: form.city, state: form.state, pincode: form.pincode },
-      };
+      const customerInfo = fulfillment === "delivery"
+        ? {
+            name:    form.name  || customer.name,
+            email:   form.email || customer.email,
+            phone:   form.phone || customer.phone || "",
+            address: { line1: form.line1, line2: form.line2 || undefined, city: form.city, state: form.state, pincode: form.pincode },
+          }
+        : {
+            name:  form.name  || customer.name,
+            email: form.email || customer.email,
+            phone: form.phone || customer.phone || "",
+          };
+
+      const pickupReceiver = fulfillment === "pickup"
+        ? { name: form.receiverName.trim() || undefined, phone: form.receiverPhone.trim() || undefined }
+        : undefined;
 
       const rzp = new window.Razorpay({
         key:         createData.keyId,
@@ -149,6 +167,9 @@ export default function CheckoutPage() {
                 razorpaySignature: response.razorpay_signature,
                 items:             cartItems,
                 customer:          customerInfo,
+                fulfillmentType:   fulfillment,
+                shippingTier,
+                pickupReceiver,
                 notes:             form.notes || undefined,
               }),
             });
@@ -216,7 +237,8 @@ const inp = "w-full rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-1 foc
           <span>Subtotal</span><span>{formatPrice(subtotal)}</span>
         </div>
         <div className="flex justify-between" style={{ color: "var(--ink-soft)" }}>
-          <span>Shipping</span><span>Free</span>
+          <span>Shipping{fulfillment === "delivery" ? ` (${SHIPPING_TIERS[shippingTier].label})` : ""}</span>
+          <span>{shipping === 0 ? "Free" : formatPrice(shipping)}</span>
         </div>
         <div className="flex justify-between border-t pt-2 font-bold" style={{ borderColor: "rgba(138,106,58,0.15)", color: "var(--foreground)" }}>
           <span>Total</span>
@@ -228,6 +250,134 @@ const inp = "w-full rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-1 foc
         Secure checkout · 24-hour easy returns
       </div>
     </div>
+  );
+
+  const fulfillmentSection = (
+    <section className="space-y-4 rounded-xl p-4 sm:p-6" style={{ background: "white", border: "1px solid rgba(138,106,58,0.15)" }}>
+      <h2 className="text-xs font-bold uppercase tracking-[0.2em]" style={{ color: "var(--ink-soft)" }}>Fulfillment</h2>
+      <div className="grid gap-3 sm:grid-cols-2">
+        {(["delivery", "pickup"] as const).map(opt => {
+          const active = fulfillment === opt;
+          const isDelivery = opt === "delivery";
+          return (
+            <button
+              key={opt}
+              type="button"
+              onClick={() => setFulfillment(opt)}
+              className="flex items-start gap-3 rounded-lg p-4 text-left transition-colors"
+              style={{
+                background: active ? "var(--surface-warm)" : "transparent",
+                border: active ? "1.5px solid var(--gold)" : "1px solid rgba(138,106,58,0.25)",
+              }}
+            >
+              {isDelivery ? <Truck size={18} style={{ color: "var(--gold)" }} /> : <Store size={18} style={{ color: "var(--gold)" }} />}
+              <span className="min-w-0 flex-1">
+                <span className="block text-sm font-semibold" style={{ color: "var(--foreground)" }}>
+                  {isDelivery ? "Home Delivery" : "In-Store Pickup"}
+                </span>
+                <span className="mt-0.5 block text-[11px] leading-snug" style={{ color: "var(--ink-soft)" }}>
+                  {isDelivery
+                    ? "Delivered to your address · Free shipping"
+                    : `Collect from ${STORE_INFO.address.city} · No shipping fee`}
+                </span>
+              </span>
+            </button>
+          );
+        })}
+      </div>
+    </section>
+  );
+
+  const shippingTierSection = (
+    <section className="space-y-4 rounded-xl p-4 sm:p-6" style={{ background: "white", border: "1px solid rgba(138,106,58,0.15)" }}>
+      <div>
+        <h2 className="text-xs font-bold uppercase tracking-[0.2em]" style={{ color: "var(--ink-soft)" }}>Delivery Speed</h2>
+        {subtotal < FREE_SHIPPING_THRESHOLD && (
+          <p className="mt-1 text-[11px]" style={{ color: "var(--ink-soft)" }}>
+            Add {formatPrice(FREE_SHIPPING_THRESHOLD - subtotal)} more for free standard delivery.
+          </p>
+        )}
+      </div>
+      <div className="grid gap-3 sm:grid-cols-2">
+        {(Object.values(SHIPPING_TIERS)).map(tier => {
+          const active = shippingTier === tier.id;
+          const price  = calculateShipping({ fulfillmentType: "delivery", tier: tier.id, subtotal });
+          const showFree = tier.freeOverThreshold && subtotal >= FREE_SHIPPING_THRESHOLD;
+          return (
+            <button
+              key={tier.id}
+              type="button"
+              onClick={() => setShippingTier(tier.id)}
+              className="flex items-start justify-between gap-3 rounded-lg p-4 text-left transition-colors"
+              style={{
+                background: active ? "var(--surface-warm)" : "transparent",
+                border: active ? "1.5px solid var(--gold)" : "1px solid rgba(138,106,58,0.25)",
+              }}
+            >
+              <span className="min-w-0">
+                <span className="block text-sm font-semibold" style={{ color: "var(--foreground)" }}>{tier.label}</span>
+                <span className="mt-0.5 block text-[11px]" style={{ color: "var(--ink-soft)" }}>{tier.eta}</span>
+              </span>
+              <span className="shrink-0 text-sm font-semibold" style={{ color: showFree ? "var(--gold)" : "var(--foreground)" }}>
+                {price === 0 ? (showFree ? "Free" : formatPrice(0)) : formatPrice(price)}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+    </section>
+  );
+
+  const pickupSection = (
+    <>
+      <section className="space-y-5 rounded-xl p-4 sm:p-6" style={{ background: "white", border: "1px solid rgba(138,106,58,0.15)" }}>
+        <h2 className="text-xs font-bold uppercase tracking-[0.2em]" style={{ color: "var(--ink-soft)" }}>Contact</h2>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="sm:col-span-2">
+            <label className={lbl} style={{ color: "var(--ink-soft)" }}>Full Name *</label>
+            <input className={inp} style={inpStyle} required value={form.name || customer.name} onChange={e => setField("name", e.target.value)} placeholder="Priya Sharma" />
+          </div>
+          <div>
+            <label className={lbl} style={{ color: "var(--ink-soft)" }}>Email *</label>
+            <input className={inp} style={inpStyle} type="email" required value={form.email || customer.email} onChange={e => setField("email", e.target.value)} placeholder="priya@example.com" />
+          </div>
+          <div>
+            <label className={lbl} style={{ color: "var(--ink-soft)" }}>Phone *</label>
+            <input className={inp} style={inpStyle} type="tel" required value={form.phone || customer.phone || ""} onChange={e => setField("phone", e.target.value)} placeholder="+91 98765 43210" />
+          </div>
+        </div>
+      </section>
+
+      <section className="space-y-4 rounded-xl p-4 sm:p-6" style={{ background: "white", border: "1px solid rgba(138,106,58,0.15)" }}>
+        <h2 className="text-xs font-bold uppercase tracking-[0.2em]" style={{ color: "var(--ink-soft)" }}>Pickup Location</h2>
+        <div className="rounded-lg p-4 text-sm leading-6" style={{ background: "var(--surface-warm)", color: "var(--foreground)" }}>
+          <p className="font-semibold">{STORE_INFO.name}</p>
+          <p style={{ color: "var(--ink-soft)" }}>{STORE_INFO.address.line1}</p>
+          <p style={{ color: "var(--ink-soft)" }}>{STORE_INFO.address.city}, {STORE_INFO.address.state} — {STORE_INFO.address.pincode}</p>
+          <p className="mt-2 text-xs" style={{ color: "var(--ink-soft)" }}>{STORE_INFO.hours} · {STORE_INFO.phone}</p>
+        </div>
+        <p className="text-xs" style={{ color: "var(--ink-soft)" }}>
+          You&apos;ll receive a confirmation email once payment succeeds. Bring your order ID and a valid ID at the store.
+        </p>
+      </section>
+
+      <section className="space-y-4 rounded-xl p-4 sm:p-6" style={{ background: "white", border: "1px solid rgba(138,106,58,0.15)" }}>
+        <div>
+          <h2 className="text-xs font-bold uppercase tracking-[0.2em]" style={{ color: "var(--ink-soft)" }}>Someone Else Picking Up?</h2>
+          <p className="mt-1 text-[11px]" style={{ color: "var(--ink-soft)" }}>Optional — fill in only if a different person will collect the order.</p>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div>
+            <label className={lbl} style={{ color: "var(--ink-soft)" }}>Receiver Name</label>
+            <input className={inp} style={inpStyle} value={form.receiverName} onChange={e => setField("receiverName", e.target.value)} placeholder="Full name" />
+          </div>
+          <div>
+            <label className={lbl} style={{ color: "var(--ink-soft)" }}>Receiver Phone</label>
+            <input className={inp} style={inpStyle} type="tel" value={form.receiverPhone} onChange={e => setField("receiverPhone", e.target.value)} placeholder="+91 98765 43210" />
+          </div>
+        </div>
+      </section>
+    </>
   );
 
   const addressFormSections = (
@@ -277,13 +427,15 @@ const inp = "w-full rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-1 foc
           </div>
         </div>
       </section>
-
-      <div>
-        <label className={lbl} style={{ color: "var(--ink-soft)" }}>Order Notes (optional)</label>
-        <textarea className={inp} style={{ ...inpStyle, resize: "none" }} rows={2}
-          value={form.notes} onChange={e => setField("notes", e.target.value)} placeholder="Special instructions, gift message…" />
-      </div>
     </>
+  );
+
+  const notesSection = (
+    <div>
+      <label className={lbl} style={{ color: "var(--ink-soft)" }}>Order Notes (optional)</label>
+      <textarea className={inp} style={{ ...inpStyle, resize: "none" }} rows={2}
+        value={form.notes} onChange={e => setField("notes", e.target.value)} placeholder="Special instructions, gift message…" />
+    </div>
   );
 
   return (
@@ -291,26 +443,35 @@ const inp = "w-full rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-1 foc
       <div className="container-shell py-7 sm:py-12">
         <h1 className="display-font mb-7 text-3xl font-semibold sm:mb-10 sm:text-4xl" style={{ color: "var(--foreground)" }}>Checkout</h1>
 
-        {/* ── Prepaid: collect address then open Razorpay ───── */}
-        {method === "prepaid" && (
-          <form onSubmit={handleRazorpay} className="grid gap-7 lg:grid-cols-[1fr_400px] lg:gap-10">
-            <div className="space-y-8">
-              {addressFormSections}
+        <form onSubmit={handleRazorpay} className="grid gap-7 lg:grid-cols-[1fr_400px] lg:gap-10">
+          <div className="space-y-8">
+            {fulfillmentSection}
+            {fulfillment === "delivery" ? (
+              <>
+                {addressFormSections}
+                {shippingTierSection}
+                {notesSection}
+              </>
+            ) : (
+              <>
+                {pickupSection}
+                {notesSection}
+              </>
+            )}
+          </div>
+          <div className="space-y-6">
+            <div className="sticky top-6 space-y-4">
+              {orderSummary}
+              {error && <p className="rounded-lg bg-red-50 px-4 py-2.5 text-sm text-red-600">{error}</p>}
+              <button type="submit" disabled={loading}
+                className="flex w-full items-center justify-center gap-2 rounded-sm py-4 text-[11px] font-bold uppercase tracking-[0.26em] transition-opacity disabled:opacity-60"
+                style={{ background: "var(--bg-dark)", color: "var(--gold-pale)" }}>
+                {loading && <Loader2 size={14} className="animate-spin" />}
+                {loading ? "Opening Payment…" : `Pay ${formatPrice(subtotal + shipping)}`}
+              </button>
             </div>
-            <div className="space-y-6">
-              <div className="sticky top-6 space-y-4">
-                {orderSummary}
-                {error && <p className="rounded-lg bg-red-50 px-4 py-2.5 text-sm text-red-600">{error}</p>}
-                <button type="submit" disabled={loading}
-                  className="flex w-full items-center justify-center gap-2 rounded-sm py-4 text-[11px] font-bold uppercase tracking-[0.26em] transition-opacity disabled:opacity-60"
-                  style={{ background: "var(--bg-dark)", color: "var(--gold-pale)" }}>
-                  {loading && <Loader2 size={14} className="animate-spin" />}
-                  {loading ? "Opening Payment…" : `Pay ${formatPrice(subtotal + shipping)}`}
-                </button>
-              </div>
-            </div>
-          </form>
-        )}
+          </div>
+        </form>
 
       </div>
     </div>

@@ -1,6 +1,7 @@
 // Server-only — never import this in client components
 
 import { deriveMaterialTag } from "@/lib/material-tag";
+import { STORE_INFO } from "@/lib/store-info";
 
 // Shopify taxonomy category IDs for jewellery types
 export const TAXONOMY_CATEGORY_IDS = {
@@ -421,10 +422,13 @@ export type DraftOrderInput = {
     name: string;
     email: string;
     phone: string;
-    address: { line1: string; line2?: string; city: string; state: string; pincode: string };
+    address?: { line1: string; line2?: string; city: string; state: string; pincode: string };
   };
   orderId: string;
   shippingCharge: number;
+  shippingLabel?:   string;
+  fulfillmentType?: "delivery" | "pickup";
+  pickupReceiver?: { name?: string; phone?: string };
 };
 
 export async function createShopifyDraftOrder(input: DraftOrderInput): Promise<{ id: string; name: string } | null> {
@@ -462,27 +466,54 @@ export async function createShopifyDraftOrder(input: DraftOrderInput): Promise<{
         };
   });
 
+  const isPickup = input.fulfillmentType === "pickup";
+
+  const shippingAddress = isPickup
+    ? {
+        firstName,
+        lastName,
+        address1: STORE_INFO.address.line1,
+        address2: STORE_INFO.address.line2,
+        city:     STORE_INFO.address.city,
+        province: STORE_INFO.address.state,
+        zip:      STORE_INFO.address.pincode,
+        country:  STORE_INFO.address.country,
+        phone:    input.customer.phone,
+      }
+    : {
+        firstName,
+        lastName,
+        address1: input.customer.address!.line1,
+        address2: input.customer.address!.line2 ?? "",
+        city:     input.customer.address!.city,
+        province: input.customer.address!.state,
+        zip:      input.customer.address!.pincode,
+        country:  "IN",
+        phone:    input.customer.phone,
+      };
+
+  const receiverNote = isPickup && (input.pickupReceiver?.name || input.pickupReceiver?.phone)
+    ? ` | Receiver: ${input.pickupReceiver?.name ?? "—"} (${input.pickupReceiver?.phone ?? "—"})`
+    : "";
+
+  const noteBase = `Internal Order ID: ${input.orderId} | Payment: PREPAID | Phone: ${input.customer.phone}`;
+  const note     = isPickup
+    ? `${noteBase} | STORE PICKUP — do not ship${receiverNote}`
+    : noteBase;
+
   const draftInput: Record<string, unknown> = {
     lineItems,
-    shippingAddress: {
-      firstName,
-      lastName,
-      address1: input.customer.address.line1,
-      address2: input.customer.address.line2 ?? "",
-      city: input.customer.address.city,
-      province: input.customer.address.state,
-      zip: input.customer.address.pincode,
-      country: "IN",
-      phone: input.customer.phone,
-    },
+    shippingAddress,
     email: input.customer.email,
-    note: `Internal Order ID: ${input.orderId} | Payment: PREPAID | Phone: ${input.customer.phone}`,
-    tags: ["Prepaid", "website-order"],
+    note,
+    tags: isPickup
+      ? ["Prepaid", "website-order", "Pickup"]
+      : ["Prepaid", "website-order"],
   };
 
-  if (input.shippingCharge > 0) {
+  if (!isPickup) {
     draftInput.shippingLine = {
-      title: "Standard Shipping",
+      title: input.shippingLabel ?? "Standard Delivery",
       price: input.shippingCharge.toFixed(2),
     };
   }

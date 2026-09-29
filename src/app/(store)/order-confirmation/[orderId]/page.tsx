@@ -1,11 +1,13 @@
 import Link from "next/link";
 import Image from "next/image";
 import { notFound, redirect } from "next/navigation";
-import { CheckCircle2, Package, Home } from "lucide-react";
+import { CheckCircle2, Package, Home, Store } from "lucide-react";
 import { getSession } from "@/lib/session";
 import { connectDB } from "@/lib/mongodb";
 import { Order } from "@/models/Order";
 import { formatPrice } from "@/lib/seo";
+import { STORE_INFO } from "@/lib/store-info";
+import { SHIPPING_TIERS, type ShippingTier } from "@/lib/shipping";
 
 type Props = { params: Promise<{ orderId: string }> };
 
@@ -13,6 +15,9 @@ type OrderDoc = {
   orderId: string;
   items: { name: string; image: string; price: number; qty: number; size?: string; color?: string; slug: string }[];
   customer: { email: string };
+  fulfillmentType?: "delivery" | "pickup";
+  pickupReceiver?: { name?: string; phone?: string };
+  shippingTier?:   ShippingTier;
   subtotal: number;
   shippingCharge: number;
   total: number;
@@ -30,6 +35,8 @@ export default async function OrderConfirmationPage({ params }: Props) {
   if (!order) notFound();
   if (order.customer.email.toLowerCase() !== session.email.toLowerCase()) notFound();
 
+  const isPickup = order.fulfillmentType === "pickup";
+
   return (
     <div style={{ background: "var(--surface)" }}>
       <div className="container-shell flex min-h-[72vh] flex-col items-center py-12 sm:py-16">
@@ -39,8 +46,31 @@ export default async function OrderConfirmationPage({ params }: Props) {
           Thank you for your order
         </h1>
         <p className="mt-4 max-w-md text-center text-base" style={{ color: "var(--ink-soft)" }}>
-          We&apos;ve received your order and will confirm it shortly. You&apos;ll receive updates on your email.
+          {isPickup
+            ? "We’ve received your order. Please visit our store to collect it during business hours."
+            : "We’ve received your order and will confirm it shortly. You’ll receive updates on your email."}
         </p>
+
+        {isPickup && (
+          <div className="mt-8 w-full max-w-2xl rounded-xl px-5 py-5 sm:px-8 sm:py-6" style={{ background: "var(--surface-warm)", border: "1px solid rgba(138,106,58,0.25)" }}>
+            <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.25em]" style={{ color: "var(--gold)" }}>
+              <Store size={14} />
+              Pickup Location
+            </div>
+            <p className="mt-3 text-base font-semibold" style={{ color: "var(--foreground)" }}>{STORE_INFO.name}</p>
+            <p className="text-sm leading-6" style={{ color: "var(--ink-soft)" }}>
+              {STORE_INFO.address.line1}<br />
+              {STORE_INFO.address.city}, {STORE_INFO.address.state} — {STORE_INFO.address.pincode}
+            </p>
+            <p className="mt-2 text-xs" style={{ color: "var(--ink-soft)" }}>
+              {STORE_INFO.hours} · {STORE_INFO.phone}
+            </p>
+            <p className="mt-4 text-xs leading-6" style={{ color: "var(--ink-soft)" }}>
+              Please bring this order ID and a valid ID.
+              {order.pickupReceiver?.name && ` If ${order.pickupReceiver.name} is collecting on your behalf, they should carry the same.`}
+            </p>
+          </div>
+        )}
 
         <div className="mt-8 w-full max-w-2xl rounded-xl px-5 py-5 sm:px-8 sm:py-6" style={{ background: "white", border: "1px solid rgba(138,106,58,0.18)" }}>
           <div className="flex flex-wrap items-start justify-between gap-3 border-b pb-4" style={{ borderColor: "rgba(138,106,58,0.15)" }}>
@@ -75,6 +105,25 @@ export default async function OrderConfirmationPage({ params }: Props) {
               </li>
             ))}
           </ul>
+
+          <div className="mt-5 space-y-1.5 border-t pt-4 text-sm" style={{ borderColor: "rgba(138,106,58,0.15)" }}>
+            <div className="flex justify-between" style={{ color: "var(--ink-soft)" }}>
+              <span>Subtotal</span>
+              <span>{formatPrice(order.subtotal)}</span>
+            </div>
+            <div className="flex justify-between" style={{ color: "var(--ink-soft)" }}>
+              <span>
+                Shipping
+                {order.fulfillmentType !== "pickup" && order.shippingTier &&
+                  ` (${SHIPPING_TIERS[order.shippingTier].label})`}
+              </span>
+              <span>{order.shippingCharge === 0 ? "Free" : formatPrice(order.shippingCharge)}</span>
+            </div>
+            <div className="flex justify-between pt-1.5 text-base font-semibold" style={{ color: "var(--foreground)" }}>
+              <span>Total</span>
+              <span>{formatPrice(order.total)}</span>
+            </div>
+          </div>
         </div>
 
         <div className="mt-10 flex w-full max-w-sm flex-col items-stretch gap-3 sm:w-auto sm:max-w-none sm:flex-row sm:items-center sm:gap-4">

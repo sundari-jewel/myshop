@@ -6,10 +6,14 @@ export type OrderStatus =
   | "processing"
   | "shipped"
   | "delivered"
+  | "ready_for_pickup"
+  | "picked_up"
   | "cancelled";
 
-export type PaymentStatus = "pending" | "paid" | "failed" | "refunded";
-export type PaymentMethod = "prepaid";
+export type PaymentStatus    = "pending" | "paid" | "failed" | "refunded";
+export type PaymentMethod    = "prepaid";
+export type FulfillmentType  = "delivery" | "pickup";
+export type ShippingTier     = "standard" | "express";
 
 export interface IOrderItem {
   productId: string;
@@ -31,7 +35,7 @@ export interface IOrder extends Document {
     name: string;
     email: string;
     phone: string;
-    address: {
+    address?: {
       line1: string;
       line2?: string;
       city: string;
@@ -39,6 +43,12 @@ export interface IOrder extends Document {
       pincode: string;
     };
   };
+  fulfillmentType: FulfillmentType;
+  pickupReceiver?: {
+    name?:  string;
+    phone?: string;
+  };
+  shippingTier?:  ShippingTier;
   subtotal: number;
   shippingCharge: number;
   total: number;
@@ -84,19 +94,34 @@ const OrderSchema = new Schema<IOrder>(
       email: { type: String, required: true },
       phone: { type: String, required: true },
       address: {
-        line1:   { type: String, required: true },
+        line1:   { type: String },
         line2:   { type: String },
-        city:    { type: String, required: true },
-        state:   { type: String, required: true },
-        pincode: { type: String, required: true },
+        city:    { type: String },
+        state:   { type: String },
+        pincode: { type: String },
       },
+    },
+    fulfillmentType: {
+      type: String,
+      enum: ["delivery", "pickup"],
+      required: true,
+      default: "delivery",
+      index: true,
+    },
+    pickupReceiver: {
+      name:  { type: String },
+      phone: { type: String },
+    },
+    shippingTier: {
+      type: String,
+      enum: ["standard", "express"],
     },
     subtotal:       { type: Number, required: true },
     shippingCharge: { type: Number, default: 0 },
     total:          { type: Number, required: true },
     status:         {
       type: String,
-      enum: ["pending", "confirmed", "processing", "shipped", "delivered", "cancelled"],
+      enum: ["pending", "confirmed", "processing", "shipped", "delivered", "ready_for_pickup", "picked_up", "cancelled"],
       default: "pending",
       index: true,
     },
