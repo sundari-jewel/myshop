@@ -25,11 +25,23 @@ export async function connectDB(): Promise<typeof mongoose> {
       bufferCommands: false,
       dbName: "sundari",
     });
+    global._mongoosePromise = cachedPromise;
   }
 
-  cached = await cachedPromise;
-  global._mongooseConn = cached;
-  global._mongoosePromise = cachedPromise;
-
-  return cached;
+  // Keep concurrent requests on the same attempt, but don't leave a rejected
+  // promise cached. That would make every later request fail immediately even
+  // after a temporary DNS or network issue has cleared.
+  const connectionPromise = cachedPromise;
+  try {
+    cached = await connectionPromise;
+    global._mongooseConn = cached;
+    global._mongoosePromise = connectionPromise;
+    return cached;
+  } catch (error) {
+    if (cachedPromise === connectionPromise) cachedPromise = null;
+    if (global._mongoosePromise === connectionPromise) {
+      global._mongoosePromise = null;
+    }
+    throw error;
+  }
 }

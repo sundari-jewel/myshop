@@ -25,6 +25,7 @@ const ERROR_MESSAGES: Record<string, string> = {
   email_taken:         "An account already exists for this email.",
   invalid_credentials: "Invalid email or password.",
   rate_limit_exceeded: "Too many attempts. Please wait a few minutes and try again.",
+  network_error:       "We couldn't reach the account service. Check your connection and try again.",
   internal_error:      "Something went wrong. Please try again.",
 };
 
@@ -58,8 +59,9 @@ export function CustomerAuthProvider({ children }: { children: ReactNode }) {
       if (!res.ok) return { ok: false, error: friendlyError(data.error ?? "internal_error") };
       setCustomer({ id: data.id, name: data.name, email: data.email, phone: data.phone });
       return { ok: true };
-    } catch {
-      return { ok: false, error: friendlyError("internal_error") };
+    } catch (error) {
+      console.error("[auth:signin] Request failed", error);
+      return { ok: false, error: friendlyError("network_error") };
     }
   }, []);
 
@@ -74,8 +76,9 @@ export function CustomerAuthProvider({ children }: { children: ReactNode }) {
       if (!res.ok) return { ok: false, error: friendlyError(data.error ?? "internal_error") };
       setCustomer({ id: data.id, name: data.name, email: data.email, phone: data.phone });
       return { ok: true };
-    } catch {
-      return { ok: false, error: friendlyError("internal_error") };
+    } catch (error) {
+      console.error("[auth:signup] Request failed", error);
+      return { ok: false, error: friendlyError("network_error") };
     }
   }, []);
 
