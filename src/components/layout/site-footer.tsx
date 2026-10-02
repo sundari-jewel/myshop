@@ -14,7 +14,6 @@ const SHOP_LINKS = [
   { label: "Nath",             href: "/collections/nath" },
   { label: "Hathful",          href: "/collections/hathful" },
   { label: "Watches",          href: "/collections/watches" },
-  { label: "Rakhi",            href: "/collections/rakhis" },
   { label: "Gifting",          href: "/collections/gifting" },
 ];
 

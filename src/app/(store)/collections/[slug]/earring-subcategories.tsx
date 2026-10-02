@@ -6,20 +6,18 @@ import type { Route } from "next";
 import { useEffect, useRef } from "react";
 
 const SUBCATEGORIES: { label: string; image: string | null; href: string; key: string }[] = [
-  { label: "Oxidized Necklace",   image: null, href: "/collections/necklaces?tag=Oxidized+Necklace",   key: "oxidized-necklace" },
-  { label: "Haldi Necklace",      image: null, href: "/collections/necklaces?tag=Haldi+Necklace",      key: "haldi-necklace" },
-  { label: "Mehendi Necklace",    image: null, href: "/collections/necklaces?tag=Mehendi+Necklace",    key: "mehendi-necklace" },
-  { label: "Temple Necklace",     image: null, href: "/collections/necklaces?tag=Temple+Necklace",     key: "temple-necklace" },
-  { label: "Bridal Necklace",     image: null, href: "/collections/necklaces?tag=Bridal+Necklace",     key: "bridal-necklace" },
-  { label: "Long Necklace",       image: "/assets/category-long-necklace.png", href: "/collections/necklaces?tag=Long+Necklace",       key: "long-necklace" },
-  { label: "Choker Set",          image: "/assets/category-choker-set.png",    href: "/collections/necklaces?tag=Choker+Set",          key: "choker-set" },
-  { label: "Hasli Set",           image: "/assets/category-hasli-necklace.png",href: "/collections/necklaces?tag=Hasli+Set",           key: "hasli-set" },
-  { label: "AD Necklace",         image: null, href: "/collections/necklaces?tag=AD+Necklace",         key: "ad-necklace" },
-  { label: "High Gold Necklace",  image: null, href: "/collections/necklaces?tag=High+Gold+Necklace",  key: "high-gold-necklace" },
-  { label: "Mosaic Necklace",     image: null, href: "/collections/necklaces?tag=Mosaic+Necklace",     key: "mosaic-necklace" },
+  { label: "AD Earring",            image: null,                            href: "/collections/earrings?tag=AD+Earring",            key: "ad-earring" },
+  { label: "High Gold Earring",     image: null,                            href: "/collections/earrings?tag=High+Gold+Earring",     key: "high-gold-earring" },
+  { label: "Moissanite Earring",    image: null,                            href: "/collections/earrings?tag=Moissanite+Earring",    key: "moissanite-earring" },
+  { label: "Jhumki",                image: null,                            href: "/collections/earrings?tag=Jhumki",                key: "jhumki" },
+  { label: "Kashmiri Earring",      image: "/assets/kashmiri-earrings.png", href: "/collections/earrings?tag=Kashmiri+Earring",      key: "kashmiri-earring" },
+  { label: "Anti Tarnish Earring",  image: null,                            href: "/collections/earrings?tag=Anti+Tarnish+Earring",  key: "anti-tarnish-earring" },
+  { label: "Studs / Tops",          image: null,                            href: "/collections/earrings?tag=Studs+Tops",            key: "studs-tops" },
+  { label: "Matching Earrings",     image: null,                            href: "/collections/earrings?tag=Matching+Earrings",     key: "matching-earrings" },
+  { label: "Oxidized Earrings",     image: null,                            href: "/collections/earrings?tag=Oxidized+Earrings",     key: "oxidized-earrings" },
 ];
 
-export function NecklaceSubcategories({ activeTag }: { activeTag?: string }) {
+export function EarringSubcategories({ activeTag }: { activeTag?: string }) {
   const prevTag = useRef<string | undefined>(undefined);
 
   useEffect(() => {

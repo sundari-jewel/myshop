@@ -30,7 +30,7 @@ const MATERIALS = [
 
 const CATEGORIES = [
   "Earrings", "Necklaces", "Bangles", "Rings",
-  "Tika", "Nath", "Hathful", "Watches", "Rakhi", "Gifting",
+  "Tika", "Nath", "Hathful", "Watches", "Gifting",
 ];
 
 export default function AboutPage() {

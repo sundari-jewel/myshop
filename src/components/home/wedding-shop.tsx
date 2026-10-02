@@ -24,7 +24,7 @@ export function WeddingShop() {
       <div className="relative h-[clamp(360px,92vw,900px)] overflow-hidden">
         <div className="absolute inset-0">
           <Image
-            src="/assets/Shop-for-wedding-bg.webp"
+            src="/assets/Shop-for-wedding-bg-new.png"
             alt="Shop for wedding jewellery"
             fill
             sizes="100vw"

@@ -14,7 +14,6 @@ const ALL_CATEGORIES = [
   { label: "Nath",       discount: "Up to 15% Off", image: "/assets/category-nath.webp",            href: "/collections/sale?category=nath",      tag: "Traditional" },
   { label: "Bangles",    discount: "Up to 20% Off", image: "/assets/category-bangles.webp",         href: "/collections/sale?category=bangles",   tag: "Stack Faves" },
   { label: "Bracelets",  discount: "Up to 15% Off", image: "/assets/category-bracelet-hero.png",    href: "/collections/bracelet",                tag: "Trending" },
-  { label: "Rakhi",      discount: "Up to 10% Off", image: "/assets/rakhi-collection.webp",         href: "/collections/rakhis",                  tag: "Festival" },
 ];
 
 type SlotPhase = "idle" | "leaving" | "entering";

@@ -26,7 +26,6 @@ const CATEGORY_LINKS = [
   { label: "Hathful",          href: "/collections/hathful" },
   { label: "Bracelet",         href: "/collections/bracelet" },
   { label: "Watches",          href: "/collections/watches" },
-  { label: "Rakhis",           href: "/collections/rakhis" },
   { label: "Tika",             href: "/collections/tika" },
   { label: "Rings",            href: "/collections/rings" },
   { label: "Anti-tarnish",     href: "/collections/anti-tarnish-jewellery" },

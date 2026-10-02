@@ -22,6 +22,7 @@ export function ProductCard({ product }: ProductCardProps) {
   const wishlist = useWishlist();
   const hasMarkdown = Boolean(product.originalPrice && product.originalPrice > product.price);
   const discount = hasMarkdown && product.originalPrice ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100) : 0;
+  const hasSaleTag = product.tags?.some((t) => t.toLowerCase() === "sale") ?? false;
   const saved = wishlist.isSaved(product.id);
 
   function handleWishlist() {
@@ -81,6 +82,13 @@ export function ProductCard({ product }: ProductCardProps) {
                 {discount}%<br />OFF
               </span>
             </div>
+          ) : hasSaleTag ? (
+            <span
+              className="absolute left-1.5 top-1.5 z-10 rounded-sm px-1.5 py-0.5 text-[7px] font-black uppercase tracking-[0.1em] text-white md:left-3 md:top-3 md:px-2.5 md:py-1 md:text-[10px] md:tracking-[0.16em]"
+              style={{ background: "var(--ruby)" }}
+            >
+              Sale
+            </span>
           ) : product.badge ? (
             <span
               className="absolute left-1.5 top-1.5 z-10 max-w-[calc(100%-42px)] truncate rounded-sm px-1.5 py-0.5 text-[7px] font-bold uppercase tracking-[0.08em] md:left-3 md:top-3 md:px-2.5 md:py-1 md:text-[10px] md:tracking-[0.14em]"

@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 
 const CATEGORIES = [
-  { label: "Earing",    href: "/collections/earrings",  image: "/assets/category-earring.webp" },
+  { label: "Earing",    href: "/collections/earrings",  image: "/assets/kashmiri-earrings.png" },
   { label: "Bangles",   href: "/collections/bangles",   image: "/assets/category-bangles.webp" },
   { label: "Rings",     href: "/collections/rings",     image: "/assets/category-ring.webp" },
   { label: "Tika",      href: "/collections/tika",      image: "/assets/category-tika.webp" },

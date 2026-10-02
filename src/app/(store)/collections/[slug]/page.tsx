@@ -8,6 +8,7 @@ import { getProductsByGenderGid, getTopSellingProducts, getAntiTarnishProducts, 
 import { createMetadata } from "@/lib/seo";
 import { NecklaceSubcategories } from "./necklace-subcategories";
 import { BangleSubcategories } from "./bangle-subcategories";
+import { EarringSubcategories } from "./earring-subcategories";
 
 type CollectionPageProps = {
   params: Promise<{ slug: string }>;
@@ -131,9 +132,12 @@ export default async function CollectionPage({ params, searchParams }: Collectio
     );
   }
 
-  // 0a. Sale page — all jewellery
+  // 0a. Sale page — products tagged "sale" in Shopify
   if (slug === "sale") {
-    const products = await fetchAllShopifyProducts();
+    const all = await fetchAllShopifyProducts();
+    const products = all.filter((p) =>
+      p.tags?.some((t) => t.toLowerCase() === "sale")
+    );
     return (
       <CollectionLayout
         products={products}
@@ -191,26 +195,81 @@ export default async function CollectionPage({ params, searchParams }: Collectio
     const shopify = await getShopifyCollection("necklace");
     if (!shopify) notFound();
 
-    const SUBCATEGORY_TAGS: Record<string, string> = {
-      "long-necklace":  "long necklace",
-      "hasli-necklace": "hasli necklace",
-      "choker-set":     "choker set",
-      "anti-tarnish":   "anti tarnish",
+    const TAG_MAP: Record<string, string> = {
+      "oxidized-necklace":  "Oxidized Necklace",
+      "haldi-necklace":     "Haldi Necklace",
+      "mehendi-necklace":   "Mehendi Necklace",
+      "temple-necklace":    "Temple Necklace",
+      "bridal-necklace":    "Bridal Necklace",
+      "long-necklace":      "Long Necklace",
+      "choker-set":         "Choker Set",
+      "hasli-set":          "Hasli Set",
+      "ad-necklace":        "AD Necklace",
+      "high-gold-necklace": "High Gold Necklace",
+      "mosaic-necklace":    "Mosaic Necklace",
     };
 
-    const subcategory = typeof sp.subcategory === "string" ? sp.subcategory : undefined;
-    const tagFilter   = subcategory ? SUBCATEGORY_TAGS[subcategory] : undefined;
+    const normalize = (s: string) => s.toLowerCase().replace(/-/g, " ");
+    const tag = typeof sp.tag === "string" ? sp.tag : undefined;
+    const activeKey = tag
+      ? Object.keys(TAG_MAP).find((k) => normalize(TAG_MAP[k]) === normalize(tag))
+      : undefined;
+    const tagFilter = activeKey ? TAG_MAP[activeKey] : undefined;
 
     const products = tagFilter
       ? shopify.products.filter((p) =>
-          p.tags?.some((t) => t.toLowerCase().includes(tagFilter.toLowerCase()))
+          p.tags?.some((t) => normalize(t) === normalize(tagFilter))
         )
       : shopify.products;
 
     return (
       <CollectionLayout
         products={products}
-        subcategorySection={<NecklaceSubcategories activeSubcategory={subcategory} />}
+        subcategorySection={<NecklaceSubcategories activeTag={activeKey} />}
+      />
+    );
+  }
+
+  // 1c2. Earrings — with subcategory browse section and optional tag filtering
+  if (slug === "earrings") {
+    const shopify = await getShopifyCollection("earrings");
+    if (!shopify) notFound();
+
+    const TAG_MAP: Record<string, string> = {
+      "ad-earring":           "AD Earring",
+      "high-gold-earring":    "High Gold Earring",
+      "moissanite-earring":   "Moissanite Earring",
+      "jhumki":               "Jhumki",
+      "kashmiri-earring":     "Kashmiri Earring",
+      "anti-tarnish-earring": "Anti Tarnish Earring",
+      "studs-tops":           "Studs Tops",
+      "matching-earrings":    "Matching Earrings",
+      "oxidized-earrings":    "Oxidized Earrings",
+    };
+
+    const normalize = (s: string) => s.toLowerCase().replace(/-/g, " ");
+    const tag = typeof sp.tag === "string" ? sp.tag : undefined;
+    const activeKey = tag
+      ? Object.keys(TAG_MAP).find((k) => normalize(TAG_MAP[k]) === normalize(tag))
+      : undefined;
+    const tagFilter = activeKey ? TAG_MAP[activeKey] : undefined;
+
+    const products = tagFilter
+      ? shopify.products.filter((p) => {
+          if (activeKey === "studs-tops") {
+            return p.tags?.some((t) => {
+              const n = t.toLowerCase();
+              return n === "studs" || n === "tops" || normalize(t) === "studs tops";
+            });
+          }
+          return p.tags?.some((t) => normalize(t) === normalize(tagFilter));
+        })
+      : shopify.products;
+
+    return (
+      <CollectionLayout
+        products={products}
+        subcategorySection={<EarringSubcategories activeTag={activeKey} />}
       />
     );
   }

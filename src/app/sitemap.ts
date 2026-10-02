@@ -14,7 +14,6 @@ const STATIC_ROUTES: MetadataRoute.Sitemap = [
   { url: `${BASE_URL}/collections/nath`,         priority: 0.8,  changeFrequency: "weekly" },
   { url: `${BASE_URL}/collections/hathful`,      priority: 0.8,  changeFrequency: "weekly" },
   { url: `${BASE_URL}/collections/watches`,      priority: 0.7,  changeFrequency: "weekly" },
-  { url: `${BASE_URL}/collections/rakhis`,       priority: 0.7,  changeFrequency: "weekly" },
   { url: `${BASE_URL}/collections/gifting`,      priority: 0.7,  changeFrequency: "weekly" },
   { url: `${BASE_URL}/collections/bridal`,       priority: 0.8,  changeFrequency: "weekly" },
   { url: `${BASE_URL}/collections/diamond-edit`, priority: 0.8,  changeFrequency: "weekly" },
