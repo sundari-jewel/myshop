@@ -204,6 +204,8 @@ export default async function CollectionPage({ params, searchParams }: Collectio
       "long-necklace":      "Long Necklace",
       "choker-set":         "Choker Set",
       "hasli-set":          "Hasli Set",
+      "kundan-necklace":    "Kundan Necklace",
+      "heritage-necklace":  "Heritage Necklace",
       "ad-necklace":        "AD Necklace",
       "high-gold-necklace": "High Gold Necklace",
       "mosaic-necklace":    "Mosaic Necklace",
@@ -245,6 +247,8 @@ export default async function CollectionPage({ params, searchParams }: Collectio
       "studs-tops":           "Studs Tops",
       "matching-earrings":    "Matching Earrings",
       "oxidized-earrings":    "Oxidized Earrings",
+      "korean-earrings":      "Korean Earrings",
+      "kundan-earring":       "Kundan Earring",
     };
 
     const normalize = (s: string) => s.toLowerCase().replace(/-/g, " ");

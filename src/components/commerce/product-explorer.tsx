@@ -36,25 +36,22 @@ function uniqueValues(values: string[]) {
 }
 
 export function ProductExplorer({ products }: { products: Product[] }) {
-  const [materialFilter, setMaterialFilter] = useState("all");
   const [stoneFilter, setStoneFilter] = useState("all");
   const [priceFilter, setPriceFilter] = useState<PriceBand>("all");
   const [sortMode, setSortMode] = useState<SortMode>("featured");
   const [query, setQuery] = useState("");
   const [showMobileFilters, setShowMobileFilters] = useState(false);
 
-  const materials = useMemo(() => uniqueValues(products.map((product) => product.material).filter(Boolean)), [products]);
   const stones = useMemo(() => uniqueValues(products.map((product) => product.stone).filter(Boolean)), [products]);
 
   const visibleProducts = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
 
     const filtered = products.filter((product) => {
-      const matchesMaterial = materialFilter === "all" || product.material === materialFilter;
       const matchesStone = stoneFilter === "all" || product.stone === stoneFilter;
       const matchesQuery =
         normalizedQuery.length === 0 ||
-        [product.name, product.material, product.stone, product.badge]
+        [product.name, product.stone, product.badge]
           .filter((value): value is string => Boolean(value))
           .some((value) => value.toLowerCase().includes(normalizedQuery));
       const matchesPrice =
@@ -64,7 +61,7 @@ export function ProductExplorer({ products }: { products: Product[] }) {
         (priceFilter === "1500-3000"   && product.price > 1500  && product.price <= 3000) ||
         (priceFilter === "above-3000"  && product.price > 3000);
 
-      return matchesMaterial && matchesStone && matchesQuery && matchesPrice;
+      return matchesStone && matchesQuery && matchesPrice;
     });
 
     return [...filtered].sort((a, b) => {
@@ -73,17 +70,15 @@ export function ProductExplorer({ products }: { products: Product[] }) {
       if (sortMode === "name") return a.name.localeCompare(b.name);
       return products.findIndex((product) => product.id === a.id) - products.findIndex((product) => product.id === b.id);
     });
-  }, [materialFilter, priceFilter, products, query, sortMode, stoneFilter]);
+  }, [priceFilter, products, query, sortMode, stoneFilter]);
 
   const activeFilterCount = [
-    materialFilter !== "all",
     stoneFilter !== "all",
     priceFilter !== "all",
     query.trim().length > 0,
   ].filter(Boolean).length;
 
   function resetFilters() {
-    setMaterialFilter("all");
     setStoneFilter("all");
     setPriceFilter("all");
     setQuery("");
@@ -138,7 +133,6 @@ export function ProductExplorer({ products }: { products: Product[] }) {
           </div>
         </fieldset>
 
-        <FilterChipGroup title="Material" options={materials} value={materialFilter} onChange={setMaterialFilter} />
         <FilterChipGroup title="Stone" options={stones} value={stoneFilter} onChange={setStoneFilter} />
       </div>
     </aside>
@@ -190,7 +184,7 @@ export function ProductExplorer({ products }: { products: Product[] }) {
                 <input
                   value={query}
                   onChange={(event) => setQuery(event.target.value)}
-                  placeholder="Search by name, material, stone..."
+                  placeholder="Search by name or stone..."
                   className="h-full min-w-0 bg-transparent text-xs text-[var(--cream)] outline-none placeholder:text-[rgba(245,230,200,0.35)] md:text-sm"
                 />
               </label>
@@ -272,7 +266,7 @@ export function ProductExplorer({ products }: { products: Product[] }) {
                   <Gem className="mx-auto text-[var(--gold-dim)]" size={30} />
                   <h2 className="display-font mt-4 text-3xl font-semibold text-[var(--cream)]">No pieces found</h2>
                   <p className="mt-2 max-w-md text-sm leading-6 text-[rgba(245,230,200,0.55)]">
-                    Try removing a filter or searching for a broader material, stone, or collection.
+                    Try removing a filter or searching for a broader stone or collection.
                   </p>
                   <button
                     type="button"

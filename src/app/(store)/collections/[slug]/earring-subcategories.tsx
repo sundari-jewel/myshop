@@ -6,15 +6,17 @@ import type { Route } from "next";
 import { useEffect, useRef } from "react";
 
 const SUBCATEGORIES: { label: string; image: string | null; href: string; key: string }[] = [
-  { label: "AD Earring",            image: null,                            href: "/collections/earrings?tag=AD+Earring",            key: "ad-earring" },
-  { label: "High Gold Earring",     image: null,                            href: "/collections/earrings?tag=High+Gold+Earring",     key: "high-gold-earring" },
+  { label: "AD Earring",            image: "/assets/category-ad-earring.webp",              href: "/collections/earrings?tag=AD+Earring",            key: "ad-earring" },
+  { label: "High Gold Earring",     image: "/assets/category-high-gold-earring.webp",       href: "/collections/earrings?tag=High+Gold+Earring",     key: "high-gold-earring" },
   { label: "Moissanite Earring",    image: null,                            href: "/collections/earrings?tag=Moissanite+Earring",    key: "moissanite-earring" },
   { label: "Jhumki",                image: null,                            href: "/collections/earrings?tag=Jhumki",                key: "jhumki" },
-  { label: "Kashmiri Earring",      image: "/assets/kashmiri-earrings.png", href: "/collections/earrings?tag=Kashmiri+Earring",      key: "kashmiri-earring" },
+  { label: "Kashmiri Earring",      image: "/assets/category-kashmiri-earrings.webp",       href: "/collections/earrings?tag=Kashmiri+Earring",      key: "kashmiri-earring" },
   { label: "Anti Tarnish Earring",  image: null,                            href: "/collections/earrings?tag=Anti+Tarnish+Earring",  key: "anti-tarnish-earring" },
-  { label: "Studs / Tops",          image: null,                            href: "/collections/earrings?tag=Studs+Tops",            key: "studs-tops" },
-  { label: "Matching Earrings",     image: null,                            href: "/collections/earrings?tag=Matching+Earrings",     key: "matching-earrings" },
-  { label: "Oxidized Earrings",     image: null,                            href: "/collections/earrings?tag=Oxidized+Earrings",     key: "oxidized-earrings" },
+  { label: "Studs / Tops",          image: "/assets/category-studs-tops.webp",              href: "/collections/earrings?tag=Studs+Tops",            key: "studs-tops" },
+  { label: "Matching Earrings",     image: "/assets/category-matching-earrings.webp",       href: "/collections/earrings?tag=Matching+Earrings",     key: "matching-earrings" },
+  { label: "Oxidized Earrings",     image: "/assets/category-oxidised-earrings.webp",       href: "/collections/earrings?tag=Oxidized+Earrings",     key: "oxidized-earrings" },
+  { label: "Korean Earrings",      image: "/assets/category-korean-earrings.webp",          href: "/collections/earrings?tag=Korean+Earrings",       key: "korean-earrings" },
+  { label: "Kundan Earring",       image: "/assets/category-kundan-earring.webp",           href: "/collections/earrings?tag=Kundan+Earring",        key: "kundan-earring" },
 ];
 
 export function EarringSubcategories({ activeTag }: { activeTag?: string }) {

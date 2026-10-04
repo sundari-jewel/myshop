@@ -6,16 +6,18 @@ import type { Route } from "next";
 import { useEffect, useRef } from "react";
 
 const SUBCATEGORIES: { label: string; image: string | null; href: string; key: string }[] = [
-  { label: "Oxidized Necklace",   image: null, href: "/collections/necklaces?tag=Oxidized+Necklace",   key: "oxidized-necklace" },
-  { label: "Haldi Necklace",      image: null, href: "/collections/necklaces?tag=Haldi+Necklace",      key: "haldi-necklace" },
-  { label: "Mehendi Necklace",    image: null, href: "/collections/necklaces?tag=Mehendi+Necklace",    key: "mehendi-necklace" },
-  { label: "Temple Necklace",     image: null, href: "/collections/necklaces?tag=Temple+Necklace",     key: "temple-necklace" },
-  { label: "Bridal Necklace",     image: null, href: "/collections/necklaces?tag=Bridal+Necklace",     key: "bridal-necklace" },
+  { label: "Oxidized Necklace",   image: "/assets/category-oxidised-necklace.webp", href: "/collections/necklaces?tag=Oxidized+Necklace",   key: "oxidized-necklace" },
+  { label: "Haldi Necklace",      image: "/assets/category-haldi-mehendi-necklace.webp", href: "/collections/necklaces?tag=Haldi+Necklace",      key: "haldi-necklace" },
+  { label: "Mehendi Necklace",    image: "/assets/category-haldi-mehendi-necklace.webp", href: "/collections/necklaces?tag=Mehendi+Necklace",    key: "mehendi-necklace" },
+  { label: "Temple Necklace",     image: "/assets/category-temple-necklace.webp", href: "/collections/necklaces?tag=Temple+Necklace",     key: "temple-necklace" },
+  { label: "Kundan Necklace",     image: "/assets/category-kundan-necklace.webp", href: "/collections/necklaces?tag=Kundan+Necklace",     key: "kundan-necklace" },
+  { label: "Bridal Necklace",     image: "/assets/category-bridal-necklace.webp", href: "/collections/necklaces?tag=Bridal+Necklace",     key: "bridal-necklace" },
   { label: "Long Necklace",       image: "/assets/category-long-necklace.png", href: "/collections/necklaces?tag=Long+Necklace",       key: "long-necklace" },
   { label: "Choker Set",          image: "/assets/category-choker-set.png",    href: "/collections/necklaces?tag=Choker+Set",          key: "choker-set" },
   { label: "Hasli Set",           image: "/assets/category-hasli-necklace.png",href: "/collections/necklaces?tag=Hasli+Set",           key: "hasli-set" },
-  { label: "AD Necklace",         image: null, href: "/collections/necklaces?tag=AD+Necklace",         key: "ad-necklace" },
-  { label: "High Gold Necklace",  image: null, href: "/collections/necklaces?tag=High+Gold+Necklace",  key: "high-gold-necklace" },
+  { label: "AD Necklace",         image: "/assets/category-ad-necklace.webp", href: "/collections/necklaces?tag=AD+Necklace",         key: "ad-necklace" },
+  { label: "High Gold Necklace",  image: "/assets/category-high-gold-necklace.webp", href: "/collections/necklaces?tag=High+Gold+Necklace",  key: "high-gold-necklace" },
+  { label: "Heritage Necklace",   image: "/assets/category-heritage-necklace.webp", href: "/collections/necklaces?tag=Heritage+Necklace",   key: "heritage-necklace" },
   { label: "Mosaic Necklace",     image: null, href: "/collections/necklaces?tag=Mosaic+Necklace",     key: "mosaic-necklace" },
 ];
 
